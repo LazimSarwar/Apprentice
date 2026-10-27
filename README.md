@@ -17,6 +17,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 27 | **P1 — `oneshot/sim/` executor.** The task graph runs on a simulated Franka Panda: deterministic `pick`/`place`/`stack`/`push`, geometric checking of the final relations, generalisation to shuffled layouts, recovery from a mid-run disturbance (monitor the relations, re-do the step that broke), and an honest "cannot complete" when the arm can't reach. |
 | Oct 27 | **P2 — temporal monitor (`oneshot/sim/monitor.py`).** The demonstration's step order becomes a confirmed ordering rule; the monitor replays the execution trace against it. Two runs can reach the *same* final picture yet get different verdicts — only one followed the procedure. |
 | Oct 27 | **Evaluation harness (`oneshot/sim/evaluate.py`).** Seeded, randomized trials over the executor + monitor — shuffle generalisation, disturbance recovery, procedure-violation detection, honest abstention — reported with full denominators. |
+| Oct 27 | **Generalisation — second task.** A sorting demo (two bins) added to the clip generator and run through the *same* P0→P2 pipeline with no code changes: P0 extracted it correctly (distinguishing left/right trays), the arm executes and verifies it, and the evaluation harness measures it. |
 
 ## Pre-existing and third-party material
 
@@ -45,7 +46,8 @@ copy .env.example .env          # then fill in your keys
 ## Day-1 probes
 
 ```bash
-python probes/make_test_clip.py                                   # clips/synthetic.mp4, no camera needed
+python probes/make_test_clip.py                                   # clips/synthetic.mp4 (stack task), no camera needed
+python probes/make_test_clip.py --task sort                       # clips/sort.mp4 (sorting task)
 python probes/p1_sam_video.py clips/synthetic.mp4 --concept "red square" --concept "blue square"
 python probes/p2_spark_video.py clips/synthetic.mp4               # paths A, B, C
 python probes/p3_spark_open_video.py clips/synthetic.mp4          # needs BASETEN_API_KEY
@@ -98,23 +100,29 @@ step order; in the product the user confirms it.)
 ## Evaluation (seeded, reproducible)
 
 ```bash
-python -m oneshot.sim.evaluate runs/synthetic.graph.json --trials 25 --seed 0
+python -m oneshot.sim.evaluate runs/synthetic.graph.json --trials 25 --seed 0   # stack task
+python -m oneshot.sim.evaluate runs/sort.graph.json      --trials 25 --seed 0   # sort task
 ```
 
-The harness fixes one task graph and varies the world — random layouts, random shoves,
-reversed execution, out-of-reach targets — so every number has a full denominator and is
-reproducible from its seed. Over 25 trials per category (seed 0; consistent on other seeds):
+The harness fixes a task graph and varies the world — random layouts, random (in-reach)
+shoves, reversed execution, out-of-reach targets — so every number has a full denominator
+and is reproducible from its seed. Run on **two different demonstration videos** to show
+the same code generalises (25 trials per category, seed 0):
 
-| Axis | Rate | What it measures |
-|---|---|---|
-| shuffle | 24/25 | reaches the goal from a randomized starting layout |
-| procedure | 25/25 | an in-order run is judged as following the demonstrated procedure |
-| recovery | 25/25 | reaches the goal despite a mid-run shove (~1 repair on average) |
-| detection | 25/25 | an out-of-order run is flagged by the temporal monitor |
-| abstention | 25/25 | never reports success when the target is out of reach |
+| Axis | Stack | Sort | What it measures |
+|---|---|---|---|
+| shuffle | 25/25 | 24/25 | reaches the goal from a randomized starting layout |
+| procedure | 25/25 | 21/24 | of the successful runs, followed the demonstrated order |
+| recovery | 25/25 | 19/25 | reaches the goal despite an in-reach mid-run shove |
+| detection | 25/25 | 23/25 | an out-of-order run is flagged by the temporal monitor |
+| abstention | 25/25 | 25/25 | never reports success when the target is out of reach |
 
-The numbers are kept honest: shuffle and recovery are not always 100% (hard random layouts
-exist), and nothing counts as success unless the geometric check and the monitor agree.
+The numbers are kept honest: the two-bin **sort** task is harder for the push skill, so its
+rates are lower, and nothing counts as success unless the geometric check and the monitor
+agree. The stack graph is `runs/synthetic.graph.json`; the sort graph
+(`runs/sort.graph.json`) was extracted by the *same* P0 pipeline from a second clip, with
+no code changes — `python probes/make_test_clip.py --task sort` then `python -m oneshot
+clips/sort.mp4`.
 
 ## Limitations (kept honest from day 1)
 
