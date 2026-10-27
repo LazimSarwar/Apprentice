@@ -24,7 +24,7 @@ def _smoothstep(t: float) -> float:
 
 
 class Panda:
-    def __init__(self, scene: Scene, record: bool = False):
+    def __init__(self, scene: Scene, record: bool = False, frame_skip: int = 16):
         self.scene = scene
         self.m, self.d = scene.model, scene.data
         self.hand = scene.hand_id
@@ -33,7 +33,14 @@ class Panda:
         self._grasp: tuple[str, str] | None = None        # (block_id, mode)
         self.frames: list[np.ndarray] = []
         self._renderer = mujoco.Renderer(self.m, 480, 640) if record else None
-        self._cam = "__fixed__"
+        self._frame_skip = max(1, frame_skip)
+        self._sim_steps = 0
+        self._cam = mujoco.MjvCamera()
+        self._cam.type = mujoco.mjtCamera.mjCAMERA_FREE
+        self._cam.lookat[:] = [0.5, 0.0, 0.12]            # table centre
+        self._cam.distance = 1.7
+        self._cam.azimuth = 130
+        self._cam.elevation = -22
 
     # --- grasp ---------------------------------------------------------------
     def attach(self, block_id: str, mode: str = "lift") -> None:
@@ -62,9 +69,10 @@ class Panda:
         for _ in range(steps):
             mujoco.mj_step(self.m, self.d)
             self._hold()
-        if self._renderer is not None:
-            self._renderer.update_scene(self.d)
-            self.frames.append(self._renderer.render().copy())
+            self._sim_steps += 1
+            if self._renderer is not None and self._sim_steps % self._frame_skip == 0:
+                self._renderer.update_scene(self.d, self._cam)
+                self.frames.append(self._renderer.render().copy())
 
     def set_gripper(self, open_: bool, steps: int = 120) -> None:
         self.d.ctrl[7] = 255.0 if open_ else 0.0
