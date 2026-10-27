@@ -20,13 +20,18 @@ def main() -> None:
         "--nudge", nargs=4, action="append", metavar=("OBJECT", "DX", "DY", "AFTER"),
         help="shove OBJECT by (DX, DY) metres after step AFTER; repeatable",
     )
+    parser.add_argument(
+        "--reorder", action="store_true",
+        help="run the steps in reverse to show the temporal monitor catch a procedure violation",
+    )
     args = parser.parse_args()
 
     disturbances = [
         Disturbance(after_step=int(after), object=obj, dxy=(float(dx), float(dy)))
         for obj, dx, dy, after in (args.nudge or [])
     ]
-    result = execute_file(args.graph, record=args.video is not None, disturbances=disturbances)
+    result = execute_file(args.graph, record=args.video is not None,
+                          disturbances=disturbances, reorder=args.reorder)
     print(result.summary())
 
     if args.video and result.frames:

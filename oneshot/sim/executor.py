@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..schema import TaskGraph
-from . import relations, skills
+from . import monitor, relations, skills
 from .robot import Panda
 from .scene import Scene, build_scene
 
@@ -66,6 +66,7 @@ class ExecutionResult:
     disturbances: list[str] = field(default_factory=list)
     repairs: list[Repair] = field(default_factory=list)
     final: list[RelationOutcome] = field(default_factory=list)
+    procedure: list[monitor.RuleVerdict] = field(default_factory=list)
     completed: bool = False          # every step ran without the arm giving up
     success: bool = False            # completed AND all final relations hold
     reason: str = ""
@@ -74,6 +75,10 @@ class ExecutionResult:
     @property
     def corrections(self) -> int:
         return sum(r.ok for r in self.repairs)
+
+    @property
+    def procedure_ok(self) -> bool:
+        return all(v.ok for v in self.procedure)
 
     def summary(self) -> str:
         done = sum(s.ok for s in self.steps)
@@ -93,6 +98,11 @@ class ExecutionResult:
                          f"to restore {rp.a} {rp.relation} {rp.b}")
         for r in self.final:
             lines.append(f"  [{'hold' if r.holds else 'MISS'}] {r.a} {r.relation} {r.b}")
+        if self.procedure:
+            lines.append(f"  procedure: {'FOLLOWED' if self.procedure_ok else 'VIOLATED'} "
+                         f"({sum(v.ok for v in self.procedure)}/{len(self.procedure)} ordering rules)")
+            for v in self.procedure:
+                lines.append(f"    [{'ok  ' if v.ok else 'VIOL'}] {v.detail}")
         if self.reason:
             lines.append(f"  stopped: {self.reason}")
         return "\n".join(lines)
@@ -141,18 +151,38 @@ def _establishing_step(graph: TaskGraph, rel) -> object | None:
 
 
 def execute(graph: TaskGraph, record: bool = False, layout=None,
-            disturbances: list[Disturbance] | None = None) -> ExecutionResult:
+            disturbances: list[Disturbance] | None = None,
+            order: list[int] | None = None,
+            rules: list[monitor.OrderingRule] | None = None) -> ExecutionResult:
     scene = build_scene(graph.objects, layout=layout)
     robot = Panda(scene, record=record)
     result = ExecutionResult()
     pending = list(disturbances or [])
 
-    for step in sorted(graph.steps, key=lambda s: s.order):
+    # The confirmed procedure comes from the demonstration graph, regardless of the
+    # order the robot actually runs the steps (so a reordered run can still be judged).
+    rules = rules if rules is not None else monitor.derive_rules(graph)
+    watched = [monitor.rel_key(r) for r in graph.final_relations]
+    trace: monitor.Trace = []
+
+    def snapshot(exec_index: int, action: str | None) -> None:
+        trace.append(monitor.Snapshot(
+            step_order=exec_index, action=action,
+            holds={k: relations.holds(k[0], k[1], k[2], scene) for k in watched},
+        ))
+
+    snapshot(0, None)                                    # the initial scene
+    by_order = {s.order: s for s in graph.steps}
+    sequence = order if order is not None else sorted(by_order)
+
+    for exec_index, step_order in enumerate(sequence, start=1):
+        step = by_order[step_order]
         sr = _run_step(robot, scene, step)
         result.steps.append(StepOutcome(
             order=step.order, action=step.action, object=step.object,
             target=step.target, ok=sr.ok, residual=sr.residual, reason=sr.reason,
         ))
+        snapshot(exec_index, f"{step.action} {step.object}")
         if not sr.ok:
             result.reason = f"step {step.order} ({step.action} {step.object}): {sr.reason}"
             break
@@ -161,6 +191,8 @@ def execute(graph: TaskGraph, record: bool = False, layout=None,
             pending.remove(dist)
     else:
         result.completed = True
+
+    result.procedure = monitor.check_rules(trace, rules)
 
     # Monitor and repair: restore any final relation that does not hold.
     if result.completed:
@@ -196,6 +228,10 @@ def execute(graph: TaskGraph, record: bool = False, layout=None,
 
 
 def execute_file(path: Path, record: bool = False,
-                 disturbances: list[Disturbance] | None = None) -> ExecutionResult:
+                 disturbances: list[Disturbance] | None = None,
+                 reorder: bool = False) -> ExecutionResult:
     graph = TaskGraph.model_validate_json(Path(path).read_text(encoding="utf-8"))
-    return execute(graph, record=record, disturbances=disturbances)
+    order = None
+    if reorder:
+        order = sorted((s.order for s in graph.steps), reverse=True)
+    return execute(graph, record=record, disturbances=disturbances, order=order)

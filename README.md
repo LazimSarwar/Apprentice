@@ -15,6 +15,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 27 | Repository created. Day-1 API probes: SAM 3.1 video tracking, Muse Spark 1.3 video input (three input paths), Muse Spark Open on Baseten with `video_url`. Synthetic test clip generator. |
 | Oct 27 | **P0 — `oneshot/` task-graph module.** Video in → Muse Spark reads the ordered task (objects, steps, final relations) → SAM 3.1 tracks each object → every step linked to the trajectory that backs it. Evidence only ever comes from the tracker, never the language model. |
 | Oct 27 | **P1 — `oneshot/sim/` executor.** The task graph runs on a simulated Franka Panda: deterministic `pick`/`place`/`stack`/`push`, geometric checking of the final relations, generalisation to shuffled layouts, recovery from a mid-run disturbance (monitor the relations, re-do the step that broke), and an honest "cannot complete" when the arm can't reach. |
+| Oct 27 | **P2 — temporal monitor (`oneshot/sim/monitor.py`).** The demonstration's step order becomes a confirmed ordering rule; the monitor replays the execution trace against it. Two runs can reach the *same* final picture yet get different verdicts — only one followed the procedure. |
 
 ## Pre-existing and third-party material
 
@@ -69,6 +70,7 @@ JSON holds the full per-object trajectory; the console prints a short digest.
 ```bash
 python -m oneshot.sim runs/synthetic.graph.json          # executes the graph, prints an outcome report
 python -m oneshot.sim runs/synthetic.graph.json --nudge red_block 0.0 -0.22 2   # shove red after step 2, then recover
+python -m oneshot.sim runs/synthetic.graph.json --reorder                       # run the steps out of order; the monitor flags it
 python -m oneshot.sim runs/synthetic.graph.json --video runs/run.mp4            # also record the run (needs imageio)
 ```
 
@@ -81,6 +83,16 @@ mid-run is detected and repaired. It reports `SUCCESS`, `WRONG FINAL STATE`, or
 `INCOMPLETE` with per-step residuals, repair rounds, and full denominators. The same plan
 runs against a shuffled starting layout, and the arm stops and says so — without moving an
 object it never reached — when a waypoint is out of reach.
+
+**Did it follow the procedure?** The final picture doesn't tell you *how* a task was done.
+The demonstration establishes its relations in an order (place the base, then stack on it),
+and `oneshot/sim/monitor.py` reads that order off the task graph as a confirmed ordering
+rule, then replays the execution trace against it. `--reorder` runs the same steps
+backwards: the disturbance-recovery still repairs the end state, so it reports `SUCCESS`
+with every final relation holding — but the temporal monitor reports `procedure: VIOLATED`,
+because the stack was established before the base was in place. Same final picture, only one
+run followed the procedure. (The ordering rule is currently derived from the demonstration's
+step order; in the product the user confirms it.)
 
 ## Limitations (kept honest from day 1)
 
