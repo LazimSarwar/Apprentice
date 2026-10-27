@@ -1,0 +1,13 @@
+# secrets
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# local media and derived output (may contain personal footage; review before committing anything)
+clips/
+samples/
+probes/out/
+runs/
