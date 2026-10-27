@@ -16,6 +16,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 27 | **P0 — `oneshot/` task-graph module.** Video in → Muse Spark reads the ordered task (objects, steps, final relations) → SAM 3.1 tracks each object → every step linked to the trajectory that backs it. Evidence only ever comes from the tracker, never the language model. |
 | Oct 27 | **P1 — `oneshot/sim/` executor.** The task graph runs on a simulated Franka Panda: deterministic `pick`/`place`/`stack`/`push`, geometric checking of the final relations, generalisation to shuffled layouts, recovery from a mid-run disturbance (monitor the relations, re-do the step that broke), and an honest "cannot complete" when the arm can't reach. |
 | Oct 27 | **P2 — temporal monitor (`oneshot/sim/monitor.py`).** The demonstration's step order becomes a confirmed ordering rule; the monitor replays the execution trace against it. Two runs can reach the *same* final picture yet get different verdicts — only one followed the procedure. |
+| Oct 27 | **Evaluation harness (`oneshot/sim/evaluate.py`).** Seeded, randomized trials over the executor + monitor — shuffle generalisation, disturbance recovery, procedure-violation detection, honest abstention — reported with full denominators. |
 
 ## Pre-existing and third-party material
 
@@ -93,6 +94,27 @@ with every final relation holding — but the temporal monitor reports `procedur
 because the stack was established before the base was in place. Same final picture, only one
 run followed the procedure. (The ordering rule is currently derived from the demonstration's
 step order; in the product the user confirms it.)
+
+## Evaluation (seeded, reproducible)
+
+```bash
+python -m oneshot.sim.evaluate runs/synthetic.graph.json --trials 25 --seed 0
+```
+
+The harness fixes one task graph and varies the world — random layouts, random shoves,
+reversed execution, out-of-reach targets — so every number has a full denominator and is
+reproducible from its seed. Over 25 trials per category (seed 0; consistent on other seeds):
+
+| Axis | Rate | What it measures |
+|---|---|---|
+| shuffle | 24/25 | reaches the goal from a randomized starting layout |
+| procedure | 25/25 | an in-order run is judged as following the demonstrated procedure |
+| recovery | 25/25 | reaches the goal despite a mid-run shove (~1 repair on average) |
+| detection | 25/25 | an out-of-order run is flagged by the temporal monitor |
+| abstention | 25/25 | never reports success when the target is out of reach |
+
+The numbers are kept honest: shuffle and recovery are not always 100% (hard random layouts
+exist), and nothing counts as success unless the geometric check and the monitor agree.
 
 ## Limitations (kept honest from day 1)
 
