@@ -11,15 +11,30 @@ here: same final picture, only one followed the procedure.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from ..schema import TaskGraph
 
 RelKey = tuple[str, str, str]      # (relation, a, b)
 
+_KEY_RE = re.compile(r"^\s*(\w+)\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)\s*$")
+
 
 def rel_key(r) -> RelKey:
     return (r.relation, r.a, r.b)
+
+
+def key_to_str(k: RelKey) -> str:
+    """A human-readable, round-trippable key, e.g. 'inside(red_block, gray_tray_left)'."""
+    return f"{k[0]}({k[1]}, {k[2]})"
+
+
+def str_to_key(s: str) -> RelKey:
+    m = _KEY_RE.match(s)
+    if not m:
+        raise ValueError(f"not a 'relation(a, b)' key: {s!r}")
+    return (m.group(1), m.group(2), m.group(3))
 
 
 @dataclass
@@ -106,3 +121,64 @@ def check_rule(trace: Trace, rule: OrderingRule) -> RuleVerdict:
 
 def check_rules(trace: Trace, rules: list[OrderingRule]) -> list[RuleVerdict]:
     return [check_rule(trace, r) for r in rules]
+
+
+# --- confirmable procedure spec (P2 productization) ----------------------------
+
+def propose_spec(graph: TaskGraph) -> dict:
+    """An editable spec of the ordering rules read off the demonstration.
+
+    Every proposed rule starts `confirmed: false`: the user reviews them, flips the
+    ones they accept to `confirmed: true`, edits `before`/`after`, adds or deletes, and
+    only confirmed rules are then enforced. The relation keys that exist in the task are
+    listed for reference.
+    """
+    rules = derive_rules(graph)
+    return {
+        "relations_in_task": [key_to_str(rel_key(r)) for r in graph.final_relations],
+        "how_to_use": ("Set confirmed:true on each ordering rule you accept. Edit "
+                       "before/after (use the relation keys above), add rules, or delete "
+                       "them. Only confirmed rules are enforced by the monitor."),
+        "rules": [
+            {
+                "before": key_to_str(r.before),
+                "after": key_to_str(r.after),
+                "means": f"{_fmt(r.before)}  must hold no later than  {_fmt(r.after)}",
+                "source": r.note,
+                "confirmed": False,
+            }
+            for r in rules
+        ],
+    }
+
+
+def rules_from_spec(spec: dict) -> list[OrderingRule]:
+    """The confirmed ordering rules from an (edited) spec, as OrderingRule objects."""
+    out: list[OrderingRule] = []
+    for i, r in enumerate(spec.get("rules", []), start=1):
+        if not r.get("confirmed"):
+            continue
+        try:
+            before, after = str_to_key(r["before"]), str_to_key(r["after"])
+        except (KeyError, ValueError) as exc:
+            raise ValueError(f"rule {i} in the procedure spec is malformed: {exc}") from exc
+        out.append(OrderingRule(before=before, after=after, note=r.get("source", "confirmed")))
+    return out
+
+
+def validate_spec(spec: dict, graph: TaskGraph) -> list[str]:
+    """Warnings for confirmed rules that reference objects not in the task."""
+    known = {o.id for o in graph.objects}
+    warnings: list[str] = []
+    for i, r in enumerate(spec.get("rules", []), start=1):
+        if not r.get("confirmed"):
+            continue
+        for field_name in ("before", "after"):
+            try:
+                _, a, b = str_to_key(r[field_name])
+            except (KeyError, ValueError):
+                continue
+            for obj in (a, b):
+                if obj not in known:
+                    warnings.append(f"rule {i}: '{obj}' is not an object in the task")
+    return warnings

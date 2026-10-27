@@ -18,6 +18,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 27 | **P2 — temporal monitor (`oneshot/sim/monitor.py`).** The demonstration's step order becomes a confirmed ordering rule; the monitor replays the execution trace against it. Two runs can reach the *same* final picture yet get different verdicts — only one followed the procedure. |
 | Oct 27 | **Evaluation harness (`oneshot/sim/evaluate.py`).** Seeded, randomized trials over the executor + monitor — shuffle generalisation, disturbance recovery, procedure-violation detection, honest abstention — reported with full denominators. |
 | Oct 27 | **Generalisation — second task.** A sorting demo (two bins) added to the clip generator and run through the *same* P0→P2 pipeline with no code changes: P0 extracted it correctly (distinguishing left/right trays), the arm executes and verifies it, and the evaluation harness measures it. |
+| Oct 27 | **P2 productization — confirmable procedure.** Ordering rules are *proposed* from the demonstration to an editable spec; the user confirms/edits/adds before the monitor enforces only the confirmed rules (with validation of unknown objects). |
 
 ## Pre-existing and third-party material
 
@@ -94,8 +95,21 @@ rule, then replays the execution trace against it. `--reorder` runs the same ste
 backwards: the disturbance-recovery still repairs the end state, so it reports `SUCCESS`
 with every final relation holding — but the temporal monitor reports `procedure: VIOLATED`,
 because the stack was established before the base was in place. Same final picture, only one
-run followed the procedure. (The ordering rule is currently derived from the demonstration's
-step order; in the product the user confirms it.)
+run followed the procedure.
+
+The ordering rules are *proposed* from the demonstration, then **confirmed or edited by the
+user** before the monitor enforces them — the demonstration suggests the procedure, the user
+owns it:
+
+```bash
+python -m oneshot.sim runs/sort.graph.json --propose-procedure runs/sort.procedure.json
+# edit runs/sort.procedure.json: set confirmed:true on rules you accept; edit/add/delete freely
+python -m oneshot.sim runs/sort.graph.json --procedure runs/sort.procedure.json
+```
+
+Proposed rules start `confirmed: false`, so an unedited spec enforces nothing. Only confirmed
+rules are checked; editing a rule (even reversing it) changes the verdict, and a confirmed
+rule that names an object not in the task is flagged.
 
 ## Evaluation (seeded, reproducible)
 

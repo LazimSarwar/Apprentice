@@ -229,9 +229,10 @@ def execute(graph: TaskGraph, record: bool = False, layout=None,
 
 def execute_file(path: Path, record: bool = False,
                  disturbances: list[Disturbance] | None = None,
-                 reorder: bool = False) -> ExecutionResult:
+                 reorder: bool = False,
+                 rules: list[monitor.OrderingRule] | None = None) -> ExecutionResult:
     graph = TaskGraph.model_validate_json(Path(path).read_text(encoding="utf-8"))
     order = None
     if reorder:
         order = sorted((s.order for s in graph.steps), reverse=True)
-    return execute(graph, record=record, disturbances=disturbances, order=order)
+    return execute(graph, record=record, disturbances=disturbances, order=order, rules=rules)
