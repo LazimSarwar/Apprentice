@@ -28,6 +28,7 @@ from oneshot.schema import TaskGraph
 from oneshot.sim import monitor
 from oneshot.sim.evaluate import evaluate, random_layout
 from oneshot.sim.executor import Disturbance, execute, sanitize_plan
+from oneshot.words import goal_past, goal_text, nice, step_text
 
 APP = Path(__file__).resolve().parent.parent
 MEDIA = APP / "web" / "static" / "media"
@@ -59,45 +60,6 @@ COLORS = {
     "beige": (209, 184, 133), "pink": (230, 128, 166), "maroon": (128, 31, 51),
     "gray": (140, 140, 140), "grey": (140, 140, 140),
 }
-_MODIFIERS = ("left", "right", "top", "middle", "bottom", "extra")
-
-
-# --- plain English ----------------------------------------------------------
-
-def nice(obj_id: str) -> str:
-    """'gray_tray_left' -> 'left gray tray', 'purple_block_top' -> 'top purple block'."""
-    parts = obj_id.split("_")
-    mods = [p for p in parts if p in _MODIFIERS]
-    rest = [p for p in parts if p not in _MODIFIERS]
-    return " ".join(mods + rest)
-
-
-def step_text(s) -> str:
-    o, t, rel = nice(s.object), nice(s.target) if s.target else None, s.relation
-    if s.action == "push":
-        return f"Slides the {o} {'into' if rel == 'inside' else 'onto' if rel == 'on' else 'over to'} the {t}"
-    if s.action == "stack":
-        return f"Stacks the {o} on the {t}"
-    if s.action == "place":
-        if not t:
-            return f"Puts down the {o}"
-        return f"Places the {o} {'in' if rel == 'inside' else 'on' if rel == 'on' else 'next to'} the {t}"
-    if s.action == "pick":
-        return f"Picks up the {o}" + (f" and moves it to the {t}" if t else "")
-    return f"{s.action} {o}"
-
-
-def goal_text(rel: str, a: str, b: str) -> str:
-    word = {"inside": "is in", "on": "is on", "near": "is next to"}.get(rel, rel)
-    return f"The {nice(a)} {word} the {nice(b)}"
-
-
-def goal_past(key) -> str:
-    rel, a, b = key
-    word = {"inside": "was in", "on": "was on", "near": "was next to"}.get(rel, rel)
-    return f"the {nice(a)} {word} the {nice(b)}"
-
-
 # --- video ------------------------------------------------------------------
 
 def write_mp4(path: Path, frames, fps: float, crf: int = 27) -> None:

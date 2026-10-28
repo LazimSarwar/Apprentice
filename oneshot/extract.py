@@ -44,6 +44,20 @@ Rules:
 
 REPAIR = "That was not valid for the schema ({error}). Return corrected JSON only, same shape."
 
+GUIDE = """
+These objects were seen in a reference video of the same task. When one of them appears,
+use exactly its id: {objects}. Only invent a new id for an object that is not in this list."""
+
+
+def build_prompt(known_objects: list[dict] | None = None) -> str:
+    """The extraction prompt, optionally guided to reuse a reference video's object ids
+    so two videos of the same task can be compared step by step."""
+    if not known_objects:
+        return PROMPT
+    listed = ", ".join(f"{o['id']} ({o.get('color') or ''} {o.get('shape') or ''}".rstrip() + ")"
+                       for o in known_objects)
+    return PROMPT + GUIDE.format(objects=listed)
+
 _JSON = re.compile(r"\{.*\}", re.DOTALL)
 
 
@@ -63,11 +77,11 @@ def _loads(text: str) -> dict[str, Any]:
     return json.loads(match.group(0))
 
 
-def _hosted_caller(clip: Path, model: str) -> tuple[Callable, str]:
+def _hosted_caller(clip: Path, model: str, prompt: str) -> tuple[Callable, str]:
     """Return a (call, file_id) for native-video extraction on the hosted API."""
     api = OpenAI(base_url=META_BASE_URL, api_key=require_env("MODEL_API_KEY"))
     uploaded = api.files.create(file=(clip.name, clip.read_bytes(), "video/mp4"), purpose="user_data")
-    base = [{"type": "input_text", "text": PROMPT}, {"type": "input_video", "file_id": uploaded.id}]
+    base = [{"type": "input_text", "text": prompt}, {"type": "input_video", "file_id": uploaded.id}]
 
     def call(extra: str | None):
         content = base + ([{"type": "input_text", "text": extra}] if extra else [])
@@ -80,11 +94,11 @@ def _hosted_caller(clip: Path, model: str) -> tuple[Callable, str]:
     return call, uploaded.id
 
 
-def _fireworks_caller(clip: Path, model: str) -> tuple[Callable, None]:
+def _fireworks_caller(clip: Path, model: str, prompt: str) -> tuple[Callable, None]:
     """Return a (call, None) for keyframe extraction on Muse Spark Open via Fireworks."""
     api = OpenAI(base_url=FIREWORKS_BASE_URL, api_key=require_env("FIREWORKS_API_KEY"))
     frames = keyframes(clip, ROOT / "runs" / "frames", count=KEYFRAMES)
-    base: list[dict] = [{"type": "text", "text": PROMPT + "\nThe video is given as evenly spaced frames."}]
+    base: list[dict] = [{"type": "text", "text": prompt + "\nThe video is given as evenly spaced frames."}]
     for t, frame in frames:
         base.append({"type": "text", "text": f"Frame at t={t}s:"})
         base.append({"type": "image_url", "image_url": {"url": data_url(frame, "image/jpeg")}})
@@ -99,15 +113,20 @@ def _fireworks_caller(clip: Path, model: str) -> tuple[Callable, None]:
     return call, None
 
 
-def extract_graph(clip: Path, provider: str = "hosted",
-                  model: str | None = None) -> tuple[RawGraph, dict[str, Any]]:
-    """Return the raw task graph and metadata (provider, model, seconds, cost, file_id)."""
+def extract_graph(clip: Path, provider: str = "hosted", model: str | None = None,
+                  known_objects: list[dict] | None = None) -> tuple[RawGraph, dict[str, Any]]:
+    """Return the raw task graph and metadata (provider, model, seconds, cost, file_id).
+
+    `known_objects` (id/color/shape dicts from a reference graph) guides the model to
+    reuse the same ids, so this video can be checked against the reference.
+    """
+    prompt = build_prompt(known_objects)
     if provider == "hosted":
         model = model or MODEL
-        call, file_id = _hosted_caller(clip, model)
+        call, file_id = _hosted_caller(clip, model, prompt)
     elif provider == "fireworks":
         model = model or require_env("FIREWORKS_MODEL")
-        call, file_id = _fireworks_caller(clip, model)
+        call, file_id = _fireworks_caller(clip, model, prompt)
     else:
         raise ExtractionError(f"unknown provider '{provider}' (use 'hosted' or 'fireworks')")
 

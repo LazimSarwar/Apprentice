@@ -34,39 +34,44 @@ def _downsample(boxes: list, limit: int = MAX_SAMPLES) -> list:
     return [boxes[int(i * step)] for i in range(limit)]
 
 
-def build_task_graph(video: Path, work_dir: Path | None = None,
-                     provider: str = "hosted") -> TaskGraph:
+def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = "hosted",
+                     known_objects: list[dict] | None = None, track: bool = True) -> TaskGraph:
     """Build the evidence-linked task graph for a demonstration video.
 
     `provider` selects the extractor: "hosted" (Muse Spark 1.3, native video) or
     "fireworks" (Muse Spark Open, open weights, keyframes). SAM tracking is unchanged.
+    `known_objects` guides the extractor to reuse a reference video's object ids;
+    `track=False` skips SAM (faster, but the graph carries no evidence).
     """
     video = Path(video)
     work_dir = work_dir or (ROOT / "runs")
     clip = small_mp4(video, work_dir / "clips")
     info = video_info(clip)
 
-    raw, meta = extract_graph(clip, provider=provider)
+    raw, meta = extract_graph(clip, provider=provider, known_objects=known_objects)
 
     concepts = {obj.id: obj.concept() for obj in raw.objects}
     unique = sorted(set(concepts.values()))
-    tracks_by_concept, track_seconds = track_objects(
-        clip, unique, info.fps, file_id=meta.get("file_id")
-    )
+    if track:
+        tracks_by_concept, track_seconds = track_objects(
+            clip, unique, info.fps, file_id=meta.get("file_id")
+        )
+    else:
+        tracks_by_concept, track_seconds = {}, None
 
     warnings: list[str] = []
 
     objects: list[ObjectWithEvidence] = []
     track_by_object = {}
     for obj in raw.objects:
-        track = tracks_by_concept.get(concepts[obj.id])
-        track_by_object[obj.id] = track
-        if track is None:
+        obj_track = tracks_by_concept.get(concepts[obj.id])
+        track_by_object[obj.id] = obj_track
+        if obj_track is None and track:
             warnings.append(f"no SAM track for object '{obj.id}' ({concepts[obj.id]!r})")
         objects.append(
             ObjectWithEvidence(
                 id=obj.id, color=obj.color, shape=obj.shape,
-                tracked=track is not None, track=track,
+                tracked=obj_track is not None, track=obj_track,
             )
         )
 
