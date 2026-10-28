@@ -1,0 +1,128 @@
+{
+  "source": "..\\Real-footage\\3676968-uhd_2160_4096_25fps.mp4",
+  "video": {
+    "width": 380,
+    "height": 720,
+    "fps": 25.0,
+    "frames": 326,
+    "duration_s": 13.04
+  },
+  "objects": [
+    {
+      "id": "blue_block",
+      "color": "blue",
+      "shape": "block",
+      "tracked": true,
+      "track": {
+        "concept": "blue block",
+        "sam_object_id": "0",
+        "first_s": 0.0,
+        "last_s": 13.0,
+        "visible_frames": 326,
+        "boxes": []
+      }
+    },
+    {
+      "id": "purple_block",
+      "color": "purple",
+      "shape": "block",
+      "tracked": true,
+      "track": {
+        "concept": "purple block",
+        "sam_object_id": "0",
+        "first_s": 0.0,
+        "last_s": 13.0,
+        "visible_frames": 326,
+        "boxes": []
+      }
+    },
+    {
+      "id": "green_block",
+      "color": "green",
+      "shape": "block",
+      "tracked": true,
+      "track": {
+        "concept": "green block",
+        "sam_object_id": "1",
+        "first_s": 5.28,
+        "last_s": 13.0,
+        "visible_frames": 194,
+        "boxes": []
+      }
+    },
+    {
+      "id": "beige_block",
+      "color": "beige",
+      "shape": "block",
+      "tracked": true,
+      "track": {
+        "concept": "beige block",
+        "sam_object_id": "0",
+        "first_s": 10.96,
+        "last_s": 13.0,
+        "visible_frames": 52,
+        "boxes": []
+      }
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "start_s": 0.0,
+      "end_s": 1.8,
+      "action": "pick",
+      "object": "blue_block",
+      "target": null,
+      "relation": null,
+      "evidence": {
+        "object_boxes_in_window": 46,
+        "target_boxes_in_window": 0,
+        "samples": []
+      }
+    },
+    {
+      "order": 2,
+      "start_s": 5.0,
+      "end_s": 7.5,
+      "action": "place",
+      "object": "green_block",
+      "target": null,
+      "relation": null,
+      "evidence": {
+        "object_boxes_in_window": 56,
+        "target_boxes_in_window": 0,
+        "samples": []
+      }
+    },
+    {
+      "order": 3,
+      "start_s": 10.5,
+      "end_s": 12.5,
+      "action": "stack",
+      "object": "beige_block",
+      "target": "green_block",
+      "relation": "on",
+      "evidence": {
+        "object_boxes_in_window": 39,
+        "target_boxes_in_window": 50,
+        "samples": []
+      }
+    }
+  ],
+  "final_relations": [
+    {
+      "relation": "on",
+      "a": "beige_block",
+      "b": "green_block"
+    }
+  ],
+  "meta": {
+    "model": "muse-spark-1.3",
+    "extract_seconds": 22.9,
+    "extract_cost_usd": 0.010853,
+    "track_seconds": 59.45,
+    "warnings": []
+  },
+  "title": "Real footage",
+  "description": "A genuine stock clip of a child stacking coloured cubes."
+}

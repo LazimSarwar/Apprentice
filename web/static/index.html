@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OneShot</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a;
+    --ink:#e8eaed; --dim:#9aa3b2; --accent:#6ea8fe;
+    --ok:#3ddc84; --bad:#ff6b6b; --warn:#ffcf5c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{padding:22px 28px;border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:22px;letter-spacing:.2px}
+  h1 span{color:var(--accent)}
+  .sub{color:var(--dim);margin-top:4px;font-size:14px}
+  .badge{display:inline-block;margin-left:10px;padding:2px 9px;border:1px solid var(--line);
+    border-radius:999px;font-size:12px;color:var(--dim);vertical-align:middle}
+  main{max-width:1100px;margin:0 auto;padding:22px 20px 60px}
+  .tasks{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .task{flex:1 1 220px;text-align:left;background:var(--panel);border:1px solid var(--line);
+    color:var(--ink);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.15s}
+  .task:hover{border-color:#3a4252}
+  .task.active{border-color:var(--accent);background:var(--panel2)}
+  .task b{display:block;font-size:15px}
+  .task small{color:var(--dim);display:block;margin-top:4px;font-size:12.5px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h2{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
+  .chip{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px;border:1px solid #0006}
+  .obj{padding:3px 0;font-size:14px}
+  .obj .t{color:var(--dim);font-size:12px;margin-left:6px}
+  ol.steps{margin:6px 0 0;padding-left:20px}
+  ol.steps li{margin:5px 0}
+  .act{color:var(--accent);font-weight:600}
+  .rel{color:var(--warn)}
+  .goals{margin-top:12px;font-size:14px}
+  .goals div{padding:2px 0}
+  .muted{color:var(--dim);font-size:12.5px;margin-top:12px}
+  .controls{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+  button.run{background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    padding:9px 13px;border-radius:9px;cursor:pointer;font-size:13.5px}
+  button.run:hover{border-color:var(--accent)}
+  button.run:disabled{opacity:.5;cursor:default}
+  video{width:100%;border-radius:10px;background:#000;display:block;margin-bottom:12px}
+  .verdict{font-weight:700;font-size:16px;padding:8px 12px;border-radius:9px;display:inline-block;margin-bottom:10px}
+  .v-SUCCESS{background:#12331f;color:var(--ok)}
+  .v-WRONG{background:#3a1b1b;color:var(--bad)}
+  .v-INCOMPLETE{background:#3a2f12;color:var(--warn)}
+  .line{font-size:13.5px;padding:2px 0;font-family:ui-monospace,Consolas,monospace}
+  .yes{color:var(--ok)} .no{color:var(--bad)} .dim{color:var(--dim)}
+  .proc{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  .spinner{color:var(--dim);font-size:14px}
+  footer{max-width:1100px;margin:0 auto;padding:0 20px 40px;color:var(--dim);font-size:12.5px}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>OneShot</span> — learn a tabletop task from one demonstration <span class="badge" id="prov">model</span></h1>
+  <div class="sub">A video becomes an evidence-linked task graph; a simulated arm runs it, recovers from a shove, and checks the procedure — not just the final picture.</div>
+</header>
+<main>
+  <div class="tasks" id="tasks"></div>
+  <div class="grid">
+    <section class="card">
+      <h2>What it learned</h2>
+      <div id="learned"></div>
+    </section>
+    <section class="card">
+      <h2>Watch it run</h2>
+      <div class="controls">
+        <button class="run" data-mode="normal">▶ Execute</button>
+        <button class="run" data-mode="reorder">⇄ Out of order</button>
+        <button class="run" data-mode="nudge">✦ Disturb mid-run</button>
+      </div>
+      <div id="out"><div class="spinner">Pick a run above.</div></div>
+    </section>
+  </div>
+</main>
+<footer>
+  Simulated Franka Panda (MuJoCo). Grasp is a kinematic attach; push is a no-lift slide; honest denominators throughout.
+  The real-footage task graph is sanitised to its executable core before running.
+</footer>
+<script>
+let TASKS={}, current=null;
+
+function colorHex(c){
+  const m={red:'#d93333',blue:'#3359d9',green:'#33b24d',yellow:'#e6cc33',purple:'#8033a0',
+    orange:'#e68326',brown:'#80592e',beige:'#d1b885',pink:'#e680a6',maroon:'#801f33',
+    gray:'#999',grey:'#999'};
+  return m[(c||'').toLowerCase()]||'#777';
+}
+function fmtStep(s){
+  const tgt=s.target?` <span class="dim">→</span> ${s.target}`:'';
+  const rel=s.relation?` <span class="rel">[${s.relation}]</span>`:'';
+  return `<span class="act">${s.action}</span> ${s.object}${tgt}${rel}`;
+}
+
+async function load(){
+  TASKS=await (await fetch('/api/tasks')).json();
+  const el=document.getElementById('tasks');
+  el.innerHTML='';
+  for(const [id,t] of Object.entries(TASKS)){
+    const b=document.createElement('button');
+    b.className='task'; b.dataset.id=id;
+    b.innerHTML=`<b>${t.title}</b><small>${t.description}</small>`;
+    b.onclick=()=>select(id);
+    el.appendChild(b);
+  }
+  select(Object.keys(TASKS)[0]);
+}
+
+function select(id){
+  current=id;
+  document.querySelectorAll('.task').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  const g=TASKS[id].graph;
+  document.getElementById('prov').textContent=`${g.model} · ${g.provider}`;
+  const objs=g.objects.map(o=>
+    `<div class="obj"><span class="chip" style="background:${colorHex(o.color)}"></span>${o.id}
+     <span class="t">${o.tracked?'tracked':'not tracked'}</span></div>`).join('');
+  const steps=g.steps.map(s=>`<li>${fmtStep(s)}</li>`).join('');
+  const goals=g.final_relations.map(r=>
+    `<div><span class="dim">●</span> ${r.a} <span class="rel">${r.relation}</span> ${r.b}</div>`).join('');
+  document.getElementById('learned').innerHTML=
+    `<div><b>Objects</b> (${g.objects.length})</div>${objs}
+     <div style="margin-top:12px"><b>Steps</b></div><ol class="steps">${steps}</ol>
+     <div class="goals"><b>Final relations</b>${goals}</div>`;
+  document.getElementById('out').innerHTML='<div class="spinner">Pick a run above.</div>';
+}
+
+async function run(mode){
+  const out=document.getElementById('out');
+  document.querySelectorAll('button.run').forEach(b=>b.disabled=true);
+  out.innerHTML='<div class="spinner">Simulating… (a few seconds)</div>';
+  try{
+    const r=await (await fetch(`/api/run/${current}/${mode}`,{method:'POST'})).json();
+    out.innerHTML=render(r);
+  }catch(e){ out.innerHTML=`<div class="no">Run failed: ${e}</div>`; }
+  document.querySelectorAll('button.run').forEach(b=>b.disabled=false);
+}
+
+function render(r){
+  const vcls=r.verdict.startsWith('SUCCESS')?'SUCCESS':r.verdict.startsWith('WRONG')?'WRONG':'INCOMPLETE';
+  let h='';
+  if(r.video_url) h+=`<video src="${r.video_url}" autoplay muted loop controls></video>`;
+  h+=`<div class="verdict v-${vcls}">${r.verdict}</div>`;
+  if(r.plan_notes.length) h+=r.plan_notes.map(n=>`<div class="line dim">plan: ${n}</div>`).join('');
+  h+=r.steps.map(s=>`<div class="line"><span class="${s.ok?'yes':'no'}">${s.ok?'ok ':'FAIL'}</span>
+     ${s.order}. ${s.action} ${s.object}${s.target?' → '+s.target:''}
+     <span class="dim">${s.reason?'('+s.reason+')':''}</span></div>`).join('');
+  if(r.disturbances.length) h+=r.disturbances.map(d=>`<div class="line" style="color:var(--warn)">~ ${d}</div>`).join('');
+  if(r.repairs.length) h+=r.repairs.map(rp=>`<div class="line"><span class="${rp.ok?'yes':'no'}">${rp.ok?'fix ':'FAIL'}</span>
+     repaired ${rp.a} ${rp.relation} ${rp.b}</div>`).join('');
+  h+=r.final.map(f=>`<div class="line"><span class="${f.holds?'yes':'no'}">${f.holds?'hold':'MISS'}</span>
+     ${f.a} ${f.relation} ${f.b}</div>`).join('');
+  if(r.procedure.length){
+    h+=`<div class="proc"><b class="${r.procedure_ok?'yes':'no'}">Procedure: ${r.procedure_ok?'FOLLOWED':'VIOLATED'}</b>`;
+    h+=r.procedure.map(v=>`<div class="line ${v.ok?'dim':'no'}">${v.detail}</div>`).join('')+'</div>';
+  }
+  return h;
+}
+
+document.querySelectorAll('button.run').forEach(b=>b.onclick=()=>run(b.dataset.mode));
+load();
+</script>
+</body>
+</html>

@@ -16,12 +16,13 @@ REST_TOL = 0.03       # m, how close to the table counts as "resting"
 
 
 def holds(relation: str, a: str, b: str, scene: Scene) -> bool:
+    # bool(...) so results are plain Python bools (numpy bools aren't JSON-serializable).
     if relation == "on":
-        return _on(a, b, scene)
+        return bool(_on(a, b, scene))
     if relation == "inside":
-        return _inside(a, b, scene)
+        return bool(_inside(a, b, scene))
     if relation == "near":
-        return float(np.linalg.norm(scene.xy(a) - scene.xy(b))) < 3 * NEAR_XY
+        return bool(float(np.linalg.norm(scene.xy(a) - scene.xy(b))) < 3 * NEAR_XY)
     return False
 
 

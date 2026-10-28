@@ -1,0 +1,108 @@
+{
+  "source": "clips\\sort.mp4",
+  "video": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30.0,
+    "frames": 300,
+    "duration_s": 10.0
+  },
+  "objects": [
+    {
+      "id": "red_block",
+      "color": "red",
+      "shape": "block",
+      "tracked": true,
+      "track": {
+        "concept": "red block",
+        "sam_object_id": "0",
+        "first_s": 0.0,
+        "last_s": 9.967,
+        "visible_frames": 300,
+        "boxes": []
+      }
+    },
+    {
+      "id": "blue_block",
+      "color": "blue",
+      "shape": "block",
+      "tracked": true,
+      "track": {
+        "concept": "blue block",
+        "sam_object_id": "0",
+        "first_s": 2.033,
+        "last_s": 9.967,
+        "visible_frames": 239,
+        "boxes": []
+      }
+    },
+    {
+      "id": "gray_tray_left",
+      "color": "gray",
+      "shape": "tray",
+      "tracked": false,
+      "track": null
+    },
+    {
+      "id": "gray_tray_right",
+      "color": "gray",
+      "shape": "tray",
+      "tracked": false,
+      "track": null
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "start_s": 1.5,
+      "end_s": 5.0,
+      "action": "push",
+      "object": "red_block",
+      "target": "gray_tray_left",
+      "relation": "inside",
+      "evidence": {
+        "object_boxes_in_window": 106,
+        "target_boxes_in_window": 0,
+        "samples": []
+      }
+    },
+    {
+      "order": 2,
+      "start_s": 5.0,
+      "end_s": 8.5,
+      "action": "push",
+      "object": "blue_block",
+      "target": "gray_tray_right",
+      "relation": "inside",
+      "evidence": {
+        "object_boxes_in_window": 106,
+        "target_boxes_in_window": 0,
+        "samples": []
+      }
+    }
+  ],
+  "final_relations": [
+    {
+      "relation": "inside",
+      "a": "red_block",
+      "b": "gray_tray_left"
+    },
+    {
+      "relation": "inside",
+      "a": "blue_block",
+      "b": "gray_tray_right"
+    }
+  ],
+  "meta": {
+    "model": "muse-spark-1.3",
+    "extract_seconds": 5.85,
+    "extract_cost_usd": 0.007045,
+    "track_seconds": 22.75,
+    "warnings": [
+      "no SAM track for object 'gray_tray_left' ('gray tray')",
+      "no SAM track for object 'gray_tray_right' ('gray tray')"
+    ]
+  },
+  "title": "Sort",
+  "description": "Push the red block into the left tray and the blue block into the right."
+}

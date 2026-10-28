@@ -1,0 +1,14 @@
+{
+  "stack": {
+    "title": "Stack",
+    "description": "Push the red block into the tray, then stack the blue block on it."
+  },
+  "sort": {
+    "title": "Sort",
+    "description": "Push the red block into the left tray and the blue block into the right."
+  },
+  "real": {
+    "title": "Real footage",
+    "description": "A genuine stock clip of a child stacking coloured cubes."
+  }
+}

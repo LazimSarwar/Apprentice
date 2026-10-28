@@ -21,6 +21,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 27 | **P2 productization — confirmable procedure.** Ordering rules are *proposed* from the demonstration to an editable spec; the user confirms/edits/adds before the monitor enforces only the confirmed rules (with validation of unknown objects). |
 | Oct 28 | **Real footage.** The same pipeline run on a genuine stock clip of a child stacking coloured cubes: every block tracked, the noisy extracted plan sanitised to its executable core (target-less steps and unestablished goals dropped, transparently), and the arm reaches the goal. Proof it handles real video, not only synthetic clips. |
 | Oct 28 | **P3 — open-weights path.** The task-graph extractor can run on **Muse Spark Open** (open weights) via Fireworks, selected with `--provider fireworks`: keyframes in, same JSON task graph out. Makes the open-weight route explicit for the bonus; SAM tracking stays on the hosted API. |
+| Oct 28 | **Web app (live product).** A FastAPI page — pick a demonstration, see the task graph it learned, and run it on the arm live: normally, out of order (procedure check), or with a mid-run shove. The simulation runs server-side and the rendered video + verdict come back in the page. |
 
 ## Pre-existing and third-party material
 
@@ -48,6 +49,20 @@ python -m venv .venv
 pip install -r requirements.txt
 copy .env.example .env          # then fill in your keys
 ```
+
+## Web app
+
+A single page to drive the whole pipeline — pick a demonstration, see the evidence-linked
+task graph it learned, and run it on the simulated arm, watching the rendered result and the
+verdict. "Out of order" shows the procedure monitor catch a violation; "Disturb mid-run"
+shows the recovery.
+
+```bash
+python -m uvicorn web.server:app --port 8000     # then open http://localhost:8000
+```
+
+Three demonstrations are bundled (stack, sort, and the real-footage clip). The simulation
+runs server-side on request; renders are cached per task and mode.
 
 ## Day-1 probes
 
