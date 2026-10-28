@@ -63,6 +63,7 @@ class RelationOutcome:
 @dataclass
 class ExecutionResult:
     steps: list[StepOutcome] = field(default_factory=list)
+    plan_notes: list[str] = field(default_factory=list)
     disturbances: list[str] = field(default_factory=list)
     repairs: list[Repair] = field(default_factory=list)
     final: list[RelationOutcome] = field(default_factory=list)
@@ -86,6 +87,8 @@ class ExecutionResult:
         verdict = "SUCCESS" if self.success else ("INCOMPLETE" if not self.completed else "WRONG FINAL STATE")
         lines = [f"{verdict}: {done}/{len(self.steps)} steps, {rel}/{len(self.final)} final relations hold"
                  + (f", {self.corrections} repair(s)" if self.repairs else "")]
+        for n in self.plan_notes:
+            lines.append(f"  [plan] {n}")
         for s in self.steps:
             mark = "ok " if s.ok else "FAIL"
             tgt = f" -> {s.target}" if s.target else ""
@@ -150,14 +153,54 @@ def _establishing_step(graph: TaskGraph, rel) -> object | None:
     return max(chosen, key=lambda s: s.order) if chosen else None
 
 
+_NEEDS_TARGET = ("place", "stack", "push")
+
+
+def sanitize_plan(graph: TaskGraph) -> tuple[list, list, list[str]]:
+    """Reduce a (possibly noisy, real-footage) graph to a self-consistent executable plan.
+
+    A target-less place/stack/push gets a target inferred from a final relation about the
+    same object, or is dropped. Goals are kept only if some step actually establishes them.
+    Raw extraction is untouched; the dropped/inferred items are reported as plan notes.
+    """
+    notes: list[str] = []
+    steps = []
+    for s in sorted(graph.steps, key=lambda s: s.order):
+        if s.action in _NEEDS_TARGET and not s.target:
+            cand = [r for r in graph.final_relations if r.a == s.object]
+            if cand:
+                s = s.model_copy(update={"target": cand[0].b,
+                                         "relation": s.relation or cand[0].relation})
+                notes.append(f"inferred target '{s.target}' for step {s.order} ({s.action} {s.object})")
+            else:
+                notes.append(f"dropped step {s.order}: {s.action} {s.object} has no target")
+                continue
+        steps.append(s)
+
+    def established(r) -> bool:
+        return any(st.object == r.a and st.target == r.b for st in steps)
+
+    kept = [r for r in graph.final_relations if established(r)]
+    for r in graph.final_relations:
+        if r not in kept:
+            notes.append(f"dropped goal '{r.a} {r.relation} {r.b}': no step establishes it")
+    return steps, kept, notes
+
+
 def execute(graph: TaskGraph, record: bool = False, layout=None,
             disturbances: list[Disturbance] | None = None,
             order: list[int] | None = None,
-            rules: list[monitor.OrderingRule] | None = None) -> ExecutionResult:
+            rules: list[monitor.OrderingRule] | None = None,
+            sanitize: bool = True) -> ExecutionResult:
     scene = build_scene(graph.objects, layout=layout)
     robot = Panda(scene, record=record)
     result = ExecutionResult()
     pending = list(disturbances or [])
+
+    if sanitize:
+        steps, final_rels, notes = sanitize_plan(graph)
+        graph = graph.model_copy(update={"steps": steps, "final_relations": final_rels})
+        result.plan_notes = notes
 
     # The confirmed procedure comes from the demonstration graph, regardless of the
     # order the robot actually runs the steps (so a reordered run can still be judged).

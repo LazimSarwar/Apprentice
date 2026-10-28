@@ -19,6 +19,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 27 | **Evaluation harness (`oneshot/sim/evaluate.py`).** Seeded, randomized trials over the executor + monitor — shuffle generalisation, disturbance recovery, procedure-violation detection, honest abstention — reported with full denominators. |
 | Oct 27 | **Generalisation — second task.** A sorting demo (two bins) added to the clip generator and run through the *same* P0→P2 pipeline with no code changes: P0 extracted it correctly (distinguishing left/right trays), the arm executes and verifies it, and the evaluation harness measures it. |
 | Oct 27 | **P2 productization — confirmable procedure.** Ordering rules are *proposed* from the demonstration to an editable spec; the user confirms/edits/adds before the monitor enforces only the confirmed rules (with validation of unknown objects). |
+| Oct 28 | **Real footage.** The same pipeline run on a genuine stock clip of a child stacking coloured cubes: every block tracked, the noisy extracted plan sanitised to its executable core (target-less steps and unestablished goals dropped, transparently), and the arm reaches the goal. Proof it handles real video, not only synthetic clips. |
 
 ## Pre-existing and third-party material
 
@@ -31,6 +32,9 @@ Everything in this repository was written during the event, except the third-par
   `stack`/`push` primitives the recipe lacks, geometric relation checking, shuffle generalisation, and honest
   per-step outcomes.
 - Dependencies: `openai`, `meta-sam-parser` (SAM License), `python-dotenv`, `pydantic`, `mujoco`, `robot_descriptions`.
+- The real-footage demo uses a stock video by cottonbro studio from Pexels (Pexels License, free use):
+  <https://www.pexels.com/video/a-kid-playing-with-wooden-building-blocks-3676968/>. It is demonstration *input*
+  only — not redistributed in this repository.
 - Built with help from AI coding assistants; all design and code decisions are reviewed by the author.
 
 ## Setup
@@ -110,6 +114,16 @@ python -m oneshot.sim runs/sort.graph.json --procedure runs/sort.procedure.json
 Proposed rules start `confirmed: false`, so an unedited spec enforces nothing. Only confirmed
 rules are checked; editing a rule (even reversing it) changes the verdict, and a confirmed
 rule that names an object not in the task is flagged.
+
+### On real footage
+
+A graph extracted from a clean, designed clip executes as-is. A graph read from an
+unconstrained real video is noisier — a step may lack a target, or the model may assert a
+final relation no step builds. Before running, the executor **sanitises the plan** to its
+self-consistent core: it infers a missing target from a final relation about the same object
+or drops that step, and keeps only goals that some step actually establishes. The raw
+extraction is left untouched; every drop or inference is printed as a `[plan]` note, so the
+run stays honest about what it chose to execute.
 
 ## Evaluation (seeded, reproducible)
 
