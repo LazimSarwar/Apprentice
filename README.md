@@ -20,6 +20,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 27 | **Generalisation — second task.** A sorting demo (two bins) added to the clip generator and run through the *same* P0→P2 pipeline with no code changes: P0 extracted it correctly (distinguishing left/right trays), the arm executes and verifies it, and the evaluation harness measures it. |
 | Oct 27 | **P2 productization — confirmable procedure.** Ordering rules are *proposed* from the demonstration to an editable spec; the user confirms/edits/adds before the monitor enforces only the confirmed rules (with validation of unknown objects). |
 | Oct 28 | **Real footage.** The same pipeline run on a genuine stock clip of a child stacking coloured cubes: every block tracked, the noisy extracted plan sanitised to its executable core (target-less steps and unestablished goals dropped, transparently), and the arm reaches the goal. Proof it handles real video, not only synthetic clips. |
+| Oct 28 | **P3 — open-weights path.** The task-graph extractor can run on **Muse Spark Open** (open weights) via Fireworks, selected with `--provider fireworks`: keyframes in, same JSON task graph out. Makes the open-weight route explicit for the bonus; SAM tracking stays on the hosted API. |
 
 ## Pre-existing and third-party material
 
@@ -72,6 +73,19 @@ steps with timestamps, and the relations that hold at the end), then SAM 3.1 to 
 each object across the clip, and links every step to the tracked boxes inside its time
 window. Objects SAM cannot track are reported as warnings, not dropped silently. The
 JSON holds the full per-object trajectory; the console prints a short digest.
+
+### Open-weights extractor (P3)
+
+By default the task graph is read by the hosted Muse Spark 1.3 (native video). The same
+step can run on **Muse Spark Open** — an open-weight model — via Fireworks, which makes the
+open-weight route explicit (the bonus path). It takes evenly spaced keyframes rather than
+video; SAM tracking is unchanged.
+
+```bash
+# in .env: FIREWORKS_API_KEY and FIREWORKS_MODEL (the Spark Open slug)
+python probes/p4_fireworks_models.py                 # find the Spark Open slug on your account
+python -m oneshot clips/synthetic.mp4 --provider fireworks
+```
 
 ## Run on the simulated arm (P1)
 

@@ -14,6 +14,8 @@ from contextlib import aclosing
 from pathlib import Path
 from typing import Any, AsyncIterable, AsyncIterator
 
+# SAM 3.1 runs on the hosted API regardless of which model extracted the task graph.
+
 from meta_sam_parser import parse_responses_stream, video_segmentation_format
 from openai import AsyncOpenAI
 
@@ -107,24 +109,25 @@ async def _track_one(
 
 
 async def _track_all(
-    file_id_concepts: list[tuple[str, str]], fps: float | None
+    clip: Path, concepts: list[str], fps: float | None, file_id: str | None
 ) -> dict[str, Track | None]:
     async with AsyncOpenAI(base_url=META_BASE_URL, api_key=require_env("MODEL_API_KEY")) as api:
-        file_id = file_id_concepts[0][0]
-        concepts = [c for _, c in file_id_concepts]
-        results = await asyncio.gather(
-            *(_track_one(api, file_id, c, fps) for c in concepts)
-        )
+        if file_id is None:                      # extractor didn't upload (e.g. open-weights path)
+            uploaded = await api.files.create(
+                file=(clip.name, clip.read_bytes(), "video/mp4"), purpose="user_data"
+            )
+            file_id = uploaded.id
+        results = await asyncio.gather(*(_track_one(api, file_id, c, fps) for c in concepts))
     return dict(zip(concepts, results))
 
 
 def track_objects(
-    file_id: str, concepts: list[str], fps: float | None
+    clip: Path, concepts: list[str], fps: float | None, file_id: str | None = None
 ) -> tuple[dict[str, Track | None], float]:
-    """Track every concept against an already-uploaded clip.
+    """Track every concept on the hosted SAM API, uploading the clip if needed.
 
     Returns ``{concept: Track or None}`` and the wall-clock seconds taken.
     """
     start = time.perf_counter()
-    tracks = asyncio.run(_track_all([(file_id, c) for c in concepts], fps))
+    tracks = asyncio.run(_track_all(clip, concepts, fps, file_id))
     return tracks, round(time.perf_counter() - start, 2)

@@ -14,6 +14,10 @@ load_dotenv(ROOT / ".env")
 
 META_BASE_URL = "https://api.meta.ai/v1"
 
+# Open-weights (Muse Spark Open) inference provider. Fireworks is OpenAI-compatible;
+# override the base URL / model via .env if needed.
+FIREWORKS_BASE_URL = os.environ.get("FIREWORKS_BASE_URL", "https://api.fireworks.ai/inference/v1")
+
 # USD per 1M tokens (input, cached input, output), public model pages 2026-10-27.
 _SPARK_PRICE = (1.25, 0.15, 4.25)
 

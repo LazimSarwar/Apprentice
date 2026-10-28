@@ -18,6 +18,7 @@ def summarize(graph: TaskGraph) -> None:
     """Print a human-readable digest of a task graph (ASCII only, for any console)."""
     tracked = sum(o.tracked for o in graph.objects)
     print(f"source: {graph.source}")
+    print(f"model : {graph.meta.model} ({graph.meta.provider})")
     print(f"video : {graph.video.width}x{graph.video.height}, "
           f"{graph.video.duration_s:.1f}s @ {graph.video.fps} fps")
     print(f"objects ({tracked}/{len(graph.objects)} tracked):")
@@ -46,9 +47,11 @@ def main() -> None:
     parser.add_argument("video", type=Path, help="demonstration clip (mp4/mov/...)")
     parser.add_argument("--out", type=Path, help="where to write the graph JSON")
     parser.add_argument("--work-dir", type=Path, help="scratch dir for shrunk clips")
+    parser.add_argument("--provider", choices=["hosted", "fireworks"], default="hosted",
+                        help="extractor: hosted Muse Spark 1.3 (video) or open-weights Spark Open on Fireworks (keyframes)")
     args = parser.parse_args()
 
-    graph = build_task_graph(args.video, work_dir=args.work_dir)
+    graph = build_task_graph(args.video, work_dir=args.work_dir, provider=args.provider)
 
     out = args.out or (ROOT / "runs" / f"{args.video.stem}.graph.json")
     out.parent.mkdir(parents=True, exist_ok=True)

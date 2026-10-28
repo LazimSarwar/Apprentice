@@ -118,6 +118,7 @@ class StepWithEvidence(Step):
 
 
 class GraphMeta(BaseModel):
+    provider: str = "hosted"
     model: str
     extract_seconds: Optional[float] = None
     extract_cost_usd: Optional[float] = None

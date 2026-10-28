@@ -34,18 +34,25 @@ def _downsample(boxes: list, limit: int = MAX_SAMPLES) -> list:
     return [boxes[int(i * step)] for i in range(limit)]
 
 
-def build_task_graph(video: Path, work_dir: Path | None = None) -> TaskGraph:
-    """Build the evidence-linked task graph for a demonstration video."""
+def build_task_graph(video: Path, work_dir: Path | None = None,
+                     provider: str = "hosted") -> TaskGraph:
+    """Build the evidence-linked task graph for a demonstration video.
+
+    `provider` selects the extractor: "hosted" (Muse Spark 1.3, native video) or
+    "fireworks" (Muse Spark Open, open weights, keyframes). SAM tracking is unchanged.
+    """
     video = Path(video)
     work_dir = work_dir or (ROOT / "runs")
     clip = small_mp4(video, work_dir / "clips")
     info = video_info(clip)
 
-    raw, meta = extract_graph(clip)
+    raw, meta = extract_graph(clip, provider=provider)
 
     concepts = {obj.id: obj.concept() for obj in raw.objects}
     unique = sorted(set(concepts.values()))
-    tracks_by_concept, track_seconds = track_objects(meta["file_id"], unique, info.fps)
+    tracks_by_concept, track_seconds = track_objects(
+        clip, unique, info.fps, file_id=meta.get("file_id")
+    )
 
     warnings: list[str] = []
 
@@ -92,6 +99,7 @@ def build_task_graph(video: Path, work_dir: Path | None = None) -> TaskGraph:
         steps=steps,
         final_relations=raw.final_relations,
         meta=GraphMeta(
+            provider=meta["provider"],
             model=meta["model"],
             extract_seconds=meta["extract_seconds"],
             extract_cost_usd=meta["extract_cost_usd"],

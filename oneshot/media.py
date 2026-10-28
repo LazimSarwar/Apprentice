@@ -6,6 +6,7 @@ package reaches back into the day-1 probes.
 
 from __future__ import annotations
 
+import base64
 import json
 import subprocess
 from pathlib import Path
@@ -62,3 +63,26 @@ def frame_to_seconds(frame_index: int, fps: float | None) -> float:
     if not fps:
         return 0.0
     return round(frame_index / fps, 3)
+
+
+def keyframes(path: Path, out_dir: Path, count: int = 12, width: int = 640) -> list[tuple[float, Path]]:
+    """Evenly spaced JPEG frames with their timestamps — the open-weights input path,
+    for providers that take images rather than native video."""
+    duration = video_info(path).duration_s
+    frame_dir = out_dir / f"{path.stem}.frames"
+    frame_dir.mkdir(parents=True, exist_ok=True)
+    frames: list[tuple[float, Path]] = []
+    for i in range(count):
+        t = duration * (i + 0.5) / count
+        target = frame_dir / f"{i:02d}.jpg"
+        subprocess.run(
+            ["ffmpeg", "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(path),
+             "-frames:v", "1", "-vf", f"scale={width}:-2", "-q:v", "4", str(target)],
+            check=True,
+        )
+        frames.append((round(t, 2), target))
+    return frames
+
+
+def data_url(path: Path, mime: str) -> str:
+    return f"data:{mime};base64,{base64.b64encode(path.read_bytes()).decode('ascii')}"
