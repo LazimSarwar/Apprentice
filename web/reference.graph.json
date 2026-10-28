@@ -1,0 +1,123 @@
+{
+  "source": "clips\\proc.mp4",
+  "video": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30.0,
+    "frames": 360,
+    "duration_s": 12.0
+  },
+  "objects": [
+    {
+      "id": "red_block",
+      "color": "red",
+      "shape": "block",
+      "tracked": false,
+      "track": null
+    },
+    {
+      "id": "blue_block",
+      "color": "blue",
+      "shape": "block",
+      "tracked": false,
+      "track": null
+    },
+    {
+      "id": "green_block",
+      "color": "green",
+      "shape": "block",
+      "tracked": false,
+      "track": null
+    },
+    {
+      "id": "gray_tray_left",
+      "color": "gray",
+      "shape": "tray",
+      "tracked": false,
+      "track": null
+    },
+    {
+      "id": "gray_tray_middle",
+      "color": "gray",
+      "shape": "tray",
+      "tracked": false,
+      "track": null
+    },
+    {
+      "id": "gray_tray_right",
+      "color": "gray",
+      "shape": "tray",
+      "tracked": false,
+      "track": null
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "start_s": 0.0,
+      "end_s": 3.5,
+      "action": "place",
+      "object": "red_block",
+      "target": "gray_tray_left",
+      "relation": "inside",
+      "evidence": {
+        "object_boxes_in_window": 0,
+        "target_boxes_in_window": 0,
+        "samples": []
+      }
+    },
+    {
+      "order": 2,
+      "start_s": 3.5,
+      "end_s": 7.5,
+      "action": "place",
+      "object": "blue_block",
+      "target": "gray_tray_middle",
+      "relation": "inside",
+      "evidence": {
+        "object_boxes_in_window": 0,
+        "target_boxes_in_window": 0,
+        "samples": []
+      }
+    },
+    {
+      "order": 3,
+      "start_s": 7.5,
+      "end_s": 10.5,
+      "action": "place",
+      "object": "green_block",
+      "target": "gray_tray_right",
+      "relation": "inside",
+      "evidence": {
+        "object_boxes_in_window": 0,
+        "target_boxes_in_window": 0,
+        "samples": []
+      }
+    }
+  ],
+  "final_relations": [
+    {
+      "relation": "inside",
+      "a": "red_block",
+      "b": "gray_tray_left"
+    },
+    {
+      "relation": "inside",
+      "a": "blue_block",
+      "b": "gray_tray_middle"
+    },
+    {
+      "relation": "inside",
+      "a": "green_block",
+      "b": "gray_tray_right"
+    }
+  ],
+  "meta": {
+    "provider": "hosted",
+    "model": "muse-spark-1.3",
+    "extract_seconds": 7.78,
+    "extract_cost_usd": 0.008528,
+    "track_seconds": null,
+    "warnings": []
+  }
+}

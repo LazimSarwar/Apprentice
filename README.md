@@ -26,6 +26,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 28 | **P3 — open-weights path.** The task-graph extractor can run on **Muse Spark Open** (open weights) via Fireworks, selected with `--provider fireworks`: keyframes in, same JSON task graph out. Makes the open-weight route explicit for the bonus; SAM tracking stays on the hosted API. |
 | Oct 28 | **Web app (live product).** A FastAPI page — pick a demonstration, see the task graph it learned, and run it on the arm live: normally, out of order (procedure check), or with a mid-run shove. The simulation runs server-side and the rendered video + verdict come back in the page. |
 | Oct 28 | **Procedure checker.** `oneshot/check.py`: learn a procedure from one reference video, then check any attempt video for skipped steps, wrong order and wrong placements, each with a timestamp. Attempts are read guided by the reference's object names. 20/20 generated attempts judged correctly. The web page now leads with it. |
+| Oct 28 | **Live checking.** Upload an attempt (and optionally your own reference) on the page; the server runs the real pipeline as a background job and the page shows the verdict as soon as it exists, then the tracking view. |
 
 ## Pre-existing and third-party material
 
@@ -88,8 +89,12 @@ python -m web.build_media                         # robot stress-test page: vide
 python -m uvicorn web.server:app --port 8000      # then open http://localhost:8000
 ```
 
-Both build scripts only reformat what the pipeline produced (`web/static/media/`); the server just serves files,
-so the pages can also be hosted statically.
+**Live checking:** the page's *Try it with your own video* section uploads an attempt (and optionally your own
+reference) to `POST /api/check`; the server runs the real pipeline — reads the steps, compares, then tracks the
+objects — and the page polls `GET /api/jobs/{id}`, showing the verdict as soon as it exists (~20 s) and the
+AI-vision view when tracking finishes (~1 min). One check runs at a time; uploads are limited to 2 minutes / 80 MB
+since every check calls the hosted models. Without uploads, the demo sections are plain files and can be hosted
+statically.
 
 ## Day-1 probes
 

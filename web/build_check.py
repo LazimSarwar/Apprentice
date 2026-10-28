@@ -107,6 +107,8 @@ def main() -> None:
     out["accuracy"] = acc
 
     (MEDIA / "check.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+    # the live checker on the web page compares uploads against this same reference
+    (APP / "web" / "reference.graph.json").write_text(ref.model_dump_json(indent=2), encoding="utf-8")
     print("wrote", MEDIA / "check.json")
 
 

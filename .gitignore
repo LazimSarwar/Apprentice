@@ -12,3 +12,6 @@ samples/
 probes/out/
 runs/
 web/static/renders/
+
+# live uploads (user videos)
+web/static/uploads/

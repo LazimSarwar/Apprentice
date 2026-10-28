@@ -12,7 +12,7 @@
     --accent:#2f6bff; --accent-soft:#eaf0ff; --ok:#15803d; --ok-soft:#e9f7ee; --bad:#c2410c; --bad-soft:#fdf0e8;
     --warn:#a16207; --warn-soft:#fdf6e3; --radius:16px; --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 16px rgba(16,24,40,.06);
   }
-  *{box-sizing:border-box} html,body{margin:0}
+  *{box-sizing:border-box} html,body{margin:0} [hidden]{display:none!important}
   body{background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:var(--accent)}
   .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
@@ -89,6 +89,23 @@
   @media(max-width:900px){.how{grid-template-columns:1fr 1fr}}
   .how .card{padding:16px 18px} .how .k{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.6px;text-transform:uppercase}
   .how .h{font-weight:700;margin:4px 0} .how .d{color:var(--dim);font-size:14px}
+  .radio{display:flex;gap:10px;align-items:center;padding:6px 0;font-weight:500;cursor:pointer}
+  .drop{display:block;position:relative;border:2px dashed #cfd5de;border-radius:12px;padding:18px;text-align:center;color:var(--dim);margin:8px 0 4px;transition:.15s;cursor:pointer}
+  .drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+  .drop.has{border-style:solid;border-color:var(--ok);background:var(--ok-soft);color:var(--ink);font-weight:600}
+  .drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .samples{font-size:13.5px;color:var(--dim);margin-top:10px}
+  .go{margin-top:16px;width:100%;font:inherit;font-weight:700;font-size:16px;color:#fff;background:var(--accent);border:0;border-radius:12px;padding:12px;cursor:pointer}
+  .go:disabled{background:#b8c3d6;cursor:default}
+  .fine{color:var(--faint);font-size:12.5px;margin-top:8px;text-align:center}
+  ol.stages{list-style:none;margin:16px 0 0;padding:0}
+  ol.stages li{display:flex;gap:10px;align-items:center;padding:5px 0;color:var(--faint);font-weight:500}
+  ol.stages li .s{width:20px;height:20px;border-radius:50%;border:2px solid #d5dae2;flex:none;display:grid;place-items:center;font-size:12px}
+  ol.stages li.now{color:var(--ink)} ol.stages li.now .s{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+  ol.stages li.ok{color:var(--ink)} ol.stages li.ok .s{background:var(--ok);border-color:var(--ok);color:#fff}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .err{margin-top:14px;color:var(--bad);background:var(--bad-soft);border-radius:10px;padding:10px 12px;font-weight:500}
+  .placeholder{display:grid;place-items:center;text-align:center;color:var(--faint);min-height:240px}
   footer{color:var(--faint);font-size:13.5px;padding:34px 0 50px;line-height:1.6}
 </style>
 </head>
@@ -134,15 +151,48 @@
     </div>
   </section>
 
+
+  <section class="step" id="try">
+    <div class="step-head"><div class="num">3</div><div><h2>Try it with your own video</h2>
+      <p>Upload an attempt and it is checked against the reference — live, with the real models, in about a minute.</p></div></div>
+    <div class="two">
+      <div class="card">
+        <h3>1 · Reference</h3>
+        <label class="radio"><input type="radio" name="refmode" value="builtin" checked> The demo reference above</label>
+        <label class="radio"><input type="radio" name="refmode" value="own"> My own reference video (the procedure done right)</label>
+        <label class="drop" id="refdrop" hidden><input type="file" id="reffile" accept="video/*"><span id="reflabel">Choose or drop your reference video</span></label>
+        <h3>2 · Attempt</h3>
+        <label class="drop" id="attdrop"><input type="file" id="attfile" accept="video/*"><span id="attlabel">Choose or drop a video of someone doing it</span></label>
+        <div class="samples">No video handy? Download a sample attempt and upload it:
+          <a download href="/static/media/proc_ok_demo.mp4">correct</a> ·
+          <a download href="/static/media/proc_swap_demo.mp4">wrong order</a> ·
+          <a download href="/static/media/proc_skip_demo.mp4">skipped</a> ·
+          <a download href="/static/media/proc_wrongbin_demo.mp4">wrong place</a></div>
+        <button class="go" id="go" disabled>Check this video</button>
+        <div class="fine">Each check runs the real models (a few cents). Videos up to 2 minutes and 80 MB.</div>
+        <ol class="stages" id="stages" hidden></ol>
+        <div class="err" id="liveerr" hidden></div>
+      </div>
+      <div>
+        <div class="media" id="livemedia" hidden>
+          <div class="screen"><video id="livevid" muted loop playsinline autoplay></video></div>
+          <div class="bar"><label class="toggle"><input type="checkbox" id="livevision" disabled><span class="switch"></span>AI vision</label>
+            <span class="hint" id="livehint">Drawing the tracking view…</span></div>
+        </div>
+        <div class="card" id="livereport" style="margin-top:16px" hidden></div>
+        <div class="card placeholder" id="liveempty"><div>Your verdict will appear here.</div></div>
+      </div>
+    </div>
+  </section>
   <section class="step">
-    <div class="step-head"><div class="num">3</div><div><h2>How reliable is it?</h2>
+    <div class="step-head"><div class="num">4</div><div><h2>How reliable is it?</h2>
       <p>Measured on 20 attempt videos with randomly varied positions and timing — every one checked against the same reference.</p></div></div>
     <div class="acc" id="acc"></div>
     <div class="caveat"><b>Honest scope:</b> these are clean generated clips. Real phone footage — hands, shadows, clutter — is harder, and is what we test next.</div>
   </section>
 
   <section class="step">
-    <div class="step-head"><div class="num">4</div><div><h2>It understands the steps well enough to do them</h2>
+    <div class="step-head"><div class="num">5</div><div><h2>It understands the steps well enough to do them</h2>
       <p>The same learned procedure, handed to a simulated robot arm — nobody wrote instructions for it.</p></div></div>
     <div class="two">
       <div class="media"><div class="screen"><video id="robot" muted loop playsinline autoplay></video></div></div>
@@ -198,25 +248,91 @@ async function init(){
   document.querySelectorAll('.att').forEach(b=>b.onclick=()=>select(+b.dataset.i));
   $('attvision').onchange=()=>{const a=D.attempts[cur];setVideo($('att'),$('attvision').checked?a.seen:a.demo,true);};
   select(cur);
-  renderAcc(); renderRobot();
+  renderAcc(); renderRobot(); initLive();
+}
+
+function renderReport(a, el, video, sub){
+  const fails=a.issues.filter(x=>x.severity==='fail');
+  let h=a.passed
+    ? `<div class="verdict v-ok"><span class="mark">✓</span>Follows the procedure</div><div class="sub">Every step done, in the right order, in the right place.</div>`
+    : `<div class="verdict v-bad"><span class="mark">✕</span>${fails.length} problem${fails.length===1?'':'s'} found</div><div class="sub">${sub||''}</div>`;
+  if(a.issues.length){
+    h+=`<h3>Problems</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div><span class="k">${x.kind}</span><span class="m">${x.message}</span></div></div>`).join('');
+  }
+  h+=`<h3>Steps in this attempt</h3>`+a.milestones.map((m,j)=>`<div class="ms ${m.done?'click':''}" data-j="${j}"><span class="i ${m.done?'yes':'no'}">${m.done?'✓':'✕'}</span>${m.text}<span class="at">${m.done?'at '+clock(m.time):'not seen'}</span></div>`).join('');
+  el.innerHTML=h;
+  el.querySelectorAll('.issue').forEach(n=>n.onclick=()=>{const x=a.issues[+n.dataset.j]; if(x.time!=null) seek(video,x.time);
+    n.classList.add('flash'); setTimeout(()=>n.classList.remove('flash'),700);});
+  el.querySelectorAll('.ms.click').forEach(n=>n.onclick=()=>{const m=a.milestones[+n.dataset.j]; if(m.time!=null) seek(video,m.time);});
 }
 
 function select(i){
   cur=i; const a=D.attempts[i];
   document.querySelectorAll('.att').forEach(b=>b.classList.toggle('active',+b.dataset.i===i));
   setVideo($('att'),$('attvision').checked?a.seen:a.demo,false);
-  const fails=a.issues.filter(x=>x.severity==='fail');
-  let h=a.passed
-    ? `<div class="verdict v-ok"><span class="mark">✓</span>Follows the procedure</div><div class="sub">Every step done, in the right order, in the right place.</div>`
-    : `<div class="verdict v-bad"><span class="mark">✕</span>${fails.length} problem${fails.length===1?'':'s'} found</div><div class="sub">${a.what}</div>`;
-  if(a.issues.length){
-    h+=`<h3>Problems</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div><span class="k">${x.kind}</span><span class="m">${x.message}</span></div></div>`).join('');
+  renderReport(a,$('report'),$('att'),a.what);
+}
+
+// --- live checking -----------------------------------------------------------
+const L={ref:null, att:null, job:null, timer:null, demo:null, seen:null};
+const STAGES=own=>[...(own?['Reading the steps in your reference']:[]),'Reading the steps in your attempt','Comparing with the reference','Drawing what the AI saw'];
+
+function wireDrop(drop,input,label,key,prompt){
+  const set=f=>{ L[key]=f||null; drop.classList.toggle('has',!!f); label.textContent=f?`✓ ${f.name}`:prompt; ready(); };
+  input.onchange=()=>set(input.files[0]);
+  drop.ondragover=e=>{e.preventDefault();drop.classList.add('over');};
+  drop.ondragleave=()=>drop.classList.remove('over');
+  drop.ondrop=e=>{e.preventDefault();drop.classList.remove('over');set(e.dataTransfer.files[0]);};
+}
+const ownRef=()=>document.querySelector('input[name=refmode]:checked').value==='own';
+function ready(){ $('go').disabled=!L.att||(ownRef()&&!L.ref)||!!L.timer; }
+
+function showStages(stage,own,doneAll){
+  const list=STAGES(own), at=doneAll?list.length:Math.max(0,list.indexOf(stage));
+  $('stages').hidden=false;
+  $('stages').innerHTML=list.map((s,i)=>`<li class="${i<at?'ok':i===at?'now':''}"><span class="s">${i<at?'✓':''}</span>${s}</li>`).join('');
+}
+
+async function startLive(){
+  $('liveerr').hidden=true; $('livereport').hidden=true; $('livemedia').hidden=true; $('liveempty').hidden=false;
+  const fd=new FormData(); fd.append('attempt',L.att); if(ownRef()&&L.ref) fd.append('reference',L.ref);
+  $('go').disabled=true; $('go').textContent='Uploading…';
+  let r;
+  try{ r=await fetch('/api/check',{method:'POST',body:fd}); }
+  catch(e){ return liveError('Could not reach the server.'); }
+  const body=await r.json();
+  if(!r.ok) return liveError(body.detail||'Upload failed.');
+  L.job=body.job; $('go').textContent='Checking…';
+  showStages(null,ownRef(),false);
+  L.timer=setInterval(poll,1500); poll();
+}
+function liveError(msg){
+  clearInterval(L.timer); L.timer=null; $('go').textContent='Check this video'; ready();
+  $('liveerr').textContent=msg; $('liveerr').hidden=false;
+}
+async function poll(){
+  const j=await (await fetch(`/api/jobs/${L.job}`)).json();
+  if(j.status==='error') { $('stages').hidden=true; return liveError(j.error); }
+  showStages(j.stage,j.custom_reference,j.status==='done');
+  if((j.status==='checked'||j.status==='done') && j.result && $('livereport').hidden){
+    $('liveempty').hidden=true; $('livemedia').hidden=false; $('livereport').hidden=false;
+    L.demo=j.demo; setVideo($('livevid'),j.demo,false);
+    const sub=j.custom_reference?'Checked against your reference video.':'Checked against the demo reference.';
+    renderReport(j.result,$('livereport'),$('livevid'),sub);
   }
-  h+=`<h3>Steps in this attempt</h3>`+a.milestones.map((m,j)=>`<div class="ms ${m.done?'click':''}" data-j="${j}"><span class="i ${m.done?'yes':'no'}">${m.done?'✓':'✕'}</span>${m.text}<span class="at">${m.done?'at '+clock(m.time):'not seen'}</span></div>`).join('');
-  $('report').innerHTML=h;
-  document.querySelectorAll('#report .issue').forEach(el=>el.onclick=()=>{const x=a.issues[+el.dataset.j]; if(x.time!=null) seek($('att'),x.time);
-    el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),700);});
-  document.querySelectorAll('#report .ms.click').forEach(el=>el.onclick=()=>{const m=a.milestones[+el.dataset.j]; if(m.time!=null) seek($('att'),m.time);});
+  if(j.status==='done'){
+    clearInterval(L.timer); L.timer=null; $('go').textContent='Check another video'; ready();
+    if(j.seen){ L.seen=j.seen; $('livevision').disabled=false; $('livevision').checked=true;
+      setVideo($('livevid'),j.seen,true); $('livehint').textContent='Boxes show every object it tracked'; }
+    else { $('livehint').textContent=j.note||'No tracking view for this video.'; }
+  }
+}
+function initLive(){
+  wireDrop($('refdrop'),$('reffile'),$('reflabel'),'ref','Choose or drop your reference video');
+  wireDrop($('attdrop'),$('attfile'),$('attlabel'),'att','Choose or drop a video of someone doing it');
+  document.querySelectorAll('input[name=refmode]').forEach(r=>r.onchange=()=>{ $('refdrop').hidden=!ownRef(); ready(); });
+  $('livevision').onchange=()=>setVideo($('livevid'),$('livevision').checked?L.seen:L.demo,true);
+  $('go').onclick=startLive;
 }
 
 function renderAcc(){
