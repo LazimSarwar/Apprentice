@@ -30,6 +30,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 28 | **Narrated references (`oneshot/narration.py`).** The reference's audio goes through **Muse Voice Transcribe** (timed lines); Muse Spark ties each line to a step — the reason given, whether it is critical, spoken order rules ("liner first", "any order"). Quotes are checked against the transcript, so a reason can't be invented. The spoken words also name the objects ("blue liner", not "blue block"). |
 | Oct 28 | **Which order matters (`oneshot/procedure.py`).** Every pair of steps gets a verdict: *required* (said, or physical — the product sits on the liner), *free* (said, or a second correct reference did it the other way), or *as shown* (a different order is a note, never a failure). A person can change any rule on the page and every attempt is re-checked instantly (`POST /api/recheck`, no model calls). |
 | Oct 28 | **Evidence-checked verdicts.** With tracking, each reached step is checked against SAM's boxes (*tracker agrees / seen / not seen / disagrees*), and a step whose object was hidden after the previous step is reported as **"couldn't verify"** instead of "skipped". Every problem carries its severity, the spoken reason, and a one-line fix. |
+| Oct 29 | **Near-live warnings (`oneshot/watch.py`, `web/watch.py`).** While an attempt is still going on — from the browser camera, or a video replayed in real time — the video so far is re-read every 2 s and a warning appears as soon as a mistake can no longer be undone (a step done while a required earlier one isn't, or something put in the wrong place), with the spoken reason and the fix. Skips wait for the end, when the full check gives the verdict. Measured on the six sample attempts: warnings a median 10.5 s after the mistake, no false alarms, 6/6 final verdicts right. |
 | Oct 28 | **Pack-out demo + evaluation.** `probes/make_pack_clip.py` renders a narrated packing reference (computer voice), a second correct reference and eight kinds of attempt; `probes/pack_eval.py` measures the checker on freshly randomized attempts with expected verdicts written first. The web page now tells this story. |
 
 ## Pre-existing and third-party material
@@ -117,6 +118,27 @@ evidence-checked verdict and AI-vision view when tracking finishes (~1 min). Rul
 `POST /api/recheck`. One check runs at a time; uploads are limited to 2 minutes / 80 MB
 since every check calls the hosted models. Without uploads, the demo sections are plain files and can be hosted
 statically.
+
+**Catch it while it happens (near-live):** the page's section 4 plays a sample attempt as if live, or records from
+the browser camera (`MediaRecorder`, 1 s WebM chunks to `POST /api/watch/{id}/chunk`). Every 2 s the page asks for a
+read (`POST /api/watch/{id}/read`): the server cuts the video so far into a small 5 fps clip and Muse Spark reads it
+at *minimal* reasoning effort (~8 s, ~$0.007; the model samples frames itself, so the low frame rate only shrinks
+the upload). Up to four reads overlap, and a slow read never overwrites a longer one. Each read is judged only for what is
+already certain (`oneshot.watch.wrong_now`): a step done while a required earlier step isn't (grouped on the
+missing step, so one root cause is one warning), a required order already broken, or an object put somewhere the
+procedure never puts it. Steps that ended within 0.5 s of the cut are ignored (an object in the hand isn't placed).
+Warnings persist across reads: a wrong place becomes *fixed* once the object reaches its right place, and one that
+two later reads in a row no longer see is *withdrawn*, shown struck through rather than silently dropped. When the
+attempt ends (`POST /api/watch/{id}/finish`) the whole video gets the usual full check at normal effort; that is the
+verdict, and it is where skipped steps appear. Two sessions at a time, at most 60 reads each.
+
+```bash
+python -m oneshot.watch web/reference.graph.json ATTEMPT.mp4 --procedure web/reference.procedure.json   # CLI replay
+python probes/watch_latency.py          # with the web app running: delay, false alarms, final verdicts
+```
+
+`probes/watch_latency.py` on the six sample attempts (2 s reads): 6/6 final verdicts right, 0 false alarms on the
+two passing attempts, failures warned a median **10.5 s** (max 11.9 s) after they happened, $0.02–0.04 per attempt.
 
 ## Day-1 probes
 
@@ -244,3 +266,6 @@ clips/sort.mp4`.
 - Simulation first. Grasping is a kinematic attach, not a friction grasp; nothing here is validated on a physical robot.
 - `push` is modelled as a no-lift surface slide (distinct from `pick`), not full non-prehensile contact dynamics.
 - Results are reported with full denominators (successes, failures, abstentions, human corrections).
+- Near-live means about ten seconds behind, not instant: each read of the video so far takes ~8 s. Its numbers
+  come from generated clips; the camera path was tested by streaming a recorded WebM in pieces, not yet with a
+  person working in front of a camera.

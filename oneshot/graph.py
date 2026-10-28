@@ -55,21 +55,22 @@ def track_with_fallback(clip: Path, objects: list, fps: float | None,
 
 def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = "hosted",
                      known_objects: list[dict] | None = None, track: bool = True,
-                     spoken: str | None = None) -> TaskGraph:
+                     spoken: str | None = None, effort: str = "low") -> TaskGraph:
     """Build the evidence-linked task graph for a demonstration video.
 
     `provider` selects the extractor: "hosted" (Muse Spark 1.3, native video) or
     "fireworks" (Muse Spark Open, open weights, keyframes). SAM tracking is unchanged.
     `known_objects` guides the extractor to reuse a reference video's object ids;
     `track=False` skips SAM (faster, but the graph carries no evidence); `spoken` is the
-    reference's narration, used to name objects in the person's words.
+    reference's narration, used to name objects in the person's words; `effort` is the hosted
+    model's reasoning effort.
     """
     video = Path(video)
     work_dir = work_dir or (ROOT / "runs")
     clip = small_mp4(video, work_dir / "clips")
     info = video_info(clip)
 
-    raw, meta = extract_graph(clip, provider=provider, known_objects=known_objects, spoken=spoken)
+    raw, meta = extract_graph(clip, provider=provider, known_objects=known_objects, spoken=spoken, effort=effort)
 
     concepts = {obj.id: obj.concept() for obj in raw.objects}
     if track:

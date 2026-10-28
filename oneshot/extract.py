@@ -86,7 +86,7 @@ def _loads(text: str) -> dict[str, Any]:
     return json.loads(match.group(0))
 
 
-def _hosted_caller(clip: Path, model: str, prompt: str) -> tuple[Callable, str]:
+def _hosted_caller(clip: Path, model: str, prompt: str, effort: str = "low") -> tuple[Callable, str]:
     """Return a (call, file_id) for native-video extraction on the hosted API."""
     api = OpenAI(base_url=META_BASE_URL, api_key=require_env("MODEL_API_KEY"))
     uploaded = api.files.create(file=(clip.name, clip.read_bytes(), "video/mp4"), purpose="user_data")
@@ -95,7 +95,7 @@ def _hosted_caller(clip: Path, model: str, prompt: str) -> tuple[Callable, str]:
     def call(extra: str | None):
         content = base + ([{"type": "input_text", "text": extra}] if extra else [])
         resp = api.responses.create(
-            model=model, reasoning={"effort": "low"},
+            model=model, reasoning={"effort": effort},
             input=[{"type": "message", "role": "user", "content": content}],
         )
         return resp.output_text, resp.usage
@@ -124,17 +124,18 @@ def _fireworks_caller(clip: Path, model: str, prompt: str) -> tuple[Callable, No
 
 def extract_graph(clip: Path, provider: str = "hosted", model: str | None = None,
                   known_objects: list[dict] | None = None,
-                  spoken: str | None = None) -> tuple[RawGraph, dict[str, Any]]:
+                  spoken: str | None = None, effort: str = "low") -> tuple[RawGraph, dict[str, Any]]:
     """Return the raw task graph and metadata (provider, model, seconds, cost, file_id).
 
     `known_objects` (id/color/shape dicts from a reference graph) guides the model to
     reuse the same ids, so this video can be checked against the reference; `spoken` (what
-    was said while recording) lets it name objects in the person's own words.
+    was said while recording) lets it name objects in the person's own words. `effort` is
+    the hosted model's reasoning effort ("minimal" about halves a read, for near-live checks).
     """
     prompt = build_prompt(known_objects, spoken)
     if provider == "hosted":
         model = model or MODEL
-        call, file_id = _hosted_caller(clip, model, prompt)
+        call, file_id = _hosted_caller(clip, model, prompt, effort)
     elif provider == "fireworks":
         model = model or require_env("FIREWORKS_MODEL")
         call, file_id = _fireworks_caller(clip, model, prompt)

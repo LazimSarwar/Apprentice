@@ -133,6 +133,28 @@
   .soundbtn{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer}
   .soundbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
   body.busy .att,body.busy #report{opacity:.55;transition:opacity .15s}
+
+  .srcs{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+  .srcs .lbl{color:var(--dim);font-size:14px;font-weight:600;margin-right:2px}
+  .src{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;transition:.15s}
+  .src:hover{border-color:#c4cbd6} .src.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .src.cam{background:var(--ink);color:#fff;border-color:var(--ink)} .src.cam.on{background:var(--bad);border-color:var(--bad);color:#fff}
+  .screen.live{position:relative}
+  .livetag{position:absolute;top:12px;left:12px;background:#000a;color:#fff;font-weight:700;font-size:13px;border-radius:8px;padding:4px 10px;letter-spacing:.3px}
+  .livetag .rec{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-right:7px;animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .banner{position:absolute;left:12px;right:12px;bottom:12px;background:var(--bad);color:#fff;border-radius:12px;padding:10px 14px;font-weight:600;font-size:15px;box-shadow:0 6px 24px #0005;animation:pop .25s ease-out}
+  .banner.warn{background:var(--warn)} .banner small{display:block;font-weight:500;opacity:.92;font-size:13.5px;margin-top:2px}
+  @keyframes pop{from{transform:translateY(12px);opacity:0}}
+  .prog{display:flex;gap:10px;align-items:baseline;padding:5px 0;font-weight:500}
+  .prog .i{flex:none;width:18px;font-weight:800;color:#c4cbd6} .prog.done .i{color:var(--ok)}
+  .prog .at{margin-left:auto;color:var(--faint);font-size:13px}
+  .issue.new{animation:pop .3s ease-out;box-shadow:0 0 0 3px var(--bad-soft)}
+  .issue.fixed .clock{background:var(--ok-soft);color:var(--ok)} .issue.fixed .k{color:var(--ok)}
+  .issue.gone{opacity:.55} .issue.gone .m{text-decoration:line-through}
+  .lag{display:inline-block;margin-left:8px;font-size:12px;font-weight:600;color:var(--dim);background:#eef1f5;border-radius:6px;padding:1px 6px;text-transform:none;letter-spacing:0}
+  .wstat{font-size:13px;color:var(--dim)}
+  #wfinal:not(:empty){margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -190,8 +212,40 @@
     </div>
   </section>
 
+  <section class="step" id="watch">
+    <div class="step-head"><div class="num">4</div><div><h2>Catch it while it happens</h2>
+      <p>Don’t wait until the box is sealed. While someone works, it re-reads the video so far every two seconds and warns as soon as a mistake can no longer be undone, with the fix. Skipped steps can only be called once the attempt is over.</p></div></div>
+    <div class="srcs" id="wsrc">
+      <span class="lbl">Play a sample as if live:</span>
+      <button class="src" data-demo="pack_order">Liner too late</button>
+      <button class="src" data-demo="pack_wrong_place">Wrong order box</button>
+      <button class="src" data-demo="pack_skip_liner">No liner</button>
+      <button class="src" data-demo="pack_ok">Done correctly</button>
+      <span class="lbl" style="margin-left:8px">or</span>
+      <button class="src cam" id="wcam">● Use my camera</button>
+      <label class="radio" id="wownref" hidden><input type="checkbox" id="wuseown"> against my own reference</label>
+    </div>
+    <div class="two">
+      <div class="media">
+        <div class="screen live"><video id="wvid" muted playsinline></video>
+          <div class="livetag" id="wtag" hidden></div>
+          <div class="banner" id="wbanner" hidden></div>
+        </div>
+        <div class="bar"><span class="wstat" id="wstatus">Pick a sample, or point your camera at your workspace.</span>
+          <button class="soundbtn" id="wstop" hidden>■ Stop — I’m done</button></div>
+      </div>
+      <div class="card">
+        <h3>Steps so far</h3><div id="wprog"><div class="hint">Waiting for an attempt.</div></div>
+        <h3>Warnings</h3><div id="walerts"><div class="hint">None yet.</div></div>
+        <div id="wfinal"></div>
+        <div class="err" id="werr" hidden></div>
+      </div>
+    </div>
+    <div class="fine" style="text-align:left">Every 2 seconds, Muse Spark reads only the video up to that moment (about 8 s and $0.007 per read; up to four run at once). The delay shown on each warning is measured, not estimated.</div>
+  </section>
+
   <section class="step" id="try">
-    <div class="step-head"><div class="num">4</div><div><h2>Try it with your own video</h2>
+    <div class="step-head"><div class="num">5</div><div><h2>Try it with your own video</h2>
       <p>Upload an attempt and it is checked against the reference — live, with the real models, in about a minute.</p></div></div>
     <div class="two">
       <div class="card">
@@ -228,14 +282,14 @@
   </section>
 
   <section class="step">
-    <div class="step-head"><div class="num">5</div><div><h2>How reliable is it?</h2>
+    <div class="step-head"><div class="num">6</div><div><h2>How reliable is it?</h2>
       <p id="accintro"></p></div></div>
     <div class="acc" id="acc"></div>
     <div class="caveat" id="acccaveat"></div>
   </section>
 
   <section class="step">
-    <div class="step-head"><div class="num">6</div><div><h2>It understands steps well enough to do them</h2>
+    <div class="step-head"><div class="num">7</div><div><h2>It understands steps well enough to do them</h2>
       <p>A learned procedure, handed to a simulated robot arm — nobody wrote instructions for it.</p></div></div>
     <div class="two">
       <div class="media"><div class="screen"><video id="robot" muted loop playsinline autoplay></video></div></div>
@@ -298,7 +352,7 @@ async function init(){
   renderAttempts();
   $('attvision').onchange=()=>{const a=D.attempts[cur];setVideo($('att'),$('attvision').checked?a.seen:a.demo,true);};
   select(cur);
-  renderAcc(); renderRobot(); initLive();
+  renderAcc(); renderRobot(); initLive(); initWatch();
 }
 
 // --- rules -------------------------------------------------------------------
@@ -426,6 +480,7 @@ async function poll(){
   if(j.status==='error') { $('stages').hidden=true; return liveError(j.error); }
   showStages(j.stage,j.custom_reference,j.second_reference,j.status==='done');
   if(j.reference) renderLiveProc(j.reference);
+  if(j.custom_reference&&j.result) $('wownref').hidden=false;     // the camera can now check against it
   const snap=JSON.stringify(j.result||null);
   if((j.status==='checked'||j.status==='done') && j.result && snap!==L.last){
     L.last=snap;
@@ -448,6 +503,132 @@ function initLive(){
   document.querySelectorAll('input[name=refmode]').forEach(r=>r.onchange=()=>{ $('ownrefs').hidden=!ownRef(); ready(); });
   $('livevision').onchange=()=>setVideo($('livevid'),$('livevision').checked?L.seen:L.demo,true);
   $('go').onclick=startLive;
+}
+
+// --- near-live: catch it while it happens -------------------------------------------
+const READ_EVERY=2, CAM_LIMIT=110;
+const W={};
+const wElapsed=()=>W.t0==null?0:(performance.now()-W.t0)/1000;
+
+async function wPost(path,body){
+  const opts=body instanceof FormData?{method:'POST',body}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})};
+  const r=await fetch(path,opts);
+  if(!r.ok){ let d=''; try{ d=(await r.json()).detail; }catch(e){} throw new Error(d||`Request failed (${r.status})`); }
+  return r.json();
+}
+function wReset(){
+  if(W.sid&&!W.done) fetch(`/api/watch/${W.sid}/cancel`,{method:'POST'}).catch(()=>{});
+  clearInterval(W.poll); clearInterval(W.tick); clearTimeout(W.bt);
+  if(W.rec&&W.rec.state!=='inactive'){ W.rec.onstop=null; W.rec.stop(); }
+  if(W.stream) W.stream.getTracks().forEach(t=>t.stop());
+  Object.assign(W,{sid:null,mode:null,t0:null,poll:null,tick:null,next:READ_EVERY,dur:null,rec:null,stream:null,
+    chain:Promise.resolve(),chunks:0,first:{},steps:D.reference.steps,done:false});
+  const v=$('wvid'); v.pause(); v.srcObject=null; v.removeAttribute('src'); v.load();
+  ['wtag','wbanner','wstop','werr'].forEach(id=>$(id).hidden=true);
+  $('wfinal').innerHTML=''; $('walerts').innerHTML='<div class="hint">None yet.</div>';
+  document.querySelectorAll('#wsrc .src').forEach(b=>b.classList.remove('on'));
+  $('wcam').textContent='● Use my camera';
+  wRenderProg([]);
+}
+function wError(msg){ clearInterval(W.tick); $('werr').textContent=msg; $('werr').hidden=false; }
+function wTag(text,live){ $('wtag').hidden=false; $('wtag').innerHTML=(live?'<span class="rec"></span>':'')+text; }
+
+async function wStartDemo(btn){
+  wReset(); btn.classList.add('on');
+  const fd=new FormData(); fd.append('mode','replay'); fd.append('demo',btn.dataset.demo);
+  let s; try{ s=await wPost('/api/watch',fd); }catch(e){ return wError(e.message); }
+  Object.assign(W,{sid:s.session,mode:'replay',dur:s.duration,steps:s.steps}); wRenderProg([]);
+  const v=$('wvid'); v.loop=false; v.src=BASE+s.video;
+  v.onplaying=()=>{ if(W.t0==null){ W.t0=performance.now(); W.tick=setInterval(wTick,250); } };
+  v.onended=()=>{ if(W.mode!=='replay'||W.done) return; clearInterval(W.tick); wTag('Attempt over');
+    wPost(`/api/watch/${W.sid}/finish`,{}).catch(e=>wError(e.message)); };
+  v.play().catch(()=>{});
+  W.poll=setInterval(wPoll,1000);
+}
+function wTick(){
+  if(W.mode==='replay'){
+    const vt=$('wvid').currentTime; wTag(`LIVE ${clock(vt)}`,true);
+    while(vt>=W.next&&W.next<W.dur){ wPost(`/api/watch/${W.sid}/read`,{upto:W.next}).catch(()=>{}); W.next+=READ_EVERY; }
+  } else {
+    const t=wElapsed(); wTag(`REC ${clock(t)}`,true);
+    if(t>=CAM_LIMIT) wStopCam();
+  }
+}
+async function wStartCam(){
+  if(W.mode==='camera'&&W.rec&&W.rec.state==='recording') return wStopCam();
+  wReset(); $('wcam').classList.add('on');
+  try{ W.stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}},audio:false}); }
+  catch(e){ $('wcam').classList.remove('on'); return wError(`Couldn’t open the camera (${e.name}). Allow camera access, or play a sample instead.`); }
+  const fd=new FormData(); fd.append('mode','camera');
+  if(!$('wownref').hidden&&$('wuseown').checked&&L.job) fd.append('reference_job',L.job);
+  let s; try{ s=await wPost('/api/watch',fd); }catch(e){ W.stream.getTracks().forEach(t=>t.stop()); return wError(e.message); }
+  const sid=s.session;
+  Object.assign(W,{sid,mode:'camera',steps:s.steps}); wRenderProg([]);
+  const v=$('wvid'); v.srcObject=W.stream; v.play().catch(()=>{});
+  const mime=['video/webm;codecs=vp8','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
+  W.rec=new MediaRecorder(W.stream,{mimeType:mime,videoBitsPerSecond:1500000});
+  W.rec.ondataavailable=e=>{
+    if(!e.data.size) return;
+    const n=++W.chunks, rec=W.rec;
+    W.chain=W.chain.then(()=>fetch(`/api/watch/${sid}/chunk`,{method:'POST',body:e.data}))
+      .then(()=>{ if(n%READ_EVERY===0&&rec.state==='recording') return wPost(`/api/watch/${sid}/read`,{}); }).catch(()=>{});
+  };
+  W.rec.onstop=()=>{ W.chain.then(()=>wPost(`/api/watch/${sid}/finish`,{})).catch(e=>wError(e.message)); };
+  W.rec.start(1000); W.t0=performance.now(); W.tick=setInterval(wTick,250);
+  $('wcam').textContent='■ Stop'; $('wstop').hidden=false;
+  W.poll=setInterval(wPoll,1000);
+}
+function wStopCam(){
+  if(!W.rec||W.rec.state==='inactive') return;
+  clearInterval(W.tick); W.rec.stop(); W.stream.getTracks().forEach(t=>t.stop());
+  $('wstop').hidden=true; $('wcam').textContent='● Use my camera'; $('wcam').classList.remove('on');
+  wTag('Recording over'); $('wstatus').textContent='Checking the whole recording…';
+}
+async function wPoll(){
+  const sid=W.sid; if(!sid) return;
+  let r, s; try{ r=await fetch(`/api/watch/${sid}`); s=await r.json(); }catch(e){ return; }
+  if(sid!==W.sid) return;
+  if(!r.ok){ clearInterval(W.poll); clearInterval(W.tick); W.done=true;
+    if(W.rec&&W.rec.state!=='inactive'){ W.rec.onstop=null; W.rec.stop(); W.stream.getTracks().forEach(t=>t.stop()); }
+    return wError('This live check was lost — the server restarted. Start it again.'); }
+  wRenderProg(s.progress); wRenderAlerts(s.alerts);
+  const n=`${s.reads} read${s.reads===1?'':'s'}`;
+  $('wstatus').textContent={watching:`Read up to ${clock(s.upto)} · ${n}${s.reading?` (${s.reading} running)`:''}${s.read_seconds?` · ~${s.read_seconds} s each`:''} · $${s.cost.toFixed(3)}`,
+    finishing:'Attempt over — checking the whole video…', done:`Done · ${n} while it happened + 1 full check · $${s.cost.toFixed(3)}`}[s.status]||'';
+  if(s.status==='error'){ clearInterval(W.poll); W.done=true; return wError(s.error); }
+  if(s.status!=='done') return;
+  clearInterval(W.poll); W.done=true;
+  if(W.mode==='camera'&&s.video){ const v=$('wvid'); v.srcObject=null; v.src=BASE+s.video; v.loop=true; v.play().catch(()=>{}); $('wtag').hidden=true; }
+  const box=$('wfinal'); box.innerHTML='<h3>Final check · whole video</h3><div></div>';
+  renderReport(s.final,box.lastElementChild,$('wvid'),'The full check, run once the attempt ended — skipped steps show up here.');
+}
+function wRenderProg(p){
+  const rows=p&&p.length?p:W.steps.map(s=>({text:s.text,critical:s.critical,done:false}));
+  $('wprog').innerHTML=rows.map(m=>`<div class="prog ${m.done?'done':''}"><span class="i">${m.done?'✓':'○'}</span><span>${esc(m.text)}${m.critical?'<span class="badge b-crit">Critical</span>':''}</span><span class="at">${m.done?clock(m.time):''}</span></div>`).join('');
+}
+const W_LABEL=a=>a.status==='fixed'?`Fixed at ${clock(a.closed_at)}`:a.status==='withdrawn'?'Withdrawn — later reads no longer saw it'
+  :a.severity==='warn'?'Different order · note':a.kind==='wrong_place'?'Wrong place':'Wrong order';
+function wRenderAlerts(alerts){
+  if(!alerts.length){ $('walerts').innerHTML=`<div class="hint">${W.t0==null?'None yet.':'Nothing wrong so far.'}</div>`; return; }
+  const now=wElapsed(), fresh=[];
+  alerts.forEach(a=>{ if(W.first[a.id]==null){ W.first[a.id]=now; fresh.push(a.id); } });
+  $('walerts').innerHTML=alerts.map(a=>{
+    const cls=a.status==='fixed'?'fixed':a.status==='withdrawn'?'gone':a.severity==='warn'?'warn':'';
+    const lag=Math.max(0,W.first[a.id]-(a.time||0));
+    return `<div class="issue ${cls} ${fresh.includes(a.id)?'new':''}" data-t="${a.time??''}"><span class="clock">${clock(a.time)}</span><div>
+      <span class="k">${W_LABEL(a)}${a.critical?'<span class="badge b-crit">Critical</span>':''}<span class="lag">caught ${lag.toFixed(0)} s after it happened</span></span>
+      <span class="m">${esc(a.message)}</span>${saidLine(a.quote,a.reason)}${a.fix&&a.status==='open'?`<span class="fix"><b>Fix:</b> ${esc(a.fix)}</span>`:''}</div></div>`;}).join('');
+  $('walerts').querySelectorAll('.issue').forEach(n=>n.onclick=()=>{ if(W.done&&n.dataset.t) seek($('wvid'),+n.dataset.t); });
+  const a=alerts.find(x=>fresh.includes(x.id)&&x.status==='open');
+  if(a){ const b=$('wbanner'); b.className='banner'+(a.severity==='warn'?' warn':'');
+    b.innerHTML=`⚠ ${esc(W_LABEL(a))}${a.fix?` — ${esc(a.fix)}`:''}<small>${esc(a.message)}</small>`;
+    b.hidden=false; clearTimeout(W.bt); W.bt=setTimeout(()=>b.hidden=true,7000); }
+}
+function initWatch(){
+  document.querySelectorAll('#wsrc .src[data-demo]').forEach(b=>b.onclick=()=>wStartDemo(b));
+  $('wcam').onclick=wStartCam; $('wstop').onclick=wStopCam;
+  if(!navigator.mediaDevices||!window.MediaRecorder){ $('wcam').disabled=true; $('wcam').title='This browser can’t record video.'; }
+  wReset();
 }
 
 function renderAcc(){

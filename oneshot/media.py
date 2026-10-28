@@ -58,6 +58,22 @@ def small_mp4(path: Path, out_dir: Path, max_height: int = 720) -> Path:
     return target
 
 
+def cut(path: Path, seconds: float | None, out: Path, max_height: int = 480, fps: int = 30) -> Path:
+    """The first `seconds` of a video (all of it when None) as a small H.264 clip — what a
+    near-live read sends. Also turns a browser recording (WebM, no duration) into an MP4.
+    The video model samples frames at its own rate, so a low `fps` costs it nothing and
+    makes the upload smaller."""
+    out.parent.mkdir(parents=True, exist_ok=True)
+    head = ["-t", f"{seconds:.2f}"] if seconds is not None else []
+    subprocess.run(
+        ["ffmpeg", "-y", "-v", "error", *head, "-i", str(path),
+         "-vf", f"scale=-2:'min({max_height},ih)'", "-an", "-r", str(fps),
+         "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-crf", "26", str(out)],
+        check=True,
+    )
+    return out
+
+
 def frame_to_seconds(frame_index: int, fps: float | None) -> float:
     """Map a SAM frame index back to a timestamp on the uploaded clip."""
     if not fps:
