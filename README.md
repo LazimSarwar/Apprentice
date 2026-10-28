@@ -87,6 +87,10 @@ python probes/p4_fireworks_models.py                 # find the Spark Open slug 
 python -m oneshot clips/synthetic.mp4 --provider fireworks
 ```
 
+Verified on the synthetic clip: Muse Spark Open (`accounts/fireworks/models/muse-spark-open`)
+produced the **same task graph** as the hosted model — identical steps and final relations —
+and it runs through execution and the temporal monitor unchanged (SUCCESS, procedure followed).
+
 ## Run on the simulated arm (P1)
 
 ```bash
