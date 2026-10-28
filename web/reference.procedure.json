@@ -1,0 +1,227 @@
+{
+  "steps": [
+    {
+      "key": [
+        "inside",
+        "blue_liner",
+        "brown_box"
+      ],
+      "text": "Places the blue liner in the brown box",
+      "ref_time": 3.5,
+      "start": 0.0,
+      "reason": "so the product doesn't get scratched",
+      "quote": "liner first",
+      "critical": true
+    },
+    {
+      "key": [
+        "on",
+        "red_product",
+        "blue_liner"
+      ],
+      "text": "Stacks the red product on the blue liner",
+      "ref_time": 6.5,
+      "start": 3.5,
+      "reason": null,
+      "quote": "product goes on the liner",
+      "critical": false
+    },
+    {
+      "key": [
+        "inside",
+        "green_charger",
+        "brown_box"
+      ],
+      "text": "Places the green charger in the brown box",
+      "ref_time": 10.0,
+      "start": 7.0,
+      "reason": null,
+      "quote": "charger in the box",
+      "critical": false
+    },
+    {
+      "key": [
+        "on",
+        "yellow_card",
+        "red_product"
+      ],
+      "text": "Stacks the yellow card on the red product",
+      "ref_time": 13.0,
+      "start": 10.5,
+      "reason": null,
+      "quote": "thank you card on top of the product",
+      "critical": false
+    }
+  ],
+  "pairs": [
+    {
+      "before": [
+        "inside",
+        "blue_liner",
+        "brown_box"
+      ],
+      "after": [
+        "on",
+        "red_product",
+        "blue_liner"
+      ],
+      "strength": "required",
+      "source": "said",
+      "why": "The red product goes on the blue liner, so the blue liner was in the brown box first.",
+      "quote": "liner first"
+    },
+    {
+      "before": [
+        "inside",
+        "blue_liner",
+        "brown_box"
+      ],
+      "after": [
+        "inside",
+        "green_charger",
+        "brown_box"
+      ],
+      "strength": "required",
+      "source": "said",
+      "why": "Said while recording the reference.",
+      "quote": "liner first"
+    },
+    {
+      "before": [
+        "inside",
+        "blue_liner",
+        "brown_box"
+      ],
+      "after": [
+        "on",
+        "yellow_card",
+        "red_product"
+      ],
+      "strength": "required",
+      "source": "said",
+      "why": "Said while recording the reference.",
+      "quote": "liner first"
+    },
+    {
+      "before": [
+        "on",
+        "red_product",
+        "blue_liner"
+      ],
+      "after": [
+        "inside",
+        "green_charger",
+        "brown_box"
+      ],
+      "strength": "as_shown",
+      "source": "shown",
+      "why": "Only seen in this order; nothing says the order matters.",
+      "quote": null
+    },
+    {
+      "before": [
+        "on",
+        "red_product",
+        "blue_liner"
+      ],
+      "after": [
+        "on",
+        "yellow_card",
+        "red_product"
+      ],
+      "strength": "required",
+      "source": "physical",
+      "why": "The yellow card goes on the red product, so the red product was on the blue liner first.",
+      "quote": null
+    },
+    {
+      "before": [
+        "inside",
+        "green_charger",
+        "brown_box"
+      ],
+      "after": [
+        "on",
+        "yellow_card",
+        "red_product"
+      ],
+      "strength": "free",
+      "source": "references",
+      "why": "Another correct reference did these the other way round.",
+      "quote": null
+    }
+  ],
+  "references": 2,
+  "narration": {
+    "turns": [
+      {
+        "start": 0.3,
+        "end": 5.18,
+        "text": "liner first, so the product doesn't get scratched product goes on the liner"
+      },
+      {
+        "start": 6.86,
+        "end": 8.38,
+        "text": "charger in the box"
+      },
+      {
+        "start": 9.98,
+        "end": 12.06,
+        "text": "thank you card on top of the product"
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "quote": "liner first",
+        "reason": "so the product doesn't get scratched",
+        "critical": true
+      },
+      {
+        "step": 2,
+        "quote": "product goes on the liner",
+        "reason": null,
+        "critical": false
+      },
+      {
+        "step": 3,
+        "quote": "charger in the box",
+        "reason": null,
+        "critical": false
+      },
+      {
+        "step": 4,
+        "quote": "thank you card on top of the product",
+        "reason": null,
+        "critical": false
+      }
+    ],
+    "order": [
+      {
+        "before": 1,
+        "after": 2,
+        "quote": "liner first"
+      },
+      {
+        "before": 1,
+        "after": 3,
+        "quote": "liner first"
+      },
+      {
+        "before": 1,
+        "after": 4,
+        "quote": "liner first"
+      }
+    ],
+    "any_order": [],
+    "seconds": 12.12,
+    "cost_usd": 0.009226
+  },
+  "shown": [
+    "inside/blue_liner/brown_box -> on/red_product/blue_liner",
+    "inside/blue_liner/brown_box -> inside/green_charger/brown_box",
+    "on/red_product/blue_liner -> inside/green_charger/brown_box",
+    "on/red_product/blue_liner -> on/yellow_card/red_product",
+    "inside/green_charger/brown_box -> on/yellow_card/red_product"
+  ]
+}

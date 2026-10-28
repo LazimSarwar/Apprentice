@@ -27,6 +27,10 @@ Everything in this repository was written during the event, except the third-par
 | Oct 28 | **Web app (live product).** A FastAPI page — pick a demonstration, see the task graph it learned, and run it on the arm live: normally, out of order (procedure check), or with a mid-run shove. The simulation runs server-side and the rendered video + verdict come back in the page. |
 | Oct 28 | **Procedure checker.** `oneshot/check.py`: learn a procedure from one reference video, then check any attempt video for skipped steps, wrong order and wrong placements, each with a timestamp. Attempts are read guided by the reference's object names. 20/20 generated attempts judged correctly. The web page now leads with it. |
 | Oct 28 | **Live checking.** Upload an attempt (and optionally your own reference) on the page; the server runs the real pipeline as a background job and the page shows the verdict as soon as it exists, then the tracking view. |
+| Oct 28 | **Narrated references (`oneshot/narration.py`).** The reference's audio goes through **Muse Voice Transcribe** (timed lines); Muse Spark ties each line to a step — the reason given, whether it is critical, spoken order rules ("liner first", "any order"). Quotes are checked against the transcript, so a reason can't be invented. The spoken words also name the objects ("blue liner", not "blue block"). |
+| Oct 28 | **Which order matters (`oneshot/procedure.py`).** Every pair of steps gets a verdict: *required* (said, or physical — the product sits on the liner), *free* (said, or a second correct reference did it the other way), or *as shown* (a different order is a note, never a failure). A person can change any rule on the page and every attempt is re-checked instantly (`POST /api/recheck`, no model calls). |
+| Oct 28 | **Evidence-checked verdicts.** With tracking, each reached step is checked against SAM's boxes (*tracker agrees / seen / not seen / disagrees*), and a step whose object was hidden after the previous step is reported as **"couldn't verify"** instead of "skipped". Every problem carries its severity, the spoken reason, and a one-line fix. |
+| Oct 28 | **Pack-out demo + evaluation.** `probes/make_pack_clip.py` renders a narrated packing reference (computer voice), a second correct reference and eight kinds of attempt; `probes/pack_eval.py` measures the checker on freshly randomized attempts with expected verdicts written first. The web page now tells this story. |
 
 ## Pre-existing and third-party material
 
@@ -58,28 +62,44 @@ copy .env.example .env          # then fill in your keys
 ## Check an attempt against a reference
 
 ```bash
-python -m oneshot.check REFERENCE.mp4 ATTEMPT.mp4 [ATTEMPT2.mp4 ...]     # videos or graph JSON files
+python -m oneshot.check REFERENCE.mp4 ATTEMPT.mp4 [ATTEMPT2.mp4 ...] [--also SECOND_REFERENCE.mp4]
 ```
 
-The reference is read into ordered *milestones* — the result of each step ("the red block is in the left tray").
+The reference is read into ordered *milestones* — the result of each step ("the liner is in the box"). If the
+reference has speech, it is transcribed first and read against the steps: reasons, critical steps and spoken
+order rules. A second correct reference (`--also`) shows which orders are free. Together they give the
+**procedure** (`--procedure-out` writes it as JSON): each pair of steps is *required*, *free* or *as shown*.
+
 Each attempt is read the same way, **guided to reuse the reference's object names**, so the two line up; every
 milestone is then located in time in the attempt. The report lists:
 
 - **skipped** — a milestone never happens (with when it was expected),
 - **wrong place** — the right object went somewhere else,
-- **wrong order** — two milestones happen out of order (the temporal monitor, run on the attempt's timeline),
-- **extra** — something the reference never did (a warning).
+- **wrong order** — a required order broken (temporal monitor on the attempt's timeline); a merely different
+  order from the reference is a *note*,
+- **couldn't verify** — the step looks missing but its object was hidden from the tracker after the previous step,
+- **check this step** — the tracker's boxes disagree with what the video model reported,
+- **extra** — something the reference never did (a note).
 
-Measured with `python probes/proc_eval.py` on 20 generated attempts with randomized positions and timing:
-**5/5 correct attempts pass (no false alarms), 5/5 wrong orders, 5/5 skipped steps and 5/5 wrong places caught**
-as the right kind. These are clean generated clips; real footage is harder and is being tested next.
+Verdicts: *pass*, *pass with notes*, *can't verify*, *fail*. Problems carry the spoken reason, a critical flag and
+a fix.
+
+Measured with `python probes/pack_eval.py` on freshly randomized packing attempts (expected verdicts written
+before running): **24/24** — 3 of 3 for each of correct, free order, unusual order (noted, not failed), required
+order broken, skipped liner, skipped card, wrong place, and hidden step (reported as *can't verify*, never failed).
+Extraction cost $0.24 for all 24. One hidden-step check was tightened after a run where the tracker mistook the
+hand for the card (an object can't be bigger than the container it is in), so that row is not blind. The older three-tray test (`python probes/proc_eval.py`, 20 attempts) scored
+20/20. These are clean generated clips with computer-voiced narration; real footage is harder and is being tested
+next.
 
 ## Web app
 
-The main page tells the procedure-checker story: the **reference** video (with an *AI vision* toggle showing the
-tracker's box on every object, and the learned steps highlighting as they happen), then four **attempts** — one
-correct, three with a deliberate mistake — each with its verdict and problems; click a problem to jump to that
-moment in the video. Then the measured accuracy, and the robot carrying out the same learned procedure.
+The main page tells the procedure-checker story with a packing task: the narrated **reference** video (sound
+toggle, *AI vision* toggle showing the tracker's box on every object, learned steps with critical flags and the
+words that were said), then **which order matters** — every rule with where it came from, switchable between
+*Must / Note / Free*, re-checking all attempts instantly — then eight **attempts**, each with its verdict,
+problems, reasons and fixes; click a problem to jump to that moment in the video. Then the measured accuracy, and
+the robot carrying out an earlier learned procedure.
 A second page (`/static/robot.html`) shows the robot under stress: objects moved, a block knocked over, steps
 done out of order.
 
@@ -90,9 +110,11 @@ python -m uvicorn web.server:app --port 8000      # then open http://localhost:8
 ```
 
 **Live checking:** the page's *Try it with your own video* section uploads an attempt (and optionally your own
-reference) to `POST /api/check`; the server runs the real pipeline — reads the steps, compares, then tracks the
-objects — and the page polls `GET /api/jobs/{id}`, showing the verdict as soon as it exists (~20 s) and the
-AI-vision view when tracking finishes (~1 min). One check runs at a time; uploads are limited to 2 minutes / 80 MB
+reference, plus a second correct one) to `POST /api/check`; the server runs the real pipeline — listens to the
+reference, reads the steps, learns the procedure, compares, then tracks the objects and re-checks against the
+tracker — and the page polls `GET /api/jobs/{id}`, showing the verdict as soon as it exists (~20 s) and the
+evidence-checked verdict and AI-vision view when tracking finishes (~1 min). Rule changes go to
+`POST /api/recheck`. One check runs at a time; uploads are limited to 2 minutes / 80 MB
 since every check calls the hosted models. Without uploads, the demo sections are plain files and can be hosted
 statically.
 

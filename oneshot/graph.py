@@ -34,37 +34,55 @@ def _downsample(boxes: list, limit: int = MAX_SAMPLES) -> list:
     return [boxes[int(i * step)] for i in range(limit)]
 
 
+def track_with_fallback(clip: Path, objects: list, fps: float | None,
+                        file_id: str | None = None) -> tuple[dict[str, object], float]:
+    """SAM track per object id. An object its usual concept ("blue sheet") finds nothing for
+    is retried once with a plainer one ("blue rectangle") — only when its colour is unique
+    among the objects, so the retry can't latch onto a different object."""
+    concepts = {o.id: o.concept() for o in objects}
+    tracks, seconds = track_objects(clip, sorted(set(concepts.values())), fps, file_id=file_id)
+    by_id = {oid: tracks.get(c) for oid, c in concepts.items()}
+    colours = [o.color for o in objects if o.color]
+    missing = {o.id: f"{o.color} rectangle" for o in objects
+               if by_id[o.id] is None and o.color and colours.count(o.color) == 1}
+    if missing:
+        more, extra = track_objects(clip, sorted(set(missing.values())), fps, file_id=file_id)
+        for oid, concept in missing.items():
+            by_id[oid] = more.get(concept)
+        seconds = round(seconds + extra, 2)
+    return by_id, seconds
+
+
 def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = "hosted",
-                     known_objects: list[dict] | None = None, track: bool = True) -> TaskGraph:
+                     known_objects: list[dict] | None = None, track: bool = True,
+                     spoken: str | None = None) -> TaskGraph:
     """Build the evidence-linked task graph for a demonstration video.
 
     `provider` selects the extractor: "hosted" (Muse Spark 1.3, native video) or
     "fireworks" (Muse Spark Open, open weights, keyframes). SAM tracking is unchanged.
     `known_objects` guides the extractor to reuse a reference video's object ids;
-    `track=False` skips SAM (faster, but the graph carries no evidence).
+    `track=False` skips SAM (faster, but the graph carries no evidence); `spoken` is the
+    reference's narration, used to name objects in the person's words.
     """
     video = Path(video)
     work_dir = work_dir or (ROOT / "runs")
     clip = small_mp4(video, work_dir / "clips")
     info = video_info(clip)
 
-    raw, meta = extract_graph(clip, provider=provider, known_objects=known_objects)
+    raw, meta = extract_graph(clip, provider=provider, known_objects=known_objects, spoken=spoken)
 
     concepts = {obj.id: obj.concept() for obj in raw.objects}
-    unique = sorted(set(concepts.values()))
     if track:
-        tracks_by_concept, track_seconds = track_objects(
-            clip, unique, info.fps, file_id=meta.get("file_id")
-        )
+        tracks_by_id, track_seconds = track_with_fallback(clip, raw.objects, info.fps, file_id=meta.get("file_id"))
     else:
-        tracks_by_concept, track_seconds = {}, None
+        tracks_by_id, track_seconds = {}, None
 
     warnings: list[str] = []
 
     objects: list[ObjectWithEvidence] = []
     track_by_object = {}
     for obj in raw.objects:
-        obj_track = tracks_by_concept.get(concepts[obj.id])
+        obj_track = tracks_by_id.get(obj.id)
         track_by_object[obj.id] = obj_track
         if obj_track is None and track:
             warnings.append(f"no SAM track for object '{obj.id}' ({concepts[obj.id]!r})")
@@ -118,12 +136,10 @@ def add_evidence(graph: TaskGraph, clip: Path) -> TaskGraph:
     """Attach SAM tracks to a graph that was built without tracking (e.g. `track=False`),
     so the same extraction can later be shown with its evidence."""
     info = video_info(clip)
-    concepts = {o.id: o.concept() for o in graph.objects}
-    tracks, seconds = track_objects(clip, sorted(set(concepts.values())), info.fps)
+    tracks, seconds = track_with_fallback(clip, graph.objects, info.fps)
     objects = [
         ObjectWithEvidence(id=o.id, color=o.color, shape=o.shape,
-                           tracked=tracks.get(concepts[o.id]) is not None,
-                           track=tracks.get(concepts[o.id]))
+                           tracked=tracks.get(o.id) is not None, track=tracks.get(o.id))
         for o in graph.objects
     ]
     return graph.model_copy(update={

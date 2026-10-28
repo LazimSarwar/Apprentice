@@ -40,7 +40,8 @@ Rules:
 - `order` is a 1-based integer in the order the actions happen.
 - Times are seconds from the start of the video; start_s < end_s.
 - Every `object` and `target` must be an id that appears in `objects` (target may be null).
-- Give each object a stable snake_case id built from its colour and shape."""
+- Give each object a stable snake_case id built from its colour and what it is.
+- `shape` is what the object visually looks like (block, sheet, mug, box, card...)."""
 
 REPAIR = "That was not valid for the schema ({error}). Return corrected JSON only, same shape."
 
@@ -49,14 +50,22 @@ These objects were seen in a reference video of the same task. When one of them 
 use exactly its id: {objects}. Only invent a new id for an object that is not in this list."""
 
 
-def build_prompt(known_objects: list[dict] | None = None) -> str:
+SPOKEN = """
+While recording, the person said: "{said}"
+When they clearly name an object you can see (e.g. 'liner', 'charger'), use that name in its id
+(e.g. 'blue_liner'); keep `shape` as what it looks like."""
+
+
+def build_prompt(known_objects: list[dict] | None = None, spoken: str | None = None) -> str:
     """The extraction prompt, optionally guided to reuse a reference video's object ids
-    so two videos of the same task can be compared step by step."""
+    so two videos of the same task can be compared step by step, and to name objects
+    with the words spoken while recording."""
+    prompt = PROMPT + (SPOKEN.format(said=spoken.replace('"', "'")) if spoken else "")
     if not known_objects:
-        return PROMPT
+        return prompt
     listed = ", ".join(f"{o['id']} ({o.get('color') or ''} {o.get('shape') or ''}".rstrip() + ")"
                        for o in known_objects)
-    return PROMPT + GUIDE.format(objects=listed)
+    return prompt + GUIDE.format(objects=listed)
 
 _JSON = re.compile(r"\{.*\}", re.DOTALL)
 
@@ -114,13 +123,15 @@ def _fireworks_caller(clip: Path, model: str, prompt: str) -> tuple[Callable, No
 
 
 def extract_graph(clip: Path, provider: str = "hosted", model: str | None = None,
-                  known_objects: list[dict] | None = None) -> tuple[RawGraph, dict[str, Any]]:
+                  known_objects: list[dict] | None = None,
+                  spoken: str | None = None) -> tuple[RawGraph, dict[str, Any]]:
     """Return the raw task graph and metadata (provider, model, seconds, cost, file_id).
 
     `known_objects` (id/color/shape dicts from a reference graph) guides the model to
-    reuse the same ids, so this video can be checked against the reference.
+    reuse the same ids, so this video can be checked against the reference; `spoken` (what
+    was said while recording) lets it name objects in the person's own words.
     """
-    prompt = build_prompt(known_objects)
+    prompt = build_prompt(known_objects, spoken)
     if provider == "hosted":
         model = model or MODEL
         call, file_id = _hosted_caller(clip, model, prompt)

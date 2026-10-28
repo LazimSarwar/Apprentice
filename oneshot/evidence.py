@@ -24,6 +24,7 @@ from .media import frame_to_seconds
 from .schema import Box, Track
 
 MODEL = "sam-3.1"
+CONCURRENT = 3          # parallel tracking streams; more tends to get connections reset
 
 
 async def _finalized_events(stream: AsyncIterable[Any]) -> AsyncIterator[dict[str, Any]]:
@@ -108,6 +109,19 @@ async def _track_one(
     )
 
 
+async def _track_retrying(api: AsyncOpenAI, file_id: str, concept: str, fps: float | None,
+                          attempts: int = 3) -> Track | None:
+    """A dropped stream (connection reset mid-response) is retried, with a short backoff."""
+    for i in range(attempts):
+        try:
+            return await _track_one(api, file_id, concept, fps)
+        except Exception:  # noqa: BLE001 - network/stream errors from the SDK or the parser
+            if i == attempts - 1:
+                raise
+            await asyncio.sleep(2 * (i + 1))
+    return None
+
+
 async def _track_all(
     clip: Path, concepts: list[str], fps: float | None, file_id: str | None
 ) -> dict[str, Track | None]:
@@ -117,7 +131,13 @@ async def _track_all(
                 file=(clip.name, clip.read_bytes(), "video/mp4"), purpose="user_data"
             )
             file_id = uploaded.id
-        results = await asyncio.gather(*(_track_one(api, file_id, c, fps) for c in concepts))
+        gate = asyncio.Semaphore(CONCURRENT)
+
+        async def one(concept: str) -> Track | None:
+            async with gate:
+                return await _track_retrying(api, file_id, concept, fps)
+
+        results = await asyncio.gather(*(one(c) for c in concepts))
     return dict(zip(concepts, results))
 
 

@@ -1,12 +1,15 @@
-"""Build the procedure-checker demo the web page shows.
+"""Build the procedure-checker demo the web page shows: the pack-out procedure.
 
-One reference video and several attempts. For each video: the clip itself and the clip with
-the tracker's boxes drawn on (what the AI saw). For each attempt: the checker's report against
-the reference, with the moment each step happened and each problem to look at. Plus the
-robot replaying the reference, and the measured accuracy from `probes/proc_eval.py`.
+One narrated reference, a second correct reference, and eight attempts. The procedure is
+learned from the two references and what was said (`oneshot.procedure.learn`); each attempt
+is checked against it with the tracker's evidence. For each video: the clip (the reference
+keeps its narration) and the clip with the tracker's boxes drawn on. Plus the robot replaying
+the older three-tray reference, and the measured accuracy from `probes/pack_eval.py` and
+`probes/proc_eval.py`.
 
-Uses the graphs already extracted by `python -m oneshot.check` (so the page shows exactly
-those verdicts) and only adds tracking evidence, cached next to them.
+Uses graphs already extracted by `python -m oneshot.check` and tracked ones cached as
+`runs/<stem>.tracked.graph.json`. Writes `web/static/media/check.json`, the built-in reference
+for the live checker (`web/reference.*.json`) and the tracked demo attempts (`web/demo/`).
 
 Run from app/:  python -m web.build_check
 """
@@ -20,23 +23,32 @@ import imageio.v3 as iio
 
 from oneshot.check import compare
 from oneshot.graph import add_evidence
+from oneshot.procedure import Procedure
 from oneshot.schema import TaskGraph
 from oneshot.sim.executor import execute
-from oneshot.words import goal_text, nice, step_text
-from web.build_media import write_mp4, overlay_frames
+from oneshot.words import goal_text, nice
+from web.build_media import overlay_frames, write_mp4
+from web.views import add_audio, procedure_view, report_view
 
 APP = Path(__file__).resolve().parent.parent
 RUNS = APP / "runs"
 MEDIA = APP / "web" / "static" / "media"
+DEMO = APP / "web" / "demo"
 
-REFERENCE = ("proc", "Sort three blocks into three trays — red, then blue, then green.")
+REFERENCE = ("pack_ref", "Pack an order: liner into the box, product on the liner, charger in the box, "
+             "thank-you card on top. Narrated while recording.")
+SECOND = ("pack_ref2", "A second correct way: the card goes on before the charger.")
 ATTEMPTS = [
-    ("proc_ok", "Done correctly", "Same procedure, but the blocks started in different places and moved at a different pace."),
-    ("proc_swap", "Wrong order", "We placed the blue block before the red one."),
-    ("proc_skip", "Skipped a step", "We never placed the green block."),
-    ("proc_wrongbin", "Wrong place", "The red and blue blocks went into each other's trays."),
+    ("pack_ok", "Done correctly", "Items started in different places, packed at a different pace."),
+    ("pack_ok_alt", "Different, still right", "Card before charger, like the second reference. That order is free."),
+    ("pack_loose", "Unusual order", "Charger went in before the product. Nobody said that matters."),
+    ("pack_order", "Liner too late", "The charger went in before the liner, but the liner has to go first."),
+    ("pack_skip_liner", "No liner", "The product went straight into the box."),
+    ("pack_skip_card", "No card", "The thank-you card was never added."),
+    ("pack_wrong_place", "Wrong order box", "The charger went onto the other order's plate."),
+    ("pack_hidden", "Hand in the way", "A hand covered the box before the card went in."),
 ]
-KIND = {"skipped": "Skipped step", "order": "Wrong order", "wrong_place": "Wrong place", "extra": "Extra step"}
+ROBOT_REF = "proc"
 
 
 def _graph(stem: str) -> TaskGraph:
@@ -57,58 +69,70 @@ def _tracked(stem: str) -> TaskGraph:
     return g
 
 
-def _videos(stem: str) -> dict:
+def _videos(stem: str, audio_from: Path | None = None, seen: bool = True) -> dict:
     clip = _clip(stem)
     fps = float(iio.immeta(clip).get("fps", 30))
     print(f"[{stem}] videos")
-    write_mp4(MEDIA / f"{stem}_demo.mp4", iio.imiter(clip), fps)
-    write_mp4(MEDIA / f"{stem}_seen.mp4", overlay_frames(clip, _tracked(stem)), fps)
-    return {"demo": f"media/{stem}_demo.mp4", "seen": f"media/{stem}_seen.mp4"}
+    out = {}
+    kinds = [("demo", lambda: iio.imiter(clip))] + ([("seen", lambda: overlay_frames(clip, _tracked(stem)))] if seen else [])
+    for kind, frames in kinds:
+        target = MEDIA / f"{stem}_{kind}.mp4"
+        write_mp4(target, frames(), fps)
+        if audio_from is not None:
+            voiced = target.with_suffix(".voiced.mp4")
+            add_audio(target, audio_from, voiced)
+            voiced.replace(target)
+        out[kind] = f"media/{stem}_{kind}.mp4"
+    return out
+
+
+def _accuracy(name: str) -> dict:
+    path = RUNS / name
+    if not path.exists():
+        return {}
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    acc: dict[str, list[int]] = {}
+    for r in rows:
+        good, n = acc.get(r["kind"], [0, 0])
+        acc[r["kind"]] = [good + bool(r["correct"]), n + 1]
+    return acc
 
 
 def main() -> None:
     MEDIA.mkdir(parents=True, exist_ok=True)
+    DEMO.mkdir(parents=True, exist_ok=True)
     stem, blurb = REFERENCE
     ref = _graph(stem)
+    proc = Procedure.from_dict(json.loads((RUNS / "pack.procedure.json").read_text(encoding="utf-8")))
     tracked = _tracked(stem)
     out: dict = {
         "reference": {
-            "blurb": blurb, **_videos(stem),
-            "model": ref.meta.model,
-            "steps": [{"text": step_text(s), "start": s.start_s, "end": s.end_s}
-                      for s in sorted(ref.steps, key=lambda s: s.order)],
+            "blurb": blurb, **_videos(stem, audio_from=APP / "clips" / f"{stem}.mp4"),
+            "model": ref.meta.model, **procedure_view(proc),
             "objects": [{"name": nice(o.id), "color": o.color, "tracked": bool(o.tracked)} for o in tracked.objects],
         },
+        "second": {"blurb": SECOND[1], "demo": _videos(SECOND[0], seen=False)["demo"]},
         "attempts": [],
     }
-
     for a_stem, title, what in ATTEMPTS:
-        report = compare(ref, _graph(a_stem))
-        out["attempts"].append({
-            "id": a_stem, "title": title, "what": what, **_videos(a_stem),
-            "passed": report.passed,
-            "milestones": report.milestones,
-            "issues": [{"kind": KIND.get(i.kind, i.kind), "severity": i.severity,
-                        "message": i.message, "time": i.time} for i in report.issues],
-        })
-        print(f"[{a_stem}] {'PASS' if report.passed else 'FAIL'} ({len(report.issues)} issue(s))")
+        att = _tracked(a_stem)
+        (DEMO / f"{a_stem}.graph.json").write_text(att.model_dump_json(), encoding="utf-8")
+        report = compare(ref, att, procedure=proc)
+        out["attempts"].append({"id": a_stem, "title": title, "what": what, **_videos(a_stem),
+                                **report_view(report, att)})
+        print(f"[{a_stem}] {report.verdict} ({len(report.issues)} issue(s))")
 
-    print("[robot] replaying the reference")
-    r = execute(ref, record=True)
+    print("[robot] replaying the three-tray reference")
+    r = execute(_graph(ROBOT_REF), record=True)
     write_mp4(MEDIA / "proc_robot.mp4", r.frames, fps=30)
     out["robot"] = {"video": "media/proc_robot.mp4", "success": bool(r.success),
                     "goals": [{"text": goal_text(f.relation, f.a, f.b), "ok": bool(f.holds)} for f in r.final]}
-
-    evals = json.loads((RUNS / "proc_eval.json").read_text(encoding="utf-8"))
-    acc = {}
-    for kind in ("ok", "swap", "skip", "wrongbin"):
-        rs = [e for e in evals if e["kind"] == kind]
-        acc[kind] = [sum(e["correct"] for e in rs), len(rs)]
-    out["accuracy"] = acc
+    out["accuracy"] = {"pack": _accuracy("pack_eval.json"), "trays": _accuracy("proc_eval.json")}
 
     (MEDIA / "check.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
-    # the live checker on the web page compares uploads against this same reference
+    # the live checker compares uploads against this same reference and procedure
     (APP / "web" / "reference.graph.json").write_text(ref.model_dump_json(indent=2), encoding="utf-8")
+    (APP / "web" / "reference.procedure.json").write_text(json.dumps(proc.to_dict(), indent=2), encoding="utf-8")
     print("wrote", MEDIA / "check.json")
 
 

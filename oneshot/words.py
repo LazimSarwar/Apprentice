@@ -52,3 +52,19 @@ def clock(seconds: float | None) -> str:
         return "?"
     s = max(0.0, float(seconds))
     return f"{int(s // 60)}:{int(s % 60):02d}"
+
+
+def imperative(step: str) -> str:
+    """'Places the red block in the left tray' -> 'Place the red block in the left tray'."""
+    first, _, rest = step.partition(" ")
+    if first.endswith("es") and first[:-2].endswith(("sh", "ch", "x")):
+        first = first[:-2]
+    elif first.endswith("s"):
+        first = first[:-1]
+    return f"{first} {rest}".strip()
+
+
+def into(relation: str | None, target: str | None) -> str:
+    """'into the left gray tray' / 'onto the product' — for instructions."""
+    word = {"inside": "into", "on": "onto", "near": "next to"}.get(relation or "", "to")
+    return f"{word} the {nice(target)}"

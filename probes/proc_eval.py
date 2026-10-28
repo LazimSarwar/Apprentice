@@ -4,7 +4,8 @@ Each attempt is a freshly rendered clip of the three-bin procedure with random s
 positions and timings, of one of four kinds:
 
   ok        — correct procedure          (should PASS — anything else is a false alarm)
-  swap      — two adjacent steps swapped  (should be caught as wrong order)
+  swap      — two adjacent steps swapped  (should be flagged as a different order; with one silent
+                                           reference nothing says the order matters, so it is a note)
   skip      — one step never happens      (should be caught as skipped)
   wrongbin  — two blocks swap bins        (should be caught as wrong place)
 
@@ -76,7 +77,12 @@ def main() -> None:
             report = compare(ref, att)
             kinds = sorted({i.kind for i in report.issues if i.severity == "fail"})
             want = EXPECT[kind]
-            correct = report.passed if want is None else (not report.passed and want in kinds)
+            if want is None:
+                correct = report.verdict == "pass"
+            elif want == "order":            # one silent reference: a swap is flagged as a note, not a failure
+                correct = any(i.kind == "order" for i in report.issues)
+            else:
+                correct = not report.passed and want in kinds
             results.append({"kind": kind, "n": n, "steps": v["steps"], "passed": report.passed,
                             "issues": kinds, "correct": correct,
                             "messages": [i.message for i in report.issues]})

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OneShot — show it once, check every attempt</title>
+<title>OneShot — show it once, say why, check every attempt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -107,39 +107,78 @@
   .err{margin-top:14px;color:var(--bad);background:var(--bad-soft);border-radius:10px;padding:10px 12px;font-weight:500}
   .placeholder{display:grid;place-items:center;text-align:center;color:var(--faint);min-height:240px}
   footer{color:var(--faint);font-size:13.5px;padding:34px 0 50px;line-height:1.6}
+  .badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:1px}
+  .b-crit{background:#fde8e8;color:#b42318} .b-req{background:var(--accent-soft);color:var(--accent)} .b-free{background:var(--ok-soft);color:var(--ok)} .b-shown{background:#eef1f5;color:var(--dim)}
+  .said{display:block;color:var(--dim);font-size:13.5px;margin-top:2px} .said i{color:var(--ink);font-style:normal;font-weight:600}
+  .heard{display:flex;gap:10px;padding:5px 0;font-size:14.5px} .heard .time{display:inline;flex:none;width:44px}
+  .rules{display:flex;flex-direction:column;gap:10px}
+  .rule{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .rule .pair{font-weight:600} .rule .arrow{color:var(--faint);margin:0 6px;font-weight:500} .rule .why{color:var(--dim);font-size:13.5px;margin-top:3px}
+  @media(max-width:600px){.rule{grid-template-columns:1fr}}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{font:inherit;font-size:13px;font-weight:600;border:0;background:#fff;color:var(--dim);padding:6px 10px;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)} .seg button.on{background:var(--accent);color:#fff}
+  .seg button.on.free{background:var(--ok)} .seg button.on.shown{background:#6b7280}
+  .p-note{background:var(--warn-soft);color:var(--warn)} .p-unsure{background:#eef1f5;color:#475467}
+  .v-note{background:var(--ok-soft);color:var(--ok)} .v-note .mark{background:var(--ok)}
+  .v-unsure{background:#eef1f5;color:#344054} .v-unsure .mark{background:#667085}
+  .issue.unknown .clock{background:#eef1f5;color:#475467} .issue.unknown .k{color:#475467}
+  .issue .fix{display:block;font-size:13.5px;margin-top:4px;color:var(--ink)} .issue .fix b{color:var(--accent)}
+  .ev{margin-left:8px;font-size:12px;font-weight:600;border-radius:6px;padding:1px 6px;white-space:nowrap}
+  .ev-confirmed{background:var(--ok-soft);color:var(--ok)} .ev-seen{background:#eef1f5;color:var(--dim)}
+  .ev-unseen{background:#eef1f5;color:var(--faint)} .ev-contradicted{background:var(--bad-soft);color:var(--bad)}
+  .mini{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:center}
+  .mini video{width:100%;border-radius:10px;background:#0e1116;display:block}
+  @media(max-width:900px){.mini{grid-template-columns:1fr}}
+  .soundbtn{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer}
+  .soundbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  body.busy .att,body.busy #report{opacity:.55;transition:opacity .15s}
 </style>
 </head>
 <body>
 <div class="hero"><div class="wrap">
   <div class="brand">OneShot</div>
-  <h1>Show it once.<br>Check every attempt.</h1>
-  <p class="lede">Record a procedure done right — once. OneShot learns the steps from that single video, then watches anyone else do it and tells you exactly what went wrong: a skipped step, the wrong order, the wrong place — and the moment it happened.</p>
-  <div class="uses"><span class="use">Training new staff</span><span class="use">Lab protocols</span><span class="use">Kitting &amp; packing QA</span><span class="use">Assembly checks</span></div>
+  <h1>Show it once. Say why.<br>Check every attempt.</h1>
+  <p class="lede">Record a procedure done right — once — talking through it. OneShot learns the steps, which ones are critical and why, and which orders actually matter. Then it checks anyone else's attempt and tells you what went wrong, the moment it happened, why it matters, and how to fix it.</p>
+  <div class="uses"><span class="use">Pack-out &amp; kitting QA</span><span class="use">Training new staff</span><span class="use">Lab bench setup</span><span class="use">Assembly checks</span></div>
 </div></div>
 
 <div class="wrap">
   <section class="step">
-    <div class="step-head"><div class="num">1</div><div><h2>The reference: done right, once</h2>
+    <div class="step-head"><div class="num">1</div><div><h2>The reference: done right once, explained out loud</h2>
       <p id="refblurb"></p></div></div>
     <div class="two">
       <div class="media">
         <div class="screen"><video id="ref" muted loop playsinline autoplay></video></div>
         <div class="bar"><label class="toggle"><input type="checkbox" id="refvision" checked><span class="switch"></span>AI vision</label>
-          <span class="hint">Boxes show every object it is tracking</span></div>
+          <button class="soundbtn" id="refsound">🔈 Sound off</button></div>
       </div>
       <div class="card">
         <h3>Steps it learned</h3>
         <ol class="steps" id="refsteps"></ol>
+        <h3>What it heard</h3>
+        <div id="refheard"></div>
         <h3>Objects it found</h3>
         <div class="chips" id="refobjects"></div>
-        <div class="note">Learned from this one video — no labels, no setup, no programming.</div>
       </div>
     </div>
   </section>
 
   <section class="step">
-    <div class="step-head"><div class="num">2</div><div><h2>Check an attempt</h2>
-      <p>We recorded four more attempts — one done correctly, three with a deliberate mistake. Pick one.</p></div></div>
+    <div class="step-head"><div class="num">2</div><div><h2>Which order actually matters</h2>
+      <p>Not every step order is a rule. It works out which orders are required — because they were said, or because one thing sits on another — and which are free, because a second correct reference did them the other way. Change any rule and every attempt below is re-checked instantly.</p></div></div>
+    <div class="two">
+      <div class="card"><h3>Order rules</h3><div class="rules" id="rules"></div></div>
+      <div class="card"><h3>Second correct reference</h3>
+        <div class="mini"><video id="ref2" muted loop playsinline autoplay></video><div class="sub" id="ref2blurb"></div></div>
+        <div class="note">Optional. With one reference only, a different order is reported as a note — never as a failure — unless it was said or is physically required.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><div class="num">3</div><div><h2>Check an attempt</h2>
+      <p>Eight more recordings — some right, some wrong, one where a hand blocks the view. Pick one.</p></div></div>
     <div class="attempts" id="attempts"></div>
     <div class="two">
       <div class="media">
@@ -151,23 +190,25 @@
     </div>
   </section>
 
-
   <section class="step" id="try">
-    <div class="step-head"><div class="num">3</div><div><h2>Try it with your own video</h2>
+    <div class="step-head"><div class="num">4</div><div><h2>Try it with your own video</h2>
       <p>Upload an attempt and it is checked against the reference — live, with the real models, in about a minute.</p></div></div>
     <div class="two">
       <div class="card">
         <h3>1 · Reference</h3>
-        <label class="radio"><input type="radio" name="refmode" value="builtin" checked> The demo reference above</label>
-        <label class="radio"><input type="radio" name="refmode" value="own"> My own reference video (the procedure done right)</label>
-        <label class="drop" id="refdrop" hidden><input type="file" id="reffile" accept="video/*"><span id="reflabel">Choose or drop your reference video</span></label>
+        <label class="radio"><input type="radio" name="refmode" value="builtin" checked> The packing reference above</label>
+        <label class="radio"><input type="radio" name="refmode" value="own"> My own reference video — talk while you record it</label>
+        <div id="ownrefs" hidden>
+          <label class="drop" id="refdrop"><input type="file" id="reffile" accept="video/*"><span id="reflabel">Choose or drop your reference video</span></label>
+          <label class="drop" id="ref2drop"><input type="file" id="ref2file" accept="video/*"><span id="ref2label">Optional: a second correct way to do it</span></label>
+        </div>
         <h3>2 · Attempt</h3>
         <label class="drop" id="attdrop"><input type="file" id="attfile" accept="video/*"><span id="attlabel">Choose or drop a video of someone doing it</span></label>
         <div class="samples">No video handy? Download a sample attempt and upload it:
-          <a download href="/static/media/proc_ok_demo.mp4">correct</a> ·
-          <a download href="/static/media/proc_swap_demo.mp4">wrong order</a> ·
-          <a download href="/static/media/proc_skip_demo.mp4">skipped</a> ·
-          <a download href="/static/media/proc_wrongbin_demo.mp4">wrong place</a></div>
+          <a download href="/static/media/pack_ok_demo.mp4">correct</a> ·
+          <a download href="/static/media/pack_order_demo.mp4">liner too late</a> ·
+          <a download href="/static/media/pack_skip_card_demo.mp4">no card</a> ·
+          <a download href="/static/media/pack_wrong_place_demo.mp4">wrong place</a></div>
         <button class="go" id="go" disabled>Check this video</button>
         <div class="fine">Each check runs the real models (a few cents). Videos up to 2 minutes and 80 MB.</div>
         <ol class="stages" id="stages" hidden></ol>
@@ -177,23 +218,25 @@
         <div class="media" id="livemedia" hidden>
           <div class="screen"><video id="livevid" muted loop playsinline autoplay></video></div>
           <div class="bar"><label class="toggle"><input type="checkbox" id="livevision" disabled><span class="switch"></span>AI vision</label>
-            <span class="hint" id="livehint">Drawing the tracking view…</span></div>
+            <span class="hint" id="livehint">Checking with the tracker…</span></div>
         </div>
+        <div class="card" id="liveproc" style="margin-top:16px" hidden></div>
         <div class="card" id="livereport" style="margin-top:16px" hidden></div>
         <div class="card placeholder" id="liveempty"><div>Your verdict will appear here.</div></div>
       </div>
     </div>
   </section>
+
   <section class="step">
-    <div class="step-head"><div class="num">4</div><div><h2>How reliable is it?</h2>
-      <p>Measured on 20 attempt videos with randomly varied positions and timing — every one checked against the same reference.</p></div></div>
+    <div class="step-head"><div class="num">5</div><div><h2>How reliable is it?</h2>
+      <p id="accintro"></p></div></div>
     <div class="acc" id="acc"></div>
-    <div class="caveat"><b>Honest scope:</b> these are clean generated clips. Real phone footage — hands, shadows, clutter — is harder, and is what we test next.</div>
+    <div class="caveat" id="acccaveat"></div>
   </section>
 
   <section class="step">
-    <div class="step-head"><div class="num">5</div><div><h2>It understands the steps well enough to do them</h2>
-      <p>The same learned procedure, handed to a simulated robot arm — nobody wrote instructions for it.</p></div></div>
+    <div class="step-head"><div class="num">6</div><div><h2>It understands steps well enough to do them</h2>
+      <p>A learned procedure, handed to a simulated robot arm — nobody wrote instructions for it.</p></div></div>
     <div class="two">
       <div class="media"><div class="screen"><video id="robot" muted loop playsinline autoplay></video></div></div>
       <div class="card" id="robotres"></div>
@@ -202,17 +245,17 @@
 
   <section class="step">
     <div class="step-head"><div class="num">⚙</div><div><h2>How it works</h2>
-      <p>Each stage is separate and checkable — every verdict points back to something the tracker actually saw.</p></div></div>
+      <p>Four models, each with one job. Every verdict points back to something that was seen or said.</p></div></div>
     <div class="how">
-      <div class="card"><div class="k">Reference</div><div class="h">One good video</div><div class="d">Anyone records the procedure done right, on a phone.</div></div>
-      <div class="card"><div class="k">Understand</div><div class="h">Ordered steps</div><div class="d"><b>Muse Spark</b> reads each step and its result. Also runs on the open-weight <b>Muse Spark Open</b>.</div></div>
-      <div class="card"><div class="k">Evidence</div><div class="h">Every object tracked</div><div class="d"><b>SAM 3.1</b> follows each object frame by frame, so each step is backed by what was seen.</div></div>
-      <div class="card"><div class="k">Compare</div><div class="h">When did each step happen?</div><div class="d">Each step is located in time in the attempt; a temporal check catches skips, swaps and wrong places.</div></div>
+      <div class="card"><div class="k">Listen</div><div class="h">What was said</div><div class="d"><b>Muse Voice Transcribe</b> turns the narration into timed lines. <b>Muse Spark</b> ties each line to a step: reasons, critical steps, spoken order rules. Quotes are checked against the transcript.</div></div>
+      <div class="card"><div class="k">Understand</div><div class="h">Ordered steps</div><div class="d"><b>Muse Spark</b> reads each step and its result from the video, naming objects in the speaker's words. Also runs on the open-weight <b>Muse Spark Open</b>.</div></div>
+      <div class="card"><div class="k">Evidence</div><div class="h">Every object tracked</div><div class="d"><b>SAM 3.1</b> follows each object frame by frame. Steps are checked against its boxes, and a step it couldn't see is reported as unverified, not as skipped.</div></div>
+      <div class="card"><div class="k">Judge</div><div class="h">Required, free, or as shown</div><div class="d">Each step is located in time; a temporal monitor checks only the orders that matter. Broken rules fail; unexplained differences are notes.</div></div>
     </div>
   </section>
 
   <footer>
-    Demo clips are generated test videos; the robot is a simulated Franka Panda (MuJoCo). Verdicts and rates come straight from the pipeline and include every failure.
+    Demo clips are generated test videos (flat shapes, computer-voiced narration); the robot is a simulated Franka Panda (MuJoCo). Verdicts and rates come straight from the pipeline and include every failure.
   </footer>
 </div>
 
@@ -220,8 +263,10 @@
 const BASE='/static/';
 const COLORS={red:'#d93333',blue:'#3359d9',green:'#33b24d',yellow:'#e6cc33',purple:'#8033a0',orange:'#e68326',brown:'#80592e',beige:'#d1b885',pink:'#e680a6',maroon:'#801f33',gray:'#9aa0a6',grey:'#9aa0a6'};
 const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const clock=s=>s==null?'—':`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-let D=null, cur=1;
+let D=null, cur=0;
+const overrides={};
 
 function setVideo(el,src,keep){
   const t=keep?el.currentTime:0, paused=keep&&el.paused;
@@ -229,6 +274,11 @@ function setVideo(el,src,keep){
   el.addEventListener('loadedmetadata',()=>{ if(keep) el.currentTime=Math.min(t,el.duration||t); if(!paused) el.play().catch(()=>{}); },{once:true});
 }
 function seek(el,t){ el.currentTime=Math.max(0,t-0.4); el.pause(); }
+function saidLine(quote,reason){
+  if(!quote) return reason?`<span class="said">${esc(reason)}</span>`:'';
+  const extra=reason&&!quote.toLowerCase().includes(reason.toLowerCase().replace(/[.!]$/,''))?` — ${esc(reason)}`:'';
+  return `<span class="said">They said: <i>“${esc(quote)}”</i>${extra}</span>`;
+}
 
 async function init(){
   D=await (await fetch(BASE+'media/check.json')).json();
@@ -236,46 +286,91 @@ async function init(){
   $('refblurb').textContent=R.blurb;
   setVideo($('ref'),R.seen,false);
   $('refvision').onchange=()=>setVideo($('ref'),$('refvision').checked?R.seen:R.demo,true);
-  $('refsteps').innerHTML=R.steps.map((s,i)=>`<li data-i="${i}"><div><span class="t">${s.text}</span><span class="time">${clock(s.start)} – ${clock(s.end)}</span></div></li>`).join('');
+  $('refsound').onclick=()=>{const v=$('ref'),b=$('refsound');v.muted=!v.muted;b.classList.toggle('on',!v.muted);
+    b.textContent=v.muted?'🔈 Sound off':'🔊 Sound on'; if(!v.muted){v.currentTime=0;v.play().catch(()=>{});}};
+  $('refsteps').innerHTML=R.steps.map((s,i)=>`<li data-i="${i}"><div><span class="t">${esc(s.text)}</span>${s.critical?'<span class="badge b-crit">Critical</span>':''}<span class="time">${clock(s.start)} – ${clock(s.end)}</span>${saidLine(s.quote,s.reason)}</div></li>`).join('');
   document.querySelectorAll('#refsteps li').forEach(li=>li.onclick=()=>{const v=$('ref');v.currentTime=R.steps[+li.dataset.i].start;v.play().catch(()=>{});});
   $('ref').ontimeupdate=()=>{const t=$('ref').currentTime;document.querySelectorAll('#refsteps li').forEach(li=>{const s=R.steps[+li.dataset.i];li.classList.toggle('active',t>=s.start&&t<=s.end);});};
-  $('refobjects').innerHTML=R.objects.map(o=>`<span class="chip ${o.tracked?'':'off'}"><span class="dot" style="background:${COLORS[(o.color||'').toLowerCase()]||'#999'}"></span>${o.name}${o.tracked?'':' · not tracked'}</span>`).join('');
-
-  $('attempts').innerHTML=D.attempts.map((a,i)=>{
-    const n=a.issues.filter(x=>x.severity==='fail').length;
-    return `<button class="att" data-i="${i}"><span class="ttl">${a.title}</span><span class="what">${a.what}</span>
-      <span class="pill ${a.passed?'p-ok':'p-bad'}">${a.passed?'✓ Passes':`✕ ${n} problem${n===1?'':'s'}`}</span></button>`;}).join('');
-  document.querySelectorAll('.att').forEach(b=>b.onclick=()=>select(+b.dataset.i));
+  $('refheard').innerHTML=R.heard.length?R.heard.map(h=>`<div class="heard"><span class="time">${clock(h.start)}</span><span>“${esc(h.text)}”</span></div>`).join(''):'<div class="hint">Nothing was said in this video.</div>';
+  $('refobjects').innerHTML=R.objects.map(o=>`<span class="chip ${o.tracked?'':'off'}"><span class="dot" style="background:${COLORS[(o.color||'').toLowerCase()]||'#999'}"></span>${esc(o.name)}${o.tracked?'':' · not tracked'}</span>`).join('');
+  setVideo($('ref2'),D.second.demo,false); $('ref2blurb').textContent=D.second.blurb;
+  renderRules(R.rules,$('rules'),overrides,recheckDemo);
+  renderAttempts();
   $('attvision').onchange=()=>{const a=D.attempts[cur];setVideo($('att'),$('attvision').checked?a.seen:a.demo,true);};
   select(cur);
   renderAcc(); renderRobot(); initLive();
 }
 
+// --- rules -------------------------------------------------------------------
+const SRC={said:'said in the reference',physical:'physically required',references:'seen both ways',shown:'only seen this way',you:'your choice'};
+function ruleBadge(r){
+  if(r.strength==='required') return `<span class="badge b-req">Required · ${SRC[r.source]||r.source}</span>`;
+  if(r.strength==='free') return `<span class="badge b-free">Doesn’t matter · ${SRC[r.source]||r.source}</span>`;
+  return `<span class="badge b-shown">As shown · ${SRC[r.source]||r.source}</span>`;
+}
+function renderRules(rules,el,ov,onChange){
+  el.innerHTML=rules.map((r,i)=>{
+    const s=ov[r.id]||r.strength;
+    return `<div class="rule" data-i="${i}"><div><div class="pair">${esc(r.before)}<span class="arrow">before</span>${esc(r.after)}</div>
+      <div class="why">${ruleBadge(r)} ${r.quote?`“${esc(r.quote)}”`:esc(r.why)}</div></div>
+      <div class="seg"><button data-s="required" class="${s==='required'?'on':''}">Must</button><button data-s="as_shown" class="${s==='as_shown'?'on shown':''}">Note</button><button data-s="free" class="${s==='free'?'on free':''}">Free</button></div></div>`;}).join('')||'<div class="hint">Only one step — no order to check.</div>';
+  el.querySelectorAll('.rule').forEach(row=>row.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
+    ov[rules[+row.dataset.i].id]=b.dataset.s; onChange(); }));
+}
+function applyOverrides(rules,ov){
+  rules.forEach(x=>{ if(ov[x.id]&&ov[x.id]!==x.strength){ x.strength=ov[x.id]; x.source='you'; } });
+}
+async function recheckDemo(){
+  document.body.classList.add('busy');
+  try{
+    const r=await fetch('/api/recheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({demo:D.attempts.map(a=>a.id),overrides})});
+    const res=await r.json();
+    D.attempts.forEach(a=>Object.assign(a,res[a.id]||{}));
+  } finally { document.body.classList.remove('busy'); }
+  applyOverrides(D.reference.rules,overrides);
+  renderRules(D.reference.rules,$('rules'),overrides,recheckDemo);
+  renderAttempts(); select(cur,true);
+}
+
+// --- attempts and reports --------------------------------------------------------
+function pill(a){
+  const n=a.issues.filter(x=>x.severity==='fail').length;
+  return {pass:['p-ok','✓ Passes'],pass_notes:['p-note','✓ Passes · note'],unsure:['p-unsure','? Can’t verify'],fail:['p-bad',`✕ ${n} problem${n===1?'':'s'}`]}[a.verdict];
+}
+function renderAttempts(){
+  $('attempts').innerHTML=D.attempts.map((a,i)=>{const [c,t]=pill(a);
+    return `<button class="att ${i===cur?'active':''}" data-i="${i}"><span class="ttl">${esc(a.title)}</span><span class="what">${esc(a.what)}</span><span class="pill ${c}">${t}</span></button>`;}).join('');
+  document.querySelectorAll('.att').forEach(b=>b.onclick=()=>select(+b.dataset.i));
+}
+const EV={confirmed:'tracker agrees',seen:'seen by tracker',unseen:'not seen by tracker',contradicted:'tracker disagrees'};
 function renderReport(a, el, video, sub){
   const fails=a.issues.filter(x=>x.severity==='fail');
-  let h=a.passed
-    ? `<div class="verdict v-ok"><span class="mark">✓</span>Follows the procedure</div><div class="sub">Every step done, in the right order, in the right place.</div>`
-    : `<div class="verdict v-bad"><span class="mark">✕</span>${fails.length} problem${fails.length===1?'':'s'} found</div><div class="sub">${sub||''}</div>`;
+  const V={pass:['v-ok','✓','Follows the procedure','Every step done, in an allowed order, in the right place.'],
+    pass_notes:['v-note','✓','Follows the procedure — with a note','Nothing required was broken.'],
+    unsure:['v-unsure','?','Can’t verify every step','Part of the attempt was hidden from the camera. Nothing it could see was wrong.'],
+    fail:['v-bad','✕',`${fails.length} problem${fails.length===1?'':'s'} found`,sub||'']}[a.verdict];
+  let h=`<div class="verdict ${V[0]}"><span class="mark">${V[1]}</span>${V[2]}</div><div class="sub">${esc(V[3])}</div>`;
   if(a.issues.length){
-    h+=`<h3>Problems</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div><span class="k">${x.kind}</span><span class="m">${x.message}</span></div></div>`).join('');
+    h+=`<h3>${fails.length?'Problems':'Notes'}</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':x.severity==='unknown'?'unknown':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div>
+      <span class="k">${esc(x.kind)}${x.critical?'<span class="badge b-crit">Critical</span>':''}</span><span class="m">${esc(x.message)}</span>
+      ${saidLine(x.quote,x.reason)}${x.fix?`<span class="fix"><b>Fix:</b> ${esc(x.fix)}</span>`:''}</div></div>`).join('');
   }
-  h+=`<h3>Steps in this attempt</h3>`+a.milestones.map((m,j)=>`<div class="ms ${m.done?'click':''}" data-j="${j}"><span class="i ${m.done?'yes':'no'}">${m.done?'✓':'✕'}</span>${m.text}<span class="at">${m.done?'at '+clock(m.time):'not seen'}</span></div>`).join('');
+  h+=`<h3>Steps in this attempt</h3>`+a.milestones.map((m,j)=>`<div class="ms ${m.done?'click':''}" data-j="${j}"><span class="i ${m.done?'yes':'no'}">${m.done?'✓':'✕'}</span><span>${esc(m.text)}${m.critical?'<span class="badge b-crit">Critical</span>':''}${m.evidence?`<span class="ev ev-${m.evidence}">${EV[m.evidence]}</span>`:''}</span><span class="at">${m.done?'at '+clock(m.time):'not seen'}</span></div>`).join('');
   el.innerHTML=h;
   el.querySelectorAll('.issue').forEach(n=>n.onclick=()=>{const x=a.issues[+n.dataset.j]; if(x.time!=null) seek(video,x.time);
     n.classList.add('flash'); setTimeout(()=>n.classList.remove('flash'),700);});
   el.querySelectorAll('.ms.click').forEach(n=>n.onclick=()=>{const m=a.milestones[+n.dataset.j]; if(m.time!=null) seek(video,m.time);});
 }
-
-function select(i){
+function select(i,keep){
   cur=i; const a=D.attempts[i];
   document.querySelectorAll('.att').forEach(b=>b.classList.toggle('active',+b.dataset.i===i));
-  setVideo($('att'),$('attvision').checked?a.seen:a.demo,false);
+  if(!keep) setVideo($('att'),$('attvision').checked?a.seen:a.demo,false);
   renderReport(a,$('report'),$('att'),a.what);
 }
 
 // --- live checking -----------------------------------------------------------
-const L={ref:null, att:null, job:null, timer:null, demo:null, seen:null};
-const STAGES=own=>[...(own?['Reading the steps in your reference']:[]),'Reading the steps in your attempt','Comparing with the reference','Drawing what the AI saw'];
+const L={ref:null, ref2:null, att:null, job:null, timer:null, demo:null, seen:null, rules:null, ov:{}, shownRules:false, last:null};
+const STAGES=(own,two)=>[...(own?['Listening to your reference','Reading the steps in your reference',...(two?['Reading your second reference']:[]),'Learning which steps and orders matter']:[]),'Reading the steps in your attempt','Comparing with the procedure','Checking with the tracker'];
 
 function wireDrop(drop,input,label,key,prompt){
   const set=f=>{ L[key]=f||null; drop.classList.toggle('has',!!f); label.textContent=f?`✓ ${f.name}`:prompt; ready(); };
@@ -287,15 +382,16 @@ function wireDrop(drop,input,label,key,prompt){
 const ownRef=()=>document.querySelector('input[name=refmode]:checked').value==='own';
 function ready(){ $('go').disabled=!L.att||(ownRef()&&!L.ref)||!!L.timer; }
 
-function showStages(stage,own,doneAll){
-  const list=STAGES(own), at=doneAll?list.length:Math.max(0,list.indexOf(stage));
+function showStages(stage,own,two,doneAll){
+  const list=STAGES(own,two), at=doneAll?list.length:Math.max(0,list.indexOf(stage));
   $('stages').hidden=false;
   $('stages').innerHTML=list.map((s,i)=>`<li class="${i<at?'ok':i===at?'now':''}"><span class="s">${i<at?'✓':''}</span>${s}</li>`).join('');
 }
-
 async function startLive(){
-  $('liveerr').hidden=true; $('livereport').hidden=true; $('livemedia').hidden=true; $('liveempty').hidden=false;
-  const fd=new FormData(); fd.append('attempt',L.att); if(ownRef()&&L.ref) fd.append('reference',L.ref);
+  $('liveerr').hidden=true; $('livereport').hidden=true; $('liveproc').hidden=true; $('livemedia').hidden=true; $('liveempty').hidden=false;
+  L.ov={}; L.shownRules=false; L.last=null;
+  const fd=new FormData(); fd.append('attempt',L.att);
+  if(ownRef()&&L.ref){ fd.append('reference',L.ref); if(L.ref2) fd.append('reference2',L.ref2); }
   $('go').disabled=true; $('go').textContent='Uploading…';
   let r;
   try{ r=await fetch('/api/check',{method:'POST',body:fd}); }
@@ -303,49 +399,73 @@ async function startLive(){
   const body=await r.json();
   if(!r.ok) return liveError(body.detail||'Upload failed.');
   L.job=body.job; $('go').textContent='Checking…';
-  showStages(null,ownRef(),false);
+  showStages(null,ownRef(),ownRef()&&!!L.ref2,false);
   L.timer=setInterval(poll,1500); poll();
 }
 function liveError(msg){
   clearInterval(L.timer); L.timer=null; $('go').textContent='Check this video'; ready();
   $('liveerr').textContent=msg; $('liveerr').hidden=false;
 }
+function renderLiveProc(ref){
+  if(L.shownRules) return; L.shownRules=true; L.rules=ref.rules;
+  const el=$('liveproc'); el.hidden=false;
+  el.innerHTML=`<h3>What it learned from your reference</h3><ol class="steps">${ref.steps.map(s=>`<li><div><span class="t">${esc(s.text)}</span>${s.critical?'<span class="badge b-crit">Critical</span>':''}${saidLine(s.quote,s.reason)}</div></li>`).join('')}</ol>
+    <h3>Order rules</h3><div class="rules" id="liverules"></div>`;
+  renderRules(L.rules,$('liverules'),L.ov,recheckLive);
+}
+async function recheckLive(){
+  const r=await fetch('/api/recheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job:L.job,overrides:L.ov})});
+  if(!r.ok) return;
+  const res=await r.json();
+  applyOverrides(L.rules,L.ov);
+  renderRules(L.rules,$('liverules'),L.ov,recheckLive);
+  renderReport(res[L.job],$('livereport'),$('livevid'),'Re-checked with your rule changes.');
+}
 async function poll(){
   const j=await (await fetch(`/api/jobs/${L.job}`)).json();
   if(j.status==='error') { $('stages').hidden=true; return liveError(j.error); }
-  showStages(j.stage,j.custom_reference,j.status==='done');
-  if((j.status==='checked'||j.status==='done') && j.result && $('livereport').hidden){
+  showStages(j.stage,j.custom_reference,j.second_reference,j.status==='done');
+  if(j.reference) renderLiveProc(j.reference);
+  const snap=JSON.stringify(j.result||null);
+  if((j.status==='checked'||j.status==='done') && j.result && snap!==L.last){
+    L.last=snap;
+    if($('livemedia').hidden){ L.demo=j.demo; setVideo($('livevid'),j.demo,false); }
     $('liveempty').hidden=true; $('livemedia').hidden=false; $('livereport').hidden=false;
-    L.demo=j.demo; setVideo($('livevid'),j.demo,false);
-    const sub=j.custom_reference?'Checked against your reference video.':'Checked against the demo reference.';
+    const sub=j.custom_reference?'Checked against your reference video.':'Checked against the packing reference.';
     renderReport(j.result,$('livereport'),$('livevid'),sub);
   }
   if(j.status==='done'){
     clearInterval(L.timer); L.timer=null; $('go').textContent='Check another video'; ready();
     if(j.seen){ L.seen=j.seen; $('livevision').disabled=false; $('livevision').checked=true;
-      setVideo($('livevid'),j.seen,true); $('livehint').textContent='Boxes show every object it tracked'; }
+      setVideo($('livevid'),j.seen,true); $('livehint').textContent='Steps checked against the tracker’s boxes'; }
     else { $('livehint').textContent=j.note||'No tracking view for this video.'; }
   }
 }
 function initLive(){
   wireDrop($('refdrop'),$('reffile'),$('reflabel'),'ref','Choose or drop your reference video');
+  wireDrop($('ref2drop'),$('ref2file'),$('ref2label'),'ref2','Optional: a second correct way to do it');
   wireDrop($('attdrop'),$('attfile'),$('attlabel'),'att','Choose or drop a video of someone doing it');
-  document.querySelectorAll('input[name=refmode]').forEach(r=>r.onchange=()=>{ $('refdrop').hidden=!ownRef(); ready(); });
+  document.querySelectorAll('input[name=refmode]').forEach(r=>r.onchange=()=>{ $('ownrefs').hidden=!ownRef(); ready(); });
   $('livevision').onchange=()=>setVideo($('livevid'),$('livevision').checked?L.seen:L.demo,true);
   $('go').onclick=startLive;
 }
 
 function renderAcc(){
-  const A=D.accuracy, rows=[['ok','correct attempts passed'],['swap','wrong orders caught'],['skip','skipped steps caught'],['wrongbin','wrong places caught']];
-  $('acc').innerHTML=rows.map(([k,l])=>{const [g,n]=A[k];return `<div class="card"><div class="big">${g} of ${n}</div><div class="lab">${l}</div><div class="meter"><span style="width:${100*g/n}%"></span></div></div>`;}).join('');
+  const P=D.accuracy.pack||{}, T=D.accuracy.trays||{};
+  const rows=[['ok','correct attempts passed'],['ok_alt','free-order attempts passed'],['loose','unusual orders noted, not failed'],['order','required orders caught'],
+    ['skip_liner','skipped critical step caught'],['skip_card','skipped steps caught'],['wrong_place','wrong places caught'],['hidden','hidden steps not wrongly failed']].filter(([k])=>P[k]);
+  const total=rows.reduce((s,[k])=>s+P[k][1],0);
+  $('accintro').textContent=`Measured on ${total} freshly generated packing attempts with randomly varied positions and timing — each read by the real models and checked against the learned procedure. Expected verdicts were written before running; one hidden-step check was tightened after a run where the tracker mistook the hand for the card.`;
+  $('acc').innerHTML=rows.map(([k,l])=>{const [g,n]=P[k];return `<div class="card"><div class="big">${g} of ${n}</div><div class="lab">${l}</div><div class="meter"><span style="width:${100*g/n}%"></span></div></div>`;}).join('');
+  const t=Object.values(T).reduce((a,[g,n])=>[a[0]+g,a[1]+n],[0,0]);
+  $('acccaveat').innerHTML=`<b>Honest scope:</b> these are clean generated clips with computer-voiced narration${t[1]?`; an earlier three-tray test scored ${t[0]} of ${t[1]}`:''}. Real phone footage — hands, shadows, clutter — is harder, and is what we test next.`;
 }
-
 function renderRobot(){
   const R=D.robot; setVideo($('robot'),R.video,false);
   const n=R.goals.filter(g=>g.ok).length;
   $('robotres').innerHTML=`<div class="verdict ${R.success?'v-ok':'v-bad'}"><span class="mark">${R.success?'✓':'✕'}</span>${R.success?'Robot completed the procedure':'Robot did not finish'}</div>
-    <h3>Goals reached · ${n} of ${R.goals.length}</h3>`+R.goals.map(g=>`<div class="check"><span class="i ${g.ok?'yes':'no'}">${g.ok?'✓':'✕'}</span>${g.text}</div>`).join('')
-    +`<div class="note">More: the robot under stress — objects moved, a block knocked over, steps done out of order. <a href="/static/robot.html">See the robot tests →</a></div>`;
+    <h3>Goals reached · ${n} of ${R.goals.length}</h3>`+R.goals.map(g=>`<div class="check"><span class="i ${g.ok?'yes':'no'}">${g.ok?'✓':'✕'}</span>${esc(g.text)}</div>`).join('')
+    +`<div class="note">Learned from an earlier three-tray demonstration. More: the robot under stress — objects moved, a block knocked over, steps done out of order. <a href="/static/robot.html">See the robot tests →</a></div>`;
 }
 init();
 </script>
