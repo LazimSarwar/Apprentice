@@ -216,7 +216,8 @@ def execute(graph: TaskGraph, record: bool = False, layout=None,
 
     snapshot(0, None)                                    # the initial scene
     by_order = {s.order: s for s in graph.steps}
-    sequence = order if order is not None else sorted(by_order)
+    # An order override may name steps that sanitisation dropped; skip those.
+    sequence = [o for o in order if o in by_order] if order is not None else sorted(by_order)
 
     for exec_index, step_order in enumerate(sequence, start=1):
         step = by_order[step_order]

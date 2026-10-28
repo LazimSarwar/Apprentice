@@ -21,7 +21,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..schema import TaskGraph
-from .executor import Disturbance, execute
+from . import monitor
+from .executor import Disturbance, execute, sanitize_plan
 from .scene import _is_container
 
 # Reachable sampling windows on the table (metres), kept inside the Panda's workspace.
@@ -49,19 +50,29 @@ def _sample(rng: random.Random, xr, yr, taken, min_sep=MIN_SEP,
     return round(x, 3), round(y, 3)
 
 
-def random_layout(graph: TaskGraph, rng: random.Random, far_tray: bool = False) -> dict:
+def random_layout(graph: TaskGraph, rng: random.Random, far: set[str] | None = None) -> dict:
+    """A random reachable layout; objects named in `far` are put out of the arm's reach."""
+    far = far or set()
     blocks = [o for o in graph.objects if not _is_container(o)]
     trays = [o for o in graph.objects if _is_container(o)]
     taken: list[tuple[float, float]] = []
     tray_pts: list[tuple[float, float]] = []
     places = {}
     for b in blocks:
-        places[b.id] = _sample(rng, BLOCK_X, BLOCK_Y, taken)
+        places[b.id] = _sample(rng, FAR_TRAY_X if b.id in far else BLOCK_X, BLOCK_Y, taken)
     for t in trays:
-        places[t.id] = _sample(rng, FAR_TRAY_X if far_tray else TRAY_X, TRAY_Y, taken,
+        places[t.id] = _sample(rng, FAR_TRAY_X if t.id in far else TRAY_X, TRAY_Y, taken,
                                avoid=tray_pts, avoid_sep=TRAY_SEP)
         tray_pts.append(places[t.id])
     return places
+
+
+def _goal_objects(graph: TaskGraph) -> tuple[list[str], set[str]]:
+    """Blocks the (sanitised) goals depend on, in scene order, and the goals' targets."""
+    _, kept, _ = sanitize_plan(graph)
+    involved = {r.a for r in kept} | {r.b for r in kept}
+    blocks = [o.id for o in graph.objects if not _is_container(o) and o.id in involved]
+    return blocks, {r.b for r in kept}
 
 
 @dataclass
@@ -92,9 +103,11 @@ def evaluate(graph: TaskGraph, trials: int = 15, seed: int = 0) -> list[Metric]:
     metrics.append(Metric("shuffle", goal, trials, "goal reached from a random layout"))
     metrics.append(Metric("procedure", proc, max(goal, 1), "of successful runs, followed the demonstrated order"))
 
-    # 2) Recovery: random layout + a random shove after a random step.
+    # 2) Recovery: random layout + a random shove, after a random step, to a block the
+    #    goal depends on (bumping an unrelated block tests nothing).
     recovered = 0
     repairs_total = 0
+    goal_blocks, goal_targets = _goal_objects(graph)
     for _ in range(trials):
         layout = random_layout(graph, rng)
         step_orders = [s.order for s in graph.steps]
@@ -102,7 +115,7 @@ def evaluate(graph: TaskGraph, trials: int = 15, seed: int = 0) -> list[Metric]:
         # out of reach is an abstention case, covered separately below.
         dist = Disturbance(
             after_step=rng.choice(step_orders),
-            object=rng.choice([o.id for o in graph.objects if not _is_container(o)]),
+            object=rng.choice(goal_blocks),
             dxy=(rng.uniform(-0.11, 0.11), rng.uniform(-0.11, 0.11)),
         )
         r = execute(graph, layout=layout, disturbances=[dist])
@@ -112,18 +125,23 @@ def evaluate(graph: TaskGraph, trials: int = 15, seed: int = 0) -> list[Metric]:
                           f"recovered to goal after a shove (mean {repairs_total / trials:.1f} repairs)"))
 
     # 3) Procedure detection: reversed execution should be flagged as a violation.
-    flagged = 0
-    for _ in range(trials):
-        layout = random_layout(graph, rng)
-        order = sorted((s.order for s in graph.steps), reverse=True)
-        r = execute(graph, layout=layout, order=order)
-        flagged += (not r.procedure_ok)
-    metrics.append(Metric("detection", flagged, trials, "out-of-order run flagged by the monitor"))
+    #    Only meaningful when the (sanitised) plan has an order to check.
+    steps, kept, _ = sanitize_plan(graph)
+    plan = graph.model_copy(update={"steps": steps, "final_relations": kept})
+    if monitor.derive_rules(plan):
+        flagged = 0
+        order = sorted((s.order for s in steps), reverse=True)
+        for _ in range(trials):
+            r = execute(graph, layout=random_layout(graph, rng), order=order)
+            flagged += (not r.procedure_ok)
+        metrics.append(Metric("detection", flagged, trials, "out-of-order run flagged by the monitor"))
+    else:
+        metrics.append(Metric("detection", 0, 0, "not applicable: one goal, so no order to check"))
 
-    # 4) Abstention: an unreachable target must not be reported as success.
+    # 4) Abstention: with every goal's target out of reach, success must not be claimed.
     honest = 0
     for _ in range(trials):
-        r = execute(graph, layout=random_layout(graph, rng, far_tray=True))
+        r = execute(graph, layout=random_layout(graph, rng, far=goal_targets))
         honest += (not r.success)
     metrics.append(Metric("abstention", honest, trials, "no false success when the target is out of reach"))
 

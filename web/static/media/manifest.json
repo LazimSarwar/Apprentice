@@ -1,0 +1,431 @@
+{
+  "real": {
+    "id": "real",
+    "title": "Real footage",
+    "source": "A real stock video of a child stacking wooden cubes (cottonbro studio, Pexels).",
+    "demo": "media/real_demo.mp4",
+    "seen": "media/real_seen.mp4",
+    "aspect": 0.5278,
+    "model": "muse-spark-1.3",
+    "provider": "hosted",
+    "objects": [
+      {
+        "name": "blue block",
+        "color": "blue",
+        "tracked": true
+      },
+      {
+        "name": "purple block",
+        "color": "purple",
+        "tracked": true
+      },
+      {
+        "name": "green block",
+        "color": "green",
+        "tracked": true
+      },
+      {
+        "name": "beige block",
+        "color": "beige",
+        "tracked": true
+      }
+    ],
+    "steps": [
+      {
+        "text": "Picks up the blue block",
+        "start": 0.0,
+        "end": 1.8
+      },
+      {
+        "text": "Puts down the green block",
+        "start": 5.0,
+        "end": 7.5
+      },
+      {
+        "text": "Stacks the beige block on the green block",
+        "start": 10.5,
+        "end": 12.5
+      }
+    ],
+    "goals": [
+      "The beige block is on the green block"
+    ],
+    "notes": [
+      "Skipped \u201cPuts down the green block\u201d \u2014 the video never showed where it went."
+    ],
+    "runs": {
+      "normal": {
+        "video": "media/real_robot.mp4",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The beige block is on the green block",
+            "ok": true
+          }
+        ],
+        "fixed": 0,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "shuffle": {
+        "video": "media/real_shuffle.mp4",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The beige block is on the green block",
+            "ok": true
+          }
+        ],
+        "fixed": 0,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "nudge": {
+        "video": "media/real_nudge.mp4",
+        "bumped": "beige block",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The beige block is on the green block",
+            "ok": true
+          }
+        ],
+        "fixed": 1,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "order": {
+        "na": "This demonstration has only one goal, so there is no order to check."
+      }
+    },
+    "eval": {
+      "shuffle": [
+        25,
+        25
+      ],
+      "procedure": [
+        25,
+        25
+      ],
+      "recovery": [
+        23,
+        25
+      ],
+      "detection": [
+        0,
+        0
+      ],
+      "abstention": [
+        25,
+        25
+      ]
+    }
+  },
+  "stack": {
+    "id": "stack",
+    "title": "Stack",
+    "source": "A generated test clip: the red block slides into the tray, then the blue one goes on top.",
+    "demo": "media/stack_demo.mp4",
+    "seen": "media/stack_seen.mp4",
+    "aspect": 1.7778,
+    "model": "muse-spark-1.3",
+    "provider": "hosted",
+    "objects": [
+      {
+        "name": "red block",
+        "color": "red",
+        "tracked": true
+      },
+      {
+        "name": "blue block",
+        "color": "blue",
+        "tracked": true
+      },
+      {
+        "name": "gray tray",
+        "color": "gray",
+        "tracked": false
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slides the red block into the gray tray",
+        "start": 1.5,
+        "end": 5.0
+      },
+      {
+        "text": "Stacks the blue block on the red block",
+        "start": 5.5,
+        "end": 9.4
+      }
+    ],
+    "goals": [
+      "The red block is in the gray tray",
+      "The blue block is on the red block"
+    ],
+    "notes": [],
+    "runs": {
+      "normal": {
+        "video": "media/stack_robot.mp4",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is on the red block",
+            "ok": true
+          }
+        ],
+        "fixed": 0,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "shuffle": {
+        "video": "media/stack_shuffle.mp4",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is on the red block",
+            "ok": true
+          }
+        ],
+        "fixed": 0,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "nudge": {
+        "video": "media/stack_nudge.mp4",
+        "bumped": "blue block",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is on the red block",
+            "ok": true
+          }
+        ],
+        "fixed": 1,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "order": {
+        "video": "media/stack_order.mp4",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is on the red block",
+            "ok": true
+          }
+        ],
+        "fixed": 1,
+        "procedure_ok": false,
+        "violations": [
+          "the blue block was on the red block before the red block was in the gray tray"
+        ],
+        "stopped": ""
+      }
+    },
+    "eval": {
+      "shuffle": [
+        25,
+        25
+      ],
+      "procedure": [
+        25,
+        25
+      ],
+      "recovery": [
+        25,
+        25
+      ],
+      "detection": [
+        25,
+        25
+      ],
+      "abstention": [
+        25,
+        25
+      ]
+    }
+  },
+  "sort": {
+    "id": "sort",
+    "title": "Sort",
+    "source": "A generated test clip: red goes to the left tray, blue to the right.",
+    "demo": "media/sort_demo.mp4",
+    "seen": "media/sort_seen.mp4",
+    "aspect": 1.7778,
+    "model": "muse-spark-1.3",
+    "provider": "hosted",
+    "objects": [
+      {
+        "name": "red block",
+        "color": "red",
+        "tracked": true
+      },
+      {
+        "name": "blue block",
+        "color": "blue",
+        "tracked": true
+      },
+      {
+        "name": "left gray tray",
+        "color": "gray",
+        "tracked": false
+      },
+      {
+        "name": "right gray tray",
+        "color": "gray",
+        "tracked": false
+      }
+    ],
+    "steps": [
+      {
+        "text": "Slides the red block into the left gray tray",
+        "start": 1.5,
+        "end": 5.0
+      },
+      {
+        "text": "Slides the blue block into the right gray tray",
+        "start": 5.0,
+        "end": 8.5
+      }
+    ],
+    "goals": [
+      "The red block is in the left gray tray",
+      "The blue block is in the right gray tray"
+    ],
+    "notes": [],
+    "runs": {
+      "normal": {
+        "video": "media/sort_robot.mp4",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the left gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is in the right gray tray",
+            "ok": true
+          }
+        ],
+        "fixed": 0,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "shuffle": {
+        "video": "media/sort_shuffle.mp4",
+        "success": false,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the left gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is in the right gray tray",
+            "ok": false
+          }
+        ],
+        "fixed": 3,
+        "procedure_ok": false,
+        "violations": [
+          "the blue block was in the right gray tray before the red block was in the left gray tray"
+        ],
+        "stopped": ""
+      },
+      "nudge": {
+        "video": "media/sort_nudge.mp4",
+        "bumped": "blue block",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the left gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is in the right gray tray",
+            "ok": true
+          }
+        ],
+        "fixed": 0,
+        "procedure_ok": true,
+        "violations": [],
+        "stopped": ""
+      },
+      "order": {
+        "video": "media/sort_order.mp4",
+        "success": true,
+        "completed": true,
+        "goals": [
+          {
+            "text": "The red block is in the left gray tray",
+            "ok": true
+          },
+          {
+            "text": "The blue block is in the right gray tray",
+            "ok": true
+          }
+        ],
+        "fixed": 0,
+        "procedure_ok": false,
+        "violations": [
+          "the blue block was in the right gray tray before the red block was in the left gray tray"
+        ],
+        "stopped": ""
+      }
+    },
+    "eval": {
+      "shuffle": [
+        24,
+        25
+      ],
+      "procedure": [
+        21,
+        24
+      ],
+      "recovery": [
+        19,
+        25
+      ],
+      "detection": [
+        23,
+        25
+      ],
+      "abstention": [
+        25,
+        25
+      ]
+    }
+  }
+}

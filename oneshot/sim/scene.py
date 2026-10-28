@@ -99,6 +99,34 @@ def _default_layout(blocks: list[Object], trays: list[Object]) -> dict[str, tupl
     return places
 
 
+RENDER_W, RENDER_H = 960, 540
+
+
+def _style(spec: mujoco.MjSpec) -> None:
+    """Visual-only environment: gradient sky, light floor, key light, larger offscreen
+    buffer. The floor does not collide, so physics is identical to the unstyled scene."""
+    spec.visual.global_.offwidth = RENDER_W
+    spec.visual.global_.offheight = RENDER_H
+    spec.visual.headlight.ambient = [0.36, 0.36, 0.38]
+    spec.visual.headlight.diffuse = [0.38, 0.38, 0.38]
+    spec.visual.headlight.specular = [0.05, 0.05, 0.05]
+
+    spec.add_texture(name="sky", type=mujoco.mjtTexture.mjTEXTURE_SKYBOX,
+                     builtin=mujoco.mjtBuiltin.mjBUILTIN_GRADIENT,
+                     rgb1=[0.96, 0.97, 0.99], rgb2=[0.78, 0.83, 0.90], width=512, height=3072)
+    spec.add_texture(name="floor", type=mujoco.mjtTexture.mjTEXTURE_2D,
+                     builtin=mujoco.mjtBuiltin.mjBUILTIN_CHECKER,
+                     rgb1=[0.88, 0.89, 0.91], rgb2=[0.86, 0.87, 0.89], width=256, height=256)
+    floor = spec.add_material(name="floor", texrepeat=[8, 8], reflectance=0.05)
+    floor.textures[mujoco.mjtTextureRole.mjTEXROLE_RGB] = "floor"
+
+    world = spec.worldbody
+    world.add_geom(name="floor", type=mujoco.mjtGeom.mjGEOM_PLANE, size=[4, 4, 0.05],
+                   material="floor", contype=0, conaffinity=0)
+    world.add_light(name="key", pos=[0.3, -0.8, 2.0], dir=[0.1, 0.4, -1.0],
+                    diffuse=[0.42, 0.42, 0.42], castshadow=True)
+
+
 def build_scene(objects: Iterable[Object], layout: dict[str, tuple[float, float]] | None = None) -> Scene:
     """Compile a scene holding every object the task graph named."""
     objects = list(objects)
@@ -110,12 +138,13 @@ def build_scene(objects: Iterable[Object], layout: dict[str, tuple[float, float]
     spec.option.timestep = 0.002
     for key in list(spec.keys):          # drop the 9-dof home key; freejoints change nq
         spec.delete(key)
+    _style(spec)
 
     world = spec.worldbody
     world.add_geom(
         name="table", type=mujoco.mjtGeom.mjGEOM_BOX,
         pos=[*TABLE_CENTER, TABLE_HALF[2]], size=list(TABLE_HALF),
-        rgba=[0.82, 0.73, 0.55, 1.0],
+        rgba=[0.72, 0.58, 0.42, 1.0],
     )
     for tray in trays:
         x, y = places[tray.id]

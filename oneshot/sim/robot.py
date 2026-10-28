@@ -11,7 +11,7 @@ from __future__ import annotations
 import mujoco
 import numpy as np
 
-from .scene import Scene
+from .scene import RENDER_H, RENDER_W, Scene
 
 ARM = slice(0, 7)
 HAND_OFFSET = 0.10        # hand-body origin to carried block centre (m)
@@ -32,15 +32,15 @@ class Panda:
         self.arm_dofs = [self.m.jnt_dofadr[j] for j in range(7)]
         self._grasp: tuple[str, str] | None = None        # (block_id, mode)
         self.frames: list[np.ndarray] = []
-        self._renderer = mujoco.Renderer(self.m, 480, 640) if record else None
+        self._renderer = mujoco.Renderer(self.m, RENDER_H, RENDER_W) if record else None
         self._frame_skip = max(1, frame_skip)
         self._sim_steps = 0
         self._cam = mujoco.MjvCamera()
         self._cam.type = mujoco.mjtCamera.mjCAMERA_FREE
-        self._cam.lookat[:] = [0.5, 0.0, 0.12]            # table centre
-        self._cam.distance = 1.7
-        self._cam.azimuth = 130
-        self._cam.elevation = -22
+        self._cam.lookat[:] = [0.45, 0.0, 0.18]           # between the arm and the work area
+        self._cam.distance = 1.35
+        self._cam.azimuth = 145
+        self._cam.elevation = -26
 
     # --- grasp ---------------------------------------------------------------
     def attach(self, block_id: str, mode: str = "lift") -> None:

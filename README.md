@@ -35,8 +35,8 @@ Everything in this repository was written during the event, except the third-par
   per-step outcomes.
 - Dependencies: `openai`, `meta-sam-parser` (SAM License), `python-dotenv`, `pydantic`, `mujoco`, `robot_descriptions`.
 - The real-footage demo uses a stock video by cottonbro studio from Pexels (Pexels License, free use):
-  <https://www.pexels.com/video/a-kid-playing-with-wooden-building-blocks-3676968/>. It is demonstration *input*
-  only — not redistributed in this repository.
+  <https://www.pexels.com/video/a-kid-playing-with-wooden-building-blocks-3676968/>. The web page includes a
+  downscaled copy and a version with tracking boxes drawn on it, credited here.
 - Built with help from AI coding assistants; all design and code decisions are reviewed by the author.
 
 ## Setup
@@ -52,17 +52,22 @@ copy .env.example .env          # then fill in your keys
 
 ## Web app
 
-A single page to drive the whole pipeline — pick a demonstration, see the evidence-linked
-task graph it learned, and run it on the simulated arm, watching the rendered result and the
-verdict. "Out of order" shows the procedure monitor catch a violation; "Disturb mid-run"
-shows the recovery.
+One page that tells the story for each demonstration, in plain English:
+
+1. **It watches you once** — the demonstration video, with an *AI vision* toggle that shows
+   the tracker's box on every object, and the steps it understood highlighting as they happen.
+2. **The robot does it** — the simulated arm repeating the task, with the goals it reached.
+3. **We try to break it** — objects in new places, a bump mid-task, and the right result in
+   the wrong order; each with its video, its verdict, and the measured rate over 25 trials.
 
 ```bash
-python -m uvicorn web.server:app --port 8000     # then open http://localhost:8000
+python -m web.build_media                         # build videos + results from the pipeline
+python -m uvicorn web.server:app --port 8000      # then open http://localhost:8000
 ```
 
-Three demonstrations are bundled (stack, sort, and the real-footage clip). The simulation
-runs server-side on request; renders are cached per task and mode.
+`build_media` runs the real pipeline outputs through the simulator and the evaluation
+harness and writes `web/static/media/` (videos + `manifest.json`); the server only serves
+those files, so the page can also be hosted statically.
 
 ## Day-1 probes
 
