@@ -112,3 +112,21 @@ def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = 
             warnings=warnings,
         ),
     )
+
+
+def add_evidence(graph: TaskGraph, clip: Path) -> TaskGraph:
+    """Attach SAM tracks to a graph that was built without tracking (e.g. `track=False`),
+    so the same extraction can later be shown with its evidence."""
+    info = video_info(clip)
+    concepts = {o.id: o.concept() for o in graph.objects}
+    tracks, seconds = track_objects(clip, sorted(set(concepts.values())), info.fps)
+    objects = [
+        ObjectWithEvidence(id=o.id, color=o.color, shape=o.shape,
+                           tracked=tracks.get(concepts[o.id]) is not None,
+                           track=tracks.get(concepts[o.id]))
+        for o in graph.objects
+    ]
+    return graph.model_copy(update={
+        "objects": objects,
+        "meta": graph.meta.model_copy(update={"track_seconds": seconds}),
+    })

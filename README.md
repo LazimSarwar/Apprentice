@@ -1,10 +1,13 @@
 # OneShot
 
-Show a robot a tabletop task once, on an ordinary phone video. OneShot turns the video into an evidence-linked
-task graph, runs it on a simulated arm, keeps working when the objects are shuffled, notices when something goes
-wrong, and checks *how* the task was done, not just the final picture.
+**Show it once. Check every attempt.** Record a procedure done right — once. OneShot learns the ordered steps
+from that single video, then watches anyone else do it and reports exactly what went wrong — a skipped step, the
+wrong order, the wrong place — and the moment it happened, backed by tracked visual evidence.
 
-> Status: day 1 of the build. This README is updated as each piece lands.
+For training new staff, lab protocols, kitting and packing QA, assembly checks. The same learned procedure is
+precise enough to hand to a (simulated) robot arm, which carries it out and checks its own work.
+
+> Status: in active development during the event. This README is updated as each piece lands.
 
 ## What was built during the event (Oct 26 – Nov 4, 2026)
 
@@ -22,6 +25,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 28 | **Real footage.** The same pipeline run on a genuine stock clip of a child stacking coloured cubes: every block tracked, the noisy extracted plan sanitised to its executable core (target-less steps and unestablished goals dropped, transparently), and the arm reaches the goal. Proof it handles real video, not only synthetic clips. |
 | Oct 28 | **P3 — open-weights path.** The task-graph extractor can run on **Muse Spark Open** (open weights) via Fireworks, selected with `--provider fireworks`: keyframes in, same JSON task graph out. Makes the open-weight route explicit for the bonus; SAM tracking stays on the hosted API. |
 | Oct 28 | **Web app (live product).** A FastAPI page — pick a demonstration, see the task graph it learned, and run it on the arm live: normally, out of order (procedure check), or with a mid-run shove. The simulation runs server-side and the rendered video + verdict come back in the page. |
+| Oct 28 | **Procedure checker.** `oneshot/check.py`: learn a procedure from one reference video, then check any attempt video for skipped steps, wrong order and wrong placements, each with a timestamp. Attempts are read guided by the reference's object names. 20/20 generated attempts judged correctly. The web page now leads with it. |
 
 ## Pre-existing and third-party material
 
@@ -50,24 +54,42 @@ pip install -r requirements.txt
 copy .env.example .env          # then fill in your keys
 ```
 
-## Web app
-
-One page that tells the story for each demonstration, in plain English:
-
-1. **It watches you once** — the demonstration video, with an *AI vision* toggle that shows
-   the tracker's box on every object, and the steps it understood highlighting as they happen.
-2. **The robot does it** — the simulated arm repeating the task, with the goals it reached.
-3. **We try to break it** — objects in new places, a bump mid-task, and the right result in
-   the wrong order; each with its video, its verdict, and the measured rate over 25 trials.
+## Check an attempt against a reference
 
 ```bash
-python -m web.build_media                         # build videos + results from the pipeline
+python -m oneshot.check REFERENCE.mp4 ATTEMPT.mp4 [ATTEMPT2.mp4 ...]     # videos or graph JSON files
+```
+
+The reference is read into ordered *milestones* — the result of each step ("the red block is in the left tray").
+Each attempt is read the same way, **guided to reuse the reference's object names**, so the two line up; every
+milestone is then located in time in the attempt. The report lists:
+
+- **skipped** — a milestone never happens (with when it was expected),
+- **wrong place** — the right object went somewhere else,
+- **wrong order** — two milestones happen out of order (the temporal monitor, run on the attempt's timeline),
+- **extra** — something the reference never did (a warning).
+
+Measured with `python probes/proc_eval.py` on 20 generated attempts with randomized positions and timing:
+**5/5 correct attempts pass (no false alarms), 5/5 wrong orders, 5/5 skipped steps and 5/5 wrong places caught**
+as the right kind. These are clean generated clips; real footage is harder and is being tested next.
+
+## Web app
+
+The main page tells the procedure-checker story: the **reference** video (with an *AI vision* toggle showing the
+tracker's box on every object, and the learned steps highlighting as they happen), then four **attempts** — one
+correct, three with a deliberate mistake — each with its verdict and problems; click a problem to jump to that
+moment in the video. Then the measured accuracy, and the robot carrying out the same learned procedure.
+A second page (`/static/robot.html`) shows the robot under stress: objects moved, a block knocked over, steps
+done out of order.
+
+```bash
+python -m web.build_check                         # checker demo: videos, evidence overlays, reports
+python -m web.build_media                         # robot stress-test page: videos + results
 python -m uvicorn web.server:app --port 8000      # then open http://localhost:8000
 ```
 
-`build_media` runs the real pipeline outputs through the simulator and the evaluation
-harness and writes `web/static/media/` (videos + `manifest.json`); the server only serves
-those files, so the page can also be hosted statically.
+Both build scripts only reformat what the pipeline produced (`web/static/media/`); the server just serves files,
+so the pages can also be hosted statically.
 
 ## Day-1 probes
 

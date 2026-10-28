@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OneShot — show a robot a task once</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --ink:#111827; --dim:#5b6475; --faint:#8a93a3;
+    --line:#e3e6eb; --accent:#2f6bff; --accent-soft:#eaf0ff;
+    --ok:#15803d; --ok-soft:#e9f7ee; --bad:#c2410c; --bad-soft:#fdf0e8; --na:#6b7280;
+    --radius:16px; --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 16px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);
+    font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* hero */
+  .hero{background:linear-gradient(180deg,#ffffff 0%,#f5f6f8 100%);border-bottom:1px solid var(--line)}
+  .hero .wrap{padding-top:36px;padding-bottom:26px}
+  .brand{font-weight:800;letter-spacing:-.3px;color:var(--accent);font-size:15px;text-transform:uppercase}
+  .hero h1{font-size:40px;line-height:1.12;letter-spacing:-1px;margin:10px 0 12px;font-weight:800;max-width:820px}
+  .lede{color:var(--dim);font-size:18px;max-width:760px;margin:0}
+  .tabs{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;
+    padding:9px 16px;border-radius:999px;cursor:pointer;font-size:14.5px}
+  .tab:hover{border-color:#c9cfd8}
+  .tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .source{color:var(--faint);font-size:14px;margin:12px 0 0}
+
+  /* steps */
+  section.step{padding:38px 0 6px}
+  .step-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+  .num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;
+    font-weight:700;display:grid;place-items:center;font-size:16px;margin-top:2px}
+  .step-head h2{margin:0;font-size:24px;letter-spacing:-.4px}
+  .step-head p{margin:2px 0 0;color:var(--dim)}
+  .two{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.two{grid-template-columns:1fr}.hero h1{font-size:30px}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px 22px}
+  .card h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);font-weight:700}
+  .card h3:not(:first-child){margin-top:20px}
+
+  .media{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .screen{aspect-ratio:16/9;background:#0e1116;display:flex;align-items:center;justify-content:center}
+  .screen video{width:100%;height:100%;object-fit:contain;display:block}
+  .media-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid var(--line)}
+  .toggle{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;font-size:14.5px;user-select:none}
+  .switch{width:40px;height:22px;border-radius:999px;background:#cfd5de;position:relative;transition:.2s}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px #0003}
+  .toggle input{display:none}
+  .toggle input:checked + .switch{background:var(--accent)}
+  .toggle input:checked + .switch::after{left:21px}
+  .hint{color:var(--faint);font-size:13px}
+
+  ol.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+  ol.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;margin:0 -12px;
+    border-radius:10px;cursor:pointer;transition:background .15s}
+  ol.steps li:hover{background:#f3f5f8}
+  ol.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:#eef1f5;color:var(--dim);
+    font-weight:700;font-size:13px;display:grid;place-items:center;margin-top:1px}
+  ol.steps li.active{background:var(--accent-soft)}
+  ol.steps li.active::before{background:var(--accent);color:#fff}
+  ol.steps .t{font-weight:600}
+  ol.steps .time{color:var(--faint);font-size:13px;font-weight:500;display:block}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:4px 11px 4px 8px;font-size:14px;font-weight:500}
+  .dot{width:12px;height:12px;border-radius:4px;border:1px solid #0002}
+  .chip.off{color:var(--faint)}
+  ul.goals{margin:0;padding:0;list-style:none}
+  ul.goals li{padding:3px 0;font-weight:500}
+  ul.goals li::before{content:"◎";color:var(--accent);margin-right:8px}
+  .notes{margin-top:16px;font-size:14px;color:var(--dim);background:#f7f8fa;border:1px dashed var(--line);border-radius:10px;padding:10px 12px}
+  .notes:empty{display:none}
+  .notes b{color:var(--ink)}
+
+  .verdict{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:12px;font-weight:700;font-size:18px;margin-bottom:14px}
+  .verdict .mark{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:16px;flex:none}
+  .v-ok{background:var(--ok-soft);color:var(--ok)} .v-ok .mark{background:var(--ok)}
+  .v-bad{background:var(--bad-soft);color:var(--bad)} .v-bad .mark{background:var(--bad)}
+  .v-na{background:#f1f2f4;color:var(--na)} .v-na .mark{background:var(--na)}
+  .check{display:flex;gap:10px;padding:5px 0;font-weight:500}
+  .check .i{flex:none;font-weight:800}
+  .yes{color:var(--ok)} .no{color:var(--bad)}
+  .small{color:var(--dim);font-size:14px;margin-top:10px}
+
+  /* tests */
+  .tests{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}
+  @media(max-width:900px){.tests{grid-template-columns:1fr}}
+  .test{text-align:left;font:inherit;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px 18px 16px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:6px}
+  .test:hover{border-color:#c4cbd6;transform:translateY(-1px)}
+  .test.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),var(--shadow)}
+  .test .icon{font-size:22px}
+  .test .title{font-weight:700;font-size:17px}
+  .test .q{color:var(--dim);font-size:14.5px;flex:1}
+  .rate{margin-top:8px;font-size:13.5px;color:var(--dim)}
+  .rate b{color:var(--ink);font-size:15px}
+  .bar{height:6px;background:#eef1f5;border-radius:999px;overflow:hidden;margin-top:6px}
+  .bar span{display:block;height:100%;background:var(--ok);border-radius:999px}
+
+  /* how */
+  .how{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:900px){.how{grid-template-columns:1fr 1fr}}
+  .how .card{padding:16px 18px}
+  .how .k{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.6px;text-transform:uppercase}
+  .how .h{font-weight:700;margin:4px 0 4px}
+  .how .d{color:var(--dim);font-size:14px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--dim)}
+  .stat b{color:var(--ink)}
+  footer{color:var(--faint);font-size:13.5px;padding:34px 0 50px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="wrap">
+    <div class="brand"><a href="/" style="color:inherit;text-decoration:none">OneShot</a> &middot; <span style="color:var(--dim);text-transform:none;font-weight:600">robot stress tests</span> &middot; <a href="/" style="text-transform:none;font-weight:600">&larr; back to the procedure checker</a></div>
+    <h1>Show a robot a task once.<br>It does it — and checks its own work.</h1>
+    <p class="lede">No programming. Film a simple tabletop task; OneShot works out the steps, a robot arm repeats them, and it proves it did them right — even when things get moved or knocked over.</p>
+    <div class="tabs" id="tabs"></div>
+    <p class="source" id="source"></p>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="step">
+    <div class="step-head"><div class="num">1</div><div>
+      <h2>It watches you once</h2>
+      <p>One demonstration video. Turn on AI vision to see every object it is tracking.</p></div></div>
+    <div class="two">
+      <div class="media">
+        <div class="screen"><video id="demo" muted loop playsinline autoplay></video></div>
+        <div class="media-bar">
+          <label class="toggle"><input type="checkbox" id="vision" checked><span class="switch"></span>AI vision</label>
+          <span class="hint">Click a step to jump to it</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>What it understood</h3>
+        <ol class="steps" id="steps"></ol>
+        <h3>Objects it found</h3>
+        <div class="chips" id="objects"></div>
+        <h3>The goal</h3>
+        <ul class="goals" id="goals"></ul>
+        <div class="notes" id="notes"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><div class="num">2</div><div>
+      <h2>The robot does it</h2>
+      <p>A simulated robot arm repeats the task from what it learned — nobody wrote instructions for it.</p></div></div>
+    <div class="two">
+      <div class="media"><div class="screen"><video id="robot" muted loop playsinline autoplay></video></div></div>
+      <div class="card" id="result"></div>
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><div class="num">3</div><div>
+      <h2>We try to break it</h2>
+      <p>Three things a real robot has to survive. Pick one to watch it happen.</p></div></div>
+    <div class="tests" id="tests"></div>
+    <div class="two">
+      <div class="media"><div class="screen"><video id="testvid" muted loop playsinline autoplay></video></div></div>
+      <div class="card" id="testresult"></div>
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><div class="num">⚙</div><div>
+      <h2>How it works</h2>
+      <p>Each stage is a separate, checkable piece — the robot never acts on something the tracker didn't see.</p></div></div>
+    <div class="how">
+      <div class="card"><div class="k">Watch</div><div class="h">Video in</div><div class="d">Any short clip of a task on a table — a phone video works.</div></div>
+      <div class="card"><div class="k">Understand</div><div class="h">Steps from video</div><div class="d"><b>Muse Spark</b> reads the ordered steps and the goal. Also runs on the open-weight <b>Muse Spark Open</b>.</div></div>
+      <div class="card"><div class="k">Evidence</div><div class="h">Every object tracked</div><div class="d"><b>SAM 3.1</b> follows each object frame by frame, so every step is backed by what was actually seen.</div></div>
+      <div class="card"><div class="k">Act &amp; check</div><div class="h">Robot + self-checks</div><div class="d">A simulated arm runs the plan, repairs what gets knocked over, and verifies the order — not just the end picture.</div></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <footer>
+    Simulation only: a MuJoCo Franka Panda (Menagerie model). Grasping is simplified and nothing here has run on a physical robot.
+    Real-footage clip by cottonbro studio on Pexels. Rates come from seeded, reproducible trials and include every failure.
+  </footer>
+</div>
+
+<script>
+const BASE='/static/';
+const COLORS={red:'#d93333',blue:'#3359d9',green:'#33b24d',yellow:'#e6cc33',purple:'#8033a0',orange:'#e68326',
+  brown:'#80592e',beige:'#d1b885',pink:'#e680a6',maroon:'#801f33',gray:'#9aa0a6',grey:'#9aa0a6'};
+const TESTS=[
+  {key:'shuffle',metric:'shuffle',icon:'🔀',title:'Objects in new places',
+   q:'We scatter the objects into a new random layout. Does it still do the task?',rate:'random layouts'},
+  {key:'nudge',metric:'recovery',icon:'✋',title:'Someone bumps it',
+   q:'After it finishes, we knock a block away. Does it notice and fix it?',rate:'bumps recovered'},
+  {key:'order',metric:'detection',icon:'🔢',title:'Right result, wrong order',
+   q:'We run the steps in the wrong order. The end looks the same — can it tell?',rate:'wrong orders caught'},
+];
+let M={}, cur=null, curTest='shuffle';
+const $=id=>document.getElementById(id);
+const fmt=s=>{s=Math.max(0,s);return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`};
+
+function setVideo(el,src,keepTime){
+  const t=keepTime?el.currentTime:0;
+  el.src=BASE+src;
+  el.addEventListener('loadedmetadata',()=>{if(keepTime)el.currentTime=Math.min(t,el.duration||t);el.play().catch(()=>{});},{once:true});
+}
+
+async function init(){
+  M=await (await fetch(BASE+'media/manifest.json')).json();
+  $('tabs').innerHTML=Object.values(M).map(t=>`<button class="tab" data-id="${t.id}">${t.title}</button>`).join('');
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>select(b.dataset.id));
+  $('vision').onchange=()=>setVideo($('demo'),$('vision').checked?M[cur].seen:M[cur].demo,true);
+  $('demo').ontimeupdate=highlight;
+  select(Object.keys(M)[0]);
+}
+
+function select(id){
+  cur=id; const t=M[id];
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  $('source').textContent=t.source;
+  setVideo($('demo'),$('vision').checked?t.seen:t.demo,false);
+  $('steps').innerHTML=t.steps.map((s,i)=>
+    `<li data-i="${i}"><div><span class="t">${s.text}</span><span class="time">${fmt(s.start)} – ${fmt(s.end)}</span></div></li>`).join('');
+  document.querySelectorAll('#steps li').forEach(li=>li.onclick=()=>{
+    const v=$('demo'); v.currentTime=t.steps[+li.dataset.i].start; v.play().catch(()=>{});});
+  $('objects').innerHTML=t.objects.map(o=>
+    `<span class="chip ${o.tracked?'':'off'}"><span class="dot" style="background:${COLORS[(o.color||'').toLowerCase()]||'#999'}"></span>${o.name}${o.tracked?'':' · not tracked'}</span>`).join('');
+  $('goals').innerHTML=t.goals.map(g=>`<li>${g}</li>`).join('');
+  $('notes').innerHTML=t.notes.length?`<b>Honest note:</b> ${t.notes.join(' ')}`:'';
+  renderRobot(t);
+  renderTests(t);
+}
+
+function highlight(){
+  const t=M[cur], now=$('demo').currentTime;
+  document.querySelectorAll('#steps li').forEach(li=>{
+    const s=t.steps[+li.dataset.i]; li.classList.toggle('active',now>=s.start&&now<=s.end);});
+}
+
+function verdict(kind,text){
+  const mark={ok:'✓',bad:'✕',na:'–'}[kind];
+  return `<div class="verdict v-${kind}"><span class="mark">${mark}</span>${text}</div>`;
+}
+function goalList(goals){
+  return goals.map(g=>`<div class="check"><span class="i ${g.ok?'yes':'no'}">${g.ok?'✓':'✕'}</span>${g.text}</div>`).join('');
+}
+
+function renderRobot(t){
+  const r=t.runs.normal;
+  setVideo($('robot'),r.video,false);
+  const n=r.goals.filter(g=>g.ok).length;
+  $('result').innerHTML=(r.success?verdict('ok','Task complete'):verdict('bad',r.completed?'Finished, but the goal isn’t met':'Couldn’t finish'))
+    +`<h3>Goals reached · ${n} of ${r.goals.length}</h3>`+goalList(r.goals)
+    +(t.notes.length?`<div class="small">It skipped what the video didn’t make clear — see the note in step 1.</div>`:'')
+    +`<div class="small">Plan read by <b>${t.model}</b> (${t.provider==='fireworks'?'open weights':'hosted'}).</div>`;
+}
+
+function renderTests(t){
+  $('tests').innerHTML=TESTS.map(x=>{
+    const run=t.runs[x.key], m=t.eval[x.metric];
+    const na=run&&run.na;
+    const rate=na?`<div class="rate">Not applicable here</div>`:
+      `<div class="rate"><b>${m[0]} of ${m[1]}</b> ${x.rate}</div><div class="bar"><span style="width:${100*m[0]/m[1]}%"></span></div>`;
+    return `<button class="test" data-k="${x.key}"><span class="icon">${x.icon}</span><span class="title">${x.title}</span><span class="q">${x.q}</span>${rate}</button>`;
+  }).join('');
+  document.querySelectorAll('.test').forEach(b=>b.onclick=()=>showTest(b.dataset.k));
+  showTest(curTest);
+}
+
+function showTest(key){
+  curTest=key; const t=M[cur], r=t.runs[key];
+  document.querySelectorAll('.test').forEach(b=>b.classList.toggle('active',b.dataset.k===key));
+  const v=$('testvid');
+  if(r.na){ v.removeAttribute('src'); v.load(); $('testresult').innerHTML=verdict('na','Not applicable')+`<div class="small">${r.na}</div>`; return; }
+  setVideo(v,r.video,false);
+  let h='';
+  if(key==='shuffle'){
+    h=r.success?verdict('ok','Still did it from a new layout'):verdict('bad','Couldn’t finish from this layout');
+    h+=`<div class="small">Every object started somewhere new. The plan is about <i>which</i> object goes <i>where</i>, not fixed positions.</div><h3>Goals</h3>`+goalList(r.goals);
+  } else if(key==='nudge'){
+    const fixed=r.fixed;
+    h=!r.success?verdict('bad','It couldn’t recover this time')
+      :fixed?verdict('ok',`Noticed and fixed ${fixed===1?'the broken goal':fixed+' broken goals'}`)
+      :verdict('ok','The bump didn’t break anything');
+    h+=`<div class="small">We knocked the <b>${r.bumped}</b> away after the robot finished. It re-checks every goal and redoes only the steps that broke.</div><h3>Goals after recovery</h3>`+goalList(r.goals);
+  } else {
+    const n=r.goals.filter(g=>g.ok).length;
+    h=!r.procedure_ok?verdict('ok','Caught the wrong order'):verdict('bad','Didn’t notice the order');
+    if(r.violations.length) h+=`<div class="small">${r.violations.map(s=>s.charAt(0).toUpperCase()+s.slice(1)+'.').join(' ')}</div>`;
+    h+=`<div class="small">The final scene still matched (${n} of ${r.goals.length} goals) — a check that only looks at the end picture would have passed this run.</div><h3>Final scene</h3>`+goalList(r.goals);
+  }
+  $('testresult').innerHTML=h;
+}
+
+function renderStats(){
+  const s=Object.values(M);
+  const sum=k=>s.reduce((a,t)=>[a[0]+t.eval[k][0],a[1]+t.eval[k][1]],[0,0]);
+  const ab=sum('abstention');
+  $('stats').innerHTML=`<span class="stat"><b>${ab[0]} of ${ab[1]}</b> unreachable targets: never claimed success it didn’t earn</span>`
+    +`<span class="stat"><b>${s.length}</b> demonstrations, one unchanged pipeline</span>`;
+}
+
+init().then(renderStats);
+</script>
+</body>
+</html>

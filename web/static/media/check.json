@@ -1,0 +1,238 @@
+{
+  "reference": {
+    "blurb": "Sort three blocks into three trays \u2014 red, then blue, then green.",
+    "demo": "media/proc_demo.mp4",
+    "seen": "media/proc_seen.mp4",
+    "model": "muse-spark-1.3",
+    "steps": [
+      {
+        "text": "Places the red block in the left gray tray",
+        "start": 0.0,
+        "end": 3.5
+      },
+      {
+        "text": "Places the blue block in the middle gray tray",
+        "start": 3.5,
+        "end": 7.5
+      },
+      {
+        "text": "Places the green block in the right gray tray",
+        "start": 7.5,
+        "end": 10.5
+      }
+    ],
+    "objects": [
+      {
+        "name": "red block",
+        "color": "red",
+        "tracked": true
+      },
+      {
+        "name": "blue block",
+        "color": "blue",
+        "tracked": true
+      },
+      {
+        "name": "green block",
+        "color": "green",
+        "tracked": true
+      },
+      {
+        "name": "left gray tray",
+        "color": "gray",
+        "tracked": false
+      },
+      {
+        "name": "middle gray tray",
+        "color": "gray",
+        "tracked": false
+      },
+      {
+        "name": "right gray tray",
+        "color": "gray",
+        "tracked": false
+      }
+    ]
+  },
+  "attempts": [
+    {
+      "id": "proc_ok",
+      "title": "Done correctly",
+      "what": "Same procedure, but the blocks started in different places and moved at a different pace.",
+      "demo": "media/proc_ok_demo.mp4",
+      "seen": "media/proc_ok_seen.mp4",
+      "passed": true,
+      "milestones": [
+        {
+          "text": "Places the red block in the left gray tray",
+          "done": true,
+          "time": 3.0,
+          "ref_time": 3.5
+        },
+        {
+          "text": "Places the blue block in the middle gray tray",
+          "done": true,
+          "time": 6.0,
+          "ref_time": 7.5
+        },
+        {
+          "text": "Places the green block in the right gray tray",
+          "done": true,
+          "time": 10.0,
+          "ref_time": 10.5
+        }
+      ],
+      "issues": []
+    },
+    {
+      "id": "proc_swap",
+      "title": "Wrong order",
+      "what": "We placed the blue block before the red one.",
+      "demo": "media/proc_swap_demo.mp4",
+      "seen": "media/proc_swap_seen.mp4",
+      "passed": false,
+      "milestones": [
+        {
+          "text": "Places the red block in the left gray tray",
+          "done": true,
+          "time": 7.2,
+          "ref_time": 3.5
+        },
+        {
+          "text": "Places the blue block in the middle gray tray",
+          "done": true,
+          "time": 3.2,
+          "ref_time": 7.5
+        },
+        {
+          "text": "Places the green block in the right gray tray",
+          "done": true,
+          "time": 10.5,
+          "ref_time": 10.5
+        }
+      ],
+      "issues": [
+        {
+          "kind": "Wrong order",
+          "severity": "fail",
+          "message": "Wrong order: \"Places the blue block in the middle gray tray\" happened before \"Places the red block in the left gray tray\"",
+          "time": 3.2
+        }
+      ]
+    },
+    {
+      "id": "proc_skip",
+      "title": "Skipped a step",
+      "what": "We never placed the green block.",
+      "demo": "media/proc_skip_demo.mp4",
+      "seen": "media/proc_skip_seen.mp4",
+      "passed": false,
+      "milestones": [
+        {
+          "text": "Places the red block in the left gray tray",
+          "done": true,
+          "time": 3.2,
+          "ref_time": 3.5
+        },
+        {
+          "text": "Places the blue block in the middle gray tray",
+          "done": true,
+          "time": 7.0,
+          "ref_time": 7.5
+        },
+        {
+          "text": "Places the green block in the right gray tray",
+          "done": false,
+          "time": null,
+          "ref_time": 10.5
+        }
+      ],
+      "issues": [
+        {
+          "kind": "Skipped step",
+          "severity": "fail",
+          "message": "Skipped: Places the green block in the right gray tray (expected after 0:07)",
+          "time": 7.0
+        }
+      ]
+    },
+    {
+      "id": "proc_wrongbin",
+      "title": "Wrong place",
+      "what": "The red and blue blocks went into each other's trays.",
+      "demo": "media/proc_wrongbin_demo.mp4",
+      "seen": "media/proc_wrongbin_seen.mp4",
+      "passed": false,
+      "milestones": [
+        {
+          "text": "Places the red block in the left gray tray",
+          "done": false,
+          "time": null,
+          "ref_time": 3.5
+        },
+        {
+          "text": "Places the blue block in the middle gray tray",
+          "done": false,
+          "time": null,
+          "ref_time": 7.5
+        },
+        {
+          "text": "Places the green block in the right gray tray",
+          "done": true,
+          "time": 10.2,
+          "ref_time": 10.5
+        }
+      ],
+      "issues": [
+        {
+          "kind": "Wrong place",
+          "severity": "fail",
+          "message": "Put the red block in the middle gray tray instead of in the left gray tray",
+          "time": 3.5
+        },
+        {
+          "kind": "Wrong place",
+          "severity": "fail",
+          "message": "Put the blue block in the left gray tray instead of in the middle gray tray",
+          "time": 7.0
+        }
+      ]
+    }
+  ],
+  "robot": {
+    "video": "media/proc_robot.mp4",
+    "success": true,
+    "goals": [
+      {
+        "text": "The red block is in the left gray tray",
+        "ok": true
+      },
+      {
+        "text": "The blue block is in the middle gray tray",
+        "ok": true
+      },
+      {
+        "text": "The green block is in the right gray tray",
+        "ok": true
+      }
+    ]
+  },
+  "accuracy": {
+    "ok": [
+      5,
+      5
+    ],
+    "swap": [
+      5,
+      5
+    ],
+    "skip": [
+      5,
+      5
+    ],
+    "wrongbin": [
+      5,
+      5
+    ]
+  }
+}

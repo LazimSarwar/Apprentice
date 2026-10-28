@@ -93,8 +93,10 @@ def _default_layout(blocks: list[Object], trays: list[Object]) -> dict[str, tupl
     for i, b in enumerate(blocks):
         y = 0.0 if n == 1 else -0.2 + 0.4 * i / (n - 1)
         places[b.id] = (0.42, round(y, 3))
+    m = len(trays)
+    half = 0.15 if m <= 2 else 0.11 * (m - 1)       # keep 0.2 m tray regions from overlapping
     for j, t in enumerate(trays):
-        y = 0.0 if len(trays) == 1 else -0.15 + 0.3 * j / (len(trays) - 1)
+        y = 0.0 if m == 1 else -half + 2 * half * j / (m - 1)
         places[t.id] = (0.62, round(y, 3))
     return places
 
