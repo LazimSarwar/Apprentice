@@ -198,6 +198,23 @@ attempts correctly — the same score as the hosted model on the same clips:
 python probes/pack_eval.py --provider baseten    # graphs cached as runs/pack_eval/<stem>.baseten.graph.json
 ```
 
+## Deploy (live product)
+
+The page runs as one CPU container with `ffmpeg`; jobs and live sessions are in memory, so keep it to a single
+instance. Every model call the public page triggers is charged to a spend ledger (`web/budget.py`): once
+`SPEND_CAP_USD` (default 15) is reached, new checks are refused with a clear message while the precomputed sample
+verdicts keep working. `MAX_UPLOAD_SECONDS` (default 120) bounds each upload; checks queue one at a time, at most
+three waiting; near-live sessions are capped at two at once and 60 reads each. `GET /api/health` reports the spend.
+
+```bash
+pip install modal && modal setup                        # once: sign in
+modal secret create oneshot-keys --from-dotenv .env     # once: the model keys (never commit .env)
+modal deploy deploy/modal_app.py                        # prints the public URL
+```
+
+`Dockerfile` builds the same app for any other container host (`docker build -t oneshot . && docker run -p 8000:8000
+--env-file .env oneshot`).
+
 ## Run on the simulated arm (P1)
 
 ```bash

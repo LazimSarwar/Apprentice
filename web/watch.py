@@ -29,7 +29,7 @@ from oneshot.media import cut, video_info
 from oneshot.procedure import Procedure
 from oneshot.schema import TaskGraph
 from oneshot.watch import Watch
-from web import live
+from web import budget, live
 from web.views import procedure_view, report_view
 
 WORK = live.WORK.parent / "watch"
@@ -91,6 +91,7 @@ def _reference(job: str | None) -> tuple[TaskGraph, Procedure, bool]:
 
 def start(mode: str, demo: str | None = None, upload: Path | None = None,
           reference_job: str | None = None) -> dict:
+    budget.ensure()
     with _lock:
         active = sum(s.status in ("watching", "finishing") and time.monotonic() - s.touched < IDLE
                      for s in _sessions.values())
@@ -189,6 +190,7 @@ def _read(s: Session, seq: int, src: Path, upto: float | None) -> None:
         seconds = upto if upto is not None else video_info(clip).duration_s
         t1 = time.perf_counter()
         att = build_task_graph(clip, work_dir=WORK, known_objects=s.known, track=False, effort=READ_EFFORT)
+        budget.charge(att.meta.extract_cost_usd, "live read")
         with s.lock:
             s.cost += att.meta.extract_cost_usd or 0.0
             s.read_seconds.append(round(time.perf_counter() - t, 1))
@@ -221,6 +223,7 @@ def _finish(s: Session) -> None:
     try:
         clip = cut(s.src, None, WORK / f"{s.id}_whole.mp4")
         att = build_task_graph(clip, work_dir=WORK, known_objects=s.known, track=False)
+        budget.charge(att.meta.extract_cost_usd, "live final check")
         report = s.watch.finish(att)
         video = s.video or live._web_video(clip, f"{s.id}_attempt.mp4")
         with live._lock:                          # lets the page re-check it with changed rules

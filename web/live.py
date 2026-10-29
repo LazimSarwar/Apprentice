@@ -14,6 +14,7 @@ one at a time.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import threading
 import traceback
@@ -30,6 +31,7 @@ from oneshot.media import video_info
 from oneshot.narration import listen, narrate, spoken_text
 from oneshot.procedure import Procedure, learn, milestones
 from oneshot.schema import TaskGraph
+from web import budget
 from web.build_media import overlay_frames, write_mp4
 from web.views import add_audio, procedure_view, report_view
 
@@ -41,7 +43,8 @@ UPLOADS = WEB / "static" / "uploads"            # web-encoded videos the page pl
 WORK = WEB.parent / "runs" / "uploads"          # raw uploads and intermediate clips
 ALLOWED = {".mp4", ".mov", ".webm", ".mkv", ".m4v", ".avi"}
 MAX_BYTES = 80 * 1024 * 1024
-MAX_SECONDS = 120
+MAX_SECONDS = int(os.environ.get("MAX_UPLOAD_SECONDS", "120"))
+MAX_WAITING = 3             # jobs queued or running; beyond that, ask people to come back
 
 _jobs: dict[str, dict] = {}
 _graphs: dict[str, tuple[TaskGraph, TaskGraph, Procedure]] = {}    # job -> (reference, attempt, procedure)
@@ -76,6 +79,15 @@ def new_job_id() -> str:
     return uuid.uuid4().hex[:12]
 
 
+def ensure_capacity() -> None:
+    """Before taking an upload: the spend cap, and a short queue (checks run one at a time)."""
+    budget.ensure()
+    with _lock:
+        waiting = sum(j["status"] in ("queued", "running") for j in _jobs.values())
+    if waiting >= MAX_WAITING:
+        raise UploadError("A few checks are already waiting — try again in a minute.")
+
+
 def submit(job_id: str, attempt: Path, reference: Path | None, reference2: Path | None = None) -> None:
     with _lock:
         _jobs[job_id] = {"id": job_id, "status": "queued", "stage": "Waiting for another check to finish",
@@ -106,10 +118,11 @@ def _web_video(clip: Path, name: str, audio_from: Path | None = None) -> str:
     return f"uploads/{name}"
 
 
-def _check_length(path: Path, what: str) -> None:
+def _check_length(path: Path, what: str) -> float:
     seconds = video_info(path).duration_s
     if seconds > MAX_SECONDS:
         raise UploadError(f"The {what} is {seconds:.0f} s long; please keep it under {MAX_SECONDS} s.")
+    return seconds
 
 
 def builtin() -> tuple[TaskGraph, Procedure]:
@@ -119,17 +132,20 @@ def builtin() -> tuple[TaskGraph, Procedure]:
 
 
 def _learn_own(job_id: str, reference: Path, reference2: Path | None) -> tuple[TaskGraph, Procedure]:
-    _check_length(reference, "reference")
+    seconds = _check_length(reference, "reference")
     _set(job_id, stage="Listening to your reference")
     turns = listen(reference, WORK / "audio")
+    budget.charge(seconds / 3600 * budget.TRANSCRIBE_USD_PER_HOUR, "transcribe reference")
     _set(job_id, stage="Reading the steps in your reference")
     ref = build_task_graph(reference, work_dir=WORK, track=False, spoken=spoken_text(turns))
+    budget.charge(ref.meta.extract_cost_usd, "read reference")
     refs = [ref]
     if reference2 is not None:
         _check_length(reference2, "second reference")
         _set(job_id, stage="Reading your second reference")
         known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in ref.objects]
         refs.append(build_task_graph(reference2, work_dir=WORK, known_objects=known, track=False))
+        budget.charge(refs[-1].meta.extract_cost_usd, "read second reference")
     _set(job_id, stage="Learning which steps and orders matter")
     narration = narrate(turns, [(m.text, m.start, m.ref_time) for m in milestones(ref)])
     proc = learn(refs, narration)
@@ -148,6 +164,7 @@ def _run(job_id: str, attempt: Path, reference: Path | None, reference2: Path | 
         _set(job_id, stage="Reading the steps in your attempt")
         known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in ref.objects]
         att = build_task_graph(attempt, work_dir=WORK, known_objects=known, track=False)
+        budget.charge(att.meta.extract_cost_usd, "read attempt")
         att_clip = WORK / "clips" / f"{attempt.stem}.720p.mp4"
         demo = _web_video(att_clip, f"{job_id}_attempt.mp4")
 
@@ -167,6 +184,7 @@ def _run(job_id: str, attempt: Path, reference: Path | None, reference2: Path | 
 
     try:                                   # evidence is a bonus: a failure here keeps the verdict
         tracked = add_evidence(att, att_clip)
+        budget.charge(budget.TRACK_EST_USD, "track attempt (estimate)")
         with _lock:
             _graphs[job_id] = (ref, tracked, proc)
         report = compare(ref, tracked, procedure=proc)

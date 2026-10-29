@@ -1,0 +1,11 @@
+.venv/
+.git/
+.env
+__pycache__/
+*.pyc
+runs/
+clips/
+samples/
+probes/
+web/static/uploads/
+web/static/renders/

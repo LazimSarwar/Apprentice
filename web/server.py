@@ -16,7 +16,7 @@ from fastapi import Body, FastAPI, File, Form, HTTPException, Request, UploadFil
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from web import live, watch
+from web import budget, live, watch
 
 STATIC = Path(__file__).resolve().parent / "static"
 (STATIC / "uploads").mkdir(parents=True, exist_ok=True)
@@ -30,10 +30,20 @@ def index() -> FileResponse:
     return FileResponse(STATIC / "index.html")
 
 
+@app.get("/api/health")
+def health() -> dict:
+    """For the deployment check: is the server up, and how much of the spend cap is used."""
+    return {"ok": True, **budget.status()}
+
+
 @app.post("/api/check")
 def check(attempt: UploadFile = File(...), reference: UploadFile | None = File(None),
           reference2: UploadFile | None = File(None)) -> dict:
     """Start a live check. Returns a job id to poll at /api/jobs/{id}."""
+    try:
+        live.ensure_capacity()
+    except (budget.BudgetError, live.UploadError) as exc:
+        raise HTTPException(429, str(exc)) from exc
     job_id = live.new_job_id()
     try:
         att_path = live.save_upload(attempt.file, attempt.filename, job_id, "attempt")
@@ -64,6 +74,8 @@ def watch_start(mode: str = Form("replay"), demo: str | None = Form(None), refer
         if mode == "replay" and demo is None and attempt is not None and attempt.filename:
             upload = live.save_upload(attempt.file, attempt.filename, live.new_job_id(), "watch")
         return watch.start(mode, demo=demo, upload=upload, reference_job=reference_job)
+    except budget.BudgetError as exc:
+        raise HTTPException(429, str(exc)) from exc
     except live.UploadError as exc:
         raise HTTPException(400, str(exc)) from exc
     except KeyError as exc:
