@@ -21,13 +21,14 @@ from dataclasses import asdict, dataclass, field
 
 from .narration import Narration
 from .schema import TaskGraph
-from .sim.executor import sanitize_plan
 from .sim.scene import _is_container
-from .words import goal_past, nice, step_text
+from .words import SURFACE, goal_past, nice, step_text
 
 Key = tuple[str, str, str]                     # (relation, object, target)
 
 STRENGTHS = ("required", "free", "as_shown")
+_NEEDS_TARGET = ("place", "stack", "push")
+_SURFACE_WORDS = ("table", "desk", "surface", "mat", "floor", "counter", "bench", "worktop", "tabletop")
 
 
 @dataclass
@@ -147,12 +148,62 @@ def relation_of(step, graph: TaskGraph) -> str | None:
     return rel or ("inside" if container else "near")
 
 
+def _is_surface(obj) -> bool:
+    text = f"{obj.id} {obj.shape or ''}".lower()
+    return any(word in text for word in _SURFACE_WORDS) and not _is_container(obj)
+
+
+def canonical_steps(graph: TaskGraph) -> list:
+    """The graph's steps with one canonical target each. Video models name the work surface
+    inconsistently — "on the brown table" in one read, no target at all in the next — so both
+    become a put-down on `SURFACE`. A target-less step first takes its target from a final
+    relation about the same object (the model saw where it ended up, it just didn't say so in
+    the step); a put-down only counts when the object isn't placed somewhere else afterwards.
+    Steps that still have no target (a pick, a push to nowhere) are left as they are and the
+    callers skip them."""
+    surfaces = {o.id for o in graph.objects if _is_surface(o)}
+    steps = sorted(graph.steps, key=lambda s: s.order)
+    out = []
+    for i, s in enumerate(steps):
+        target, rel = s.target, s.relation
+        if target in surfaces:
+            target, rel = SURFACE, "on"
+        elif not target and s.action in _NEEDS_TARGET:
+            later = any(t.object == s.object and t.target and t.target not in surfaces for t in steps[i + 1:])
+            final = next((r for r in graph.final_relations if r.a == s.object and r.b not in surfaces), None)
+            if later:
+                continue
+            if final is not None:
+                target, rel = final.b, rel or final.relation
+            elif s.action != "push" and rel in (None, "on"):
+                target, rel = SURFACE, "on"
+            else:
+                continue
+        out.append(s.model_copy(update={"target": target, "relation": rel}))
+    return out
+
+
+def final_keys(graph: TaskGraph, mapping: dict[str, str]) -> set[Key]:
+    """The graph's final relations as milestone keys in reference ids, canonical like the steps."""
+    objs = {o.id: o for o in graph.objects}
+    to_ref = lambda x: mapping.get(x, x)
+    out: set[Key] = set()
+    for r in graph.final_relations:
+        b = objs.get(r.b)
+        if b is not None and _is_surface(b):
+            out.add(("on", to_ref(r.a), SURFACE))
+        elif r.relation in ("on", "inside"):
+            out.add(("inside" if b is not None and _is_container(b) else "on", to_ref(r.a), to_ref(r.b)))
+        else:
+            out.add((r.relation, to_ref(r.a), to_ref(r.b)))
+    return out
+
+
 def milestones(ref: TaskGraph) -> list[Milestone]:
-    """Ordered, de-duplicated results of the reference's (sanitised) steps."""
-    steps, _, _ = sanitize_plan(ref)
+    """Ordered, de-duplicated results of the reference's (canonical) steps."""
     out: list[Milestone] = []
     seen: set[Key] = set()
-    for s in sorted(steps, key=lambda s: s.order):
+    for s in canonical_steps(ref):
         if not s.target:
             continue
         key = (relation_of(s, ref), s.object, s.target)
@@ -176,7 +227,7 @@ def _mods(obj_id: str) -> set[str]:
 def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
     """attempt id -> reference id. Exact id first (guided extraction makes this the norm),
     then same colour and kind, using left/right/top-style modifiers to break ties."""
-    ref_ids = {o.id for o in ref.objects}
+    ref_ids = {o.id for o in ref.objects if not _is_surface(o)}
     mapping: dict[str, str] = {}
     used: set[str] = set()
     for a in att.objects:
@@ -184,9 +235,9 @@ def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
             mapping[a.id] = a.id
             used.add(a.id)
     for a in att.objects:
-        if a.id in mapping:
+        if a.id in mapping or _is_surface(a):           # the surface is canonical, never matched by colour
             continue
-        cands = [r for r in ref.objects if r.id not in used
+        cands = [r for r in ref.objects if r.id in ref_ids and r.id not in used
                  and _color(r) == _color(a) and _is_container(r) == _is_container(a)]
         if len(cands) > 1:
             cands.sort(key=lambda r: -len(_mods(r.id) & _mods(a.id)))
@@ -200,7 +251,7 @@ def events(graph: TaskGraph, mapping: dict[str, str]) -> list[tuple[float, Key, 
     """(time, milestone key in reference ids, step) for every placing step, in time order."""
     to_ref = lambda x: mapping.get(x, x)
     out = []
-    for s in sorted(graph.steps, key=lambda s: (s.end_s, s.order)):
+    for s in sorted(canonical_steps(graph), key=lambda s: (s.end_s, s.order)):
         if s.target:
             out.append((s.end_s, (relation_of(s, graph), to_ref(s.object), to_ref(s.target)), s))
     return out

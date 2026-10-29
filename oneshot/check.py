@@ -28,8 +28,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from .narration import Narration, Turn, listen, narrate, spoken_text
-from .procedure import (Key, Milestone, Procedure, Rule, events, learn, map_objects,  # noqa: F401
-                        milestones, pair_id)
+from .procedure import (Key, Milestone, Procedure, Rule, events, final_keys, learn,  # noqa: F401
+                        map_objects, milestones, pair_id)
 from .schema import TaskGraph
 from .sim import monitor
 from .words import clock, imperative, into, nice, where
@@ -192,7 +192,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     for t, k, s in evs:
         if k not in first:
             first[k], step_of[k] = t, s
-    finals = {(r.relation, mapping.get(r.a, r.a), mapping.get(r.b, r.b)) for r in att.final_relations}
+    finals = final_keys(att, mapping)
     tracked = any(o.track for o in att.objects)
     objs = {o.id: o for o in att.objects}
 

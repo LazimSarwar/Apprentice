@@ -4,6 +4,7 @@ from __future__ import annotations
 
 _MODIFIERS = ("left", "right", "top", "middle", "bottom", "extra", "front", "back", "center")
 _IN = {"inside": "in", "on": "on", "near": "next to"}
+SURFACE = "surface"        # the work surface, whatever the video model calls it (see procedure.canonical_steps)
 
 
 def nice(obj_id: str | None) -> str:
@@ -23,6 +24,8 @@ def where(relation: str | None, target: str | None) -> str:
 
 def step_text(s) -> str:
     o, t, rel = nice(s.object), nice(s.target) if s.target else None, s.relation
+    if s.action in ("place", "stack") and s.target == SURFACE:
+        return f"Puts down the {o}"
     if s.action == "push":
         return f"Slides the {o} {'into' if rel == 'inside' else 'onto' if rel == 'on' else 'over to'} the {t}"
     if s.action == "stack":
