@@ -37,11 +37,11 @@ data = modal.Volume.from_name("oneshot-data", create_if_missing=True)
     memory=2048,
     timeout=900,
     max_containers=1,
-    min_containers=1,                 # no cold start for a judge opening the page
-    scaledown_window=900,
-    # Warm 24/7 this is ~$0.06/h (Modal list prices: $0.0000131/core/s + $0.00000222/GiB/s), ~$1.5/day,
-    # inside the Starter plan's $30/month free credit for the whole judging window. Set
-    # min_containers=0 to pay only while someone is using the page.
+    min_containers=0,                 # pay only while someone is using the page (a few seconds' cold start)
+    scaledown_window=600,
+    # Running, this is ~$0.06/h (Modal list prices: $0.0000131/core/s + $0.00000222/GiB/s): a judge's visit
+    # plus the 10-minute scaledown costs about a cent. With credit to spare, min_containers=1 keeps it warm
+    # (~$1.5/day) so nobody ever waits for a cold start.
 )
 @modal.concurrent(max_inputs=40)
 @modal.asgi_app()
