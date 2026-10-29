@@ -33,12 +33,15 @@ data = modal.Volume.from_name("oneshot-data", create_if_missing=True)
     image=image,
     secrets=[modal.Secret.from_name("oneshot-keys")],
     volumes={"/data": data},
-    cpu=2.0,
+    cpu=1.0,                          # one physical core (2 vCPU): the work is API calls and ffmpeg
     memory=2048,
     timeout=900,
     max_containers=1,
     min_containers=1,                 # no cold start for a judge opening the page
     scaledown_window=900,
+    # Warm 24/7 this is ~$0.06/h (Modal list prices: $0.0000131/core/s + $0.00000222/GiB/s), ~$1.5/day,
+    # inside the Starter plan's $30/month free credit for the whole judging window. Set
+    # min_containers=0 to pay only while someone is using the page.
 )
 @modal.concurrent(max_inputs=40)
 @modal.asgi_app()
