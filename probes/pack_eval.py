@@ -13,8 +13,9 @@ outcome per kind (written before running):
   wrong_place  fail, wrong place
   hidden       no failure claimed   (a hand covers the box: "can't verify", never skipped/wrong place)
 
-Usage:  python probes/pack_eval.py [--per-kind 3] [--seed 100]
+Usage:  python probes/pack_eval.py [--per-kind 3] [--seed 100] [--provider baseten]
         needs runs/pack_ref.graph.json + runs/pack.procedure.json (from `python -m oneshot.check`)
+        Other providers read the same clips; their graphs are cached as <stem>.<provider>.graph.json.
 """
 
 from __future__ import annotations
@@ -52,7 +53,9 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--per-kind", type=int, default=3)
     p.add_argument("--seed", type=int, default=100)
+    p.add_argument("--provider", choices=["hosted", "fireworks", "baseten"], default="hosted")
     args = p.parse_args()
+    tag = "" if args.provider == "hosted" else f".{args.provider}"
     sys.stdout.reconfigure(encoding="utf-8")
 
     runs = ROOT / "runs"
@@ -64,13 +67,16 @@ def main() -> None:
     for k_i, kind in enumerate(KINDS):
         for n in range(args.per_kind):
             stem = f"packeval_{kind}_{n}"
-            cache = out_dir / f"{stem}.graph.json"
+            cache = out_dir / f"{stem}{tag}.graph.json"
             start = time.perf_counter()
             if cache.exists():
                 att = TaskGraph.model_validate_json(cache.read_text(encoding="utf-8"))
             else:
-                clip = make(kind, out_dir / f"{stem}.mp4", seed=args.seed + 31 * k_i + n)
-                att = build_task_graph(clip, work_dir=out_dir, known_objects=known, track=(kind == "hidden"))
+                clip = out_dir / f"{stem}.mp4"
+                if not clip.exists():
+                    make(kind, clip, seed=args.seed + 31 * k_i + n)
+                att = build_task_graph(clip, work_dir=out_dir, provider=args.provider, known_objects=known,
+                                       track=(kind == "hidden"))
                 cache.write_text(att.model_dump_json(), encoding="utf-8")
             report = compare(ref, att, procedure=proc)
             ok = correct(kind, report)
@@ -86,7 +92,7 @@ def main() -> None:
         print(f"  {kind:11} {sum(r['correct'] for r in rs)}/{len(rs)}   expected: {EXPECT[kind]}")
     total = sum(r["correct"] for r in results)
     print(f"  total       {total}/{len(results)}   extract cost ${sum(r['cost'] or 0 for r in results):.3f}")
-    (runs / "pack_eval.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
+    (runs / f"pack_eval{tag}.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

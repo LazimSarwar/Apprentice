@@ -59,7 +59,7 @@ def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = 
     """Build the evidence-linked task graph for a demonstration video.
 
     `provider` selects the extractor: "hosted" (Muse Spark 1.3, native video) or
-    "fireworks" (Muse Spark Open, open weights, keyframes). SAM tracking is unchanged.
+    "baseten" / "fireworks" (Muse Spark Open, open weights; video / keyframes). SAM tracking is unchanged.
     `known_objects` guides the extractor to reuse a reference video's object ids;
     `track=False` skips SAM (faster, but the graph carries no evidence); `spoken` is the
     reference's narration, used to name objects in the person's words; `effort` is the hosted

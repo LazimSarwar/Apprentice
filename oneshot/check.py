@@ -35,6 +35,7 @@ from .sim import monitor
 from .words import clock, imperative, into, nice, where
 
 HIDDEN = 0.25          # seen in under this share of the frames after the previous step = hidden
+SETTLE = 0.5           # an object must be seen this long after its move ends to know where it came to rest
 
 
 @dataclass
@@ -137,6 +138,9 @@ def _evidence(key: Key, step, att: TaskGraph, back: dict[str, str]) -> str:
     box_a = _box_near(oa.track, step.end_s)
     if box_a is None:
         return "unseen"
+    rest = step.end_s + SETTLE
+    if box_a.t_s < rest and any(b.t_s >= rest for o in att.objects if o.track for b in o.track.boxes):
+        return "unseen"                      # lost as the move ended (covered?): its resting place wasn't seen
     if ob is None or not ob.track:
         return "seen"
     t = box_a.t_s
@@ -362,7 +366,7 @@ def main() -> None:
     p.add_argument("attempt", type=Path, nargs="+", help="attempt video(s) or graph JSON(s)")
     p.add_argument("--also", type=Path, action="append", default=[],
                    help="another correct reference (video or graph JSON); teaches which orders are free")
-    p.add_argument("--provider", choices=["hosted", "fireworks"], default="hosted")
+    p.add_argument("--provider", choices=["hosted", "fireworks", "baseten"], default="hosted")
     p.add_argument("--no-track", action="store_true", help="skip object tracking (faster, no evidence)")
     p.add_argument("--no-narration", action="store_true", help="ignore what was said in the reference")
     p.add_argument("--procedure-out", type=Path, help="write the learned procedure as JSON")

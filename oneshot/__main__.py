@@ -47,8 +47,8 @@ def main() -> None:
     parser.add_argument("video", type=Path, help="demonstration clip (mp4/mov/...)")
     parser.add_argument("--out", type=Path, help="where to write the graph JSON")
     parser.add_argument("--work-dir", type=Path, help="scratch dir for shrunk clips")
-    parser.add_argument("--provider", choices=["hosted", "fireworks"], default="hosted",
-                        help="extractor: hosted Muse Spark 1.3 (video) or open-weights Spark Open on Fireworks (keyframes)")
+    parser.add_argument("--provider", choices=["hosted", "fireworks", "baseten"], default="hosted",
+                        help="extractor: hosted Muse Spark 1.3 (video) or open-weights Spark Open on Baseten (video) or Fireworks (keyframes)")
     args = parser.parse_args()
 
     graph = build_task_graph(args.video, work_dir=args.work_dir, provider=args.provider)

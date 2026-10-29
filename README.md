@@ -31,6 +31,7 @@ Everything in this repository was written during the event, except the third-par
 | Oct 28 | **Which order matters (`oneshot/procedure.py`).** Every pair of steps gets a verdict: *required* (said, or physical — the product sits on the liner), *free* (said, or a second correct reference did it the other way), or *as shown* (a different order is a note, never a failure). A person can change any rule on the page and every attempt is re-checked instantly (`POST /api/recheck`, no model calls). |
 | Oct 28 | **Evidence-checked verdicts.** With tracking, each reached step is checked against SAM's boxes (*tracker agrees / seen / not seen / disagrees*), and a step whose object was hidden after the previous step is reported as **"couldn't verify"** instead of "skipped". Every problem carries its severity, the spoken reason, and a one-line fix. |
 | Oct 29 | **Near-live warnings (`oneshot/watch.py`, `web/watch.py`).** While an attempt is still going on — from the browser camera, or a video replayed in real time — the video so far is re-read every 2 s and a warning appears as soon as a mistake can no longer be undone (a step done while a required earlier one isn't, or something put in the wrong place), with the spoken reason and the fix. Skips wait for the end, when the full check gives the verdict. Measured on the six sample attempts: warnings a median 10.5 s after the mistake, no false alarms, 6/6 final verdicts right. |
+| Oct 29 | **Second open-weights host.** `--provider baseten` runs the extractor on Muse Spark Open via Baseten, sending the whole clip as video (Fireworks gets keyframes). Same task graph as the hosted model on the synthetic clip, and **24/24 on the pack-out checker eval** (same clips as the hosted model's 24/24; `probes/pack_eval.py --provider`). The eval exposed a checker fragility, now fixed: when a hand covered the box, whether the verdict was "can't verify" or a false "wrong place" depended on a half-second difference in the model's step end time. An object must now be seen 0.5 s after its move ends for its resting place to count as observed. |
 | Oct 28 | **Pack-out demo + evaluation.** `probes/make_pack_clip.py` renders a narrated packing reference (computer voice), a second correct reference and eight kinds of attempt; `probes/pack_eval.py` measures the checker on freshly randomized attempts with expected verdicts written first. The web page now tells this story. |
 
 ## Pre-existing and third-party material
@@ -168,19 +169,34 @@ JSON holds the full per-object trajectory; the console prints a short digest.
 ### Open-weights extractor (P3)
 
 By default the task graph is read by the hosted Muse Spark 1.3 (native video). The same
-step can run on **Muse Spark Open** — an open-weight model — via Fireworks, which makes the
-open-weight route explicit (the bonus path). It takes evenly spaced keyframes rather than
-video; SAM tracking is unchanged.
+step can run on **Muse Spark Open** — an open-weight model — on either of two inference hosts,
+which makes the open-weight route explicit (the bonus path). SAM tracking is unchanged.
+
+| Provider | Model | Input |
+|---|---|---|
+| `--provider baseten` | `meta-models/muse-spark-open-1026` | the whole clip (`video_url`) |
+| `--provider fireworks` | `accounts/fireworks/models/muse-spark-open` | 12 evenly spaced keyframes |
 
 ```bash
+# in .env: BASETEN_API_KEY (model defaults to meta-models/muse-spark-open-1026)
+python probes/p3_spark_open_video.py clips/synthetic.mp4      # checks the key, slug and video input
+python -m oneshot clips/synthetic.mp4 --provider baseten
+
 # in .env: FIREWORKS_API_KEY and FIREWORKS_MODEL (the Spark Open slug)
-python probes/p4_fireworks_models.py                 # find the Spark Open slug on your account
+python probes/p4_fireworks_models.py                          # find the Spark Open slug on your account
 python -m oneshot clips/synthetic.mp4 --provider fireworks
 ```
 
-Verified on the synthetic clip: Muse Spark Open (`accounts/fireworks/models/muse-spark-open`)
-produced the **same task graph** as the hosted model — identical steps and final relations —
-and it runs through execution and the temporal monitor unchanged (SUCCESS, procedure followed).
+Verified on the synthetic clip: Muse Spark Open on **both** hosts produced the **same task
+graph** as the hosted model — identical steps and final relations — and it runs through
+execution and the temporal monitor unchanged (SUCCESS, procedure followed).
+
+On the procedure checker, Muse Spark Open on Baseten judges **24/24** randomized pack-out
+attempts correctly — the same score as the hosted model on the same clips:
+
+```bash
+python probes/pack_eval.py --provider baseten    # graphs cached as runs/pack_eval/<stem>.baseten.graph.json
+```
 
 ## Run on the simulated arm (P1)
 
