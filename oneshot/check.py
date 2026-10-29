@@ -59,13 +59,15 @@ class Report:
     issues: list[Issue]
     mapping: dict[str, str]
     rules: list[dict] = field(default_factory=list)
-    verified: bool = False         # tracking evidence was used
+    verified: bool = False         # all reached milestones corroborated by tracking
+    tracking_used: bool = False
+    evidence_status: str = "model_only"  # model_only | partial | corroborated | inconclusive
 
     def summary(self) -> str:
         fails = [i for i in self.issues if i.severity == "fail"]
         head = {"pass": "PASS - the attempt follows the procedure",
                 "pass_notes": "PASS (with notes)",
-                "unsure": "CAN'T VERIFY - part of the attempt was hidden",
+                "unsure": "CAN'T VERIFY - review the evidence before accepting",
                 "fail": f"FAIL - {len(fails)} problem{'s' if len(fails) != 1 else ''}"}[self.verdict]
         lines = [head]
         for m in self.milestones:
@@ -85,7 +87,8 @@ class Report:
     def to_dict(self) -> dict:
         return {"passed": self.passed, "verdict": self.verdict, "milestones": self.milestones,
                 "issues": [asdict(i) for i in self.issues], "mapping": self.mapping,
-                "rules": self.rules, "verified": self.verified}
+                "rules": self.rules, "verified": self.verified, "tracking_used": self.tracking_used,
+                "evidence_status": self.evidence_status}
 
 
 # --- tracking evidence -------------------------------------------------------------
@@ -182,6 +185,11 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
         proc = Procedure(proc.steps, [Rule(r.before, r.after, "required", "you", r.note) for r in rules],
                          proc.references, proc.narration)
     ms = proc.steps
+    if not ms:
+        return Report(False, "unsure", [], [Issue(
+            "invalid_reference", "unknown", "No checkable steps were learned from the reference.", None,
+            fix="Record a clear reference showing each placement, then confirm the learned steps.")], {},
+            evidence_status="inconclusive")
     ms_keys = [m.key for m in ms]
     info = {m.key: m for m in ms}
     mapping = map_objects(ref, att)
@@ -193,7 +201,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
         if k not in first:
             first[k], step_of[k] = t, s
     finals = final_keys(att, mapping)
-    tracked = any(o.track for o in att.objects)
+    tracked = att.meta.track_seconds is not None or any(o.track for o in att.objects)
     objs = {o.id: o for o in att.objects}
 
     issues: list[Issue] = []
@@ -212,10 +220,10 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
             t, k = moved_elsewhere[0]
             explained.add(k)
             step = next(s for tt, kk, s in evs if kk == k)
-            if tracked and obj is not None and obj.track and _evidence(k, step, att, back) == "unseen":
+            if tracked and _evidence(k, step, att, back) in ("unseen", "contradicted"):
                 issues.append(Issue("unknown", "unknown",
-                                    f"Couldn't verify where the {nice(a)} went — it was hidden when it was "
-                                    f"moved (the video model thought {where(k[0], k[2])})", t, [a, k[2], b],
+                                    f"Couldn't verify where the {nice(a)} went — the tracker could not support "
+                                    f"the reported placement ({where(k[0], k[2])})", t, [a, k[2], b],
                                     m.critical, m.reason, m.quote,
                                     "Re-record with the whole workspace in view, or check this step by hand."))
                 continue
@@ -223,7 +231,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                 f"Put the {nice(a)} {where(k[0], k[2])} instead of {where(rel, b)}",
                                 t, [a, k[2], b], m.critical, m.reason, m.quote,
                                 f"Move the {nice(a)} {into(rel, b)}."))
-        elif tracked and obj is not None and obj.track and _visible_share(obj, att, prev_time) < HIDDEN:
+        elif tracked and _visible_share(obj, att, prev_time) < HIDDEN:
             issues.append(Issue("unknown", "unknown",
                                 f"Couldn't verify: {m.text} — the {nice(a)} was hidden or out of view "
                                 f"when this step should have happened", prev_time, [a, b], m.critical, m.reason, m.quote,
@@ -254,20 +262,46 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     for m in ms:
         done = m.key in first or m.key in finals
         ev = None
-        if tracked and m.key in step_of:
-            ev = _evidence(m.key, step_of[m.key], att, back)
-            if ev == "contradicted":
-                issues.append(Issue("doubt", "warn",
+        if tracked and done:
+            ev = _evidence(m.key, step_of[m.key], att, back) if m.key in step_of else "unseen"
+            failed = [k for k in m.key[1:] if back.get(k, k) in att.meta.tracking_errors]
+            if failed:
+                ev = "unseen"
+                issues.append(Issue("unknown", "unknown",
+                                    f"Couldn't verify: {m.text} — tracking was unavailable for "
+                                    + ", ".join(nice(k) for k in failed) + ".", first.get(m.key),
+                                    list(m.key[1:]), m.critical,
+                                    fix="Review this step by hand or retry the check."))
+            elif ev == "contradicted":
+                issues.append(Issue("doubt", "unknown",
                                     f"Check this step: the tracker shows the {nice(m.key[1])} ending up away "
-                                    f"from the {nice(m.key[2])}", first[m.key], [m.key[1], m.key[2]], m.critical))
+                                    f"from the {nice(m.key[2])}", first.get(m.key), [m.key[1], m.key[2]], m.critical,
+                                    fix="Review this moment or re-record with both objects in view."))
+            elif ev == "unseen":
+                issues.append(Issue("unknown", "unknown",
+                                    f"Couldn't verify: {m.text} — the reported result wasn't seen by the tracker.",
+                                    first.get(m.key), [m.key[1], m.key[2]], m.critical,
+                                    fix="Check this step by hand or re-record with the objects visible after placement."))
         status.append({"text": m.text, "done": done, "time": first.get(m.key), "ref_time": m.ref_time,
                        "critical": m.critical, "reason": m.reason, "quote": m.quote, "evidence": ev})
+
+    # A final picture cannot establish the order of an untimed placement.
+    untimed = {k for k in ms_keys if k in finals and k not in first}
+    for k in untimed:
+        if any(r.strength == "required" and k in (r.before, r.after) for r in enforced):
+            issues.append(Issue("unknown", "unknown", f"Couldn't verify when this step happened: {info[k].text}.",
+                                None, [k[1]], info[k].critical,
+                                fix="Show the full sequence so the required order can be checked."))
 
     issues.sort(key=lambda i: (i.time is None, i.time or 0.0))
     sev = {i.severity for i in issues}
     verdict = "fail" if "fail" in sev else "unsure" if "unknown" in sev else "pass_notes" if sev else "pass"
+    corroborated = bool(status) and all(m["done"] and m["evidence"] == "confirmed" for m in status)
+    evidence_status = ("inconclusive" if "unknown" in sev else "corroborated" if corroborated
+                       else "partial" if tracked else "model_only")
     return Report(passed=verdict in ("pass", "pass_notes"), verdict=verdict, milestones=status, issues=issues,
-                  mapping=mapping, rules=[rule_view(r, proc) for r in proc.shown()], verified=tracked)
+                  mapping=mapping, rules=[rule_view(r, proc) for r in proc.shown()], verified=corroborated,
+                  tracking_used=tracked, evidence_status=evidence_status)
 
 
 def _order_issues(broken: list[Rule], first: dict[Key, float], info: dict) -> list[Issue]:

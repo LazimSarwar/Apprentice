@@ -24,7 +24,7 @@ from openai import OpenAI
 from pydantic import ValidationError
 
 from .clients import (
-    BASETEN_BASE_URL, BASETEN_DEFAULT_MODEL, FIREWORKS_BASE_URL, META_BASE_URL, ROOT, require_env,
+    BASETEN_BASE_URL, BASETEN_DEFAULT_MODEL, FIREWORKS_BASE_URL, META_BASE_URL, MODEL_TIMEOUT_SECONDS, ROOT, require_env,
     spark_cost_usd,
 )
 from .media import data_url, keyframes
@@ -104,7 +104,8 @@ def _loads(text: str) -> dict[str, Any]:
 
 def _hosted_caller(clip: Path, model: str, prompt: str, effort: str = "low") -> tuple[Callable, str]:
     """Return a (call, file_id) for native-video extraction on the hosted API."""
-    api = OpenAI(base_url=META_BASE_URL, api_key=require_env("MODEL_API_KEY"))
+    api = OpenAI(base_url=META_BASE_URL, api_key=require_env("MODEL_API_KEY"),
+                 timeout=MODEL_TIMEOUT_SECONDS, max_retries=0)
     uploaded = api.files.create(file=(clip.name, clip.read_bytes(), "video/mp4"), purpose="user_data")
     base = [{"type": "input_text", "text": prompt}, {"type": "input_video", "file_id": uploaded.id}]
 
@@ -123,7 +124,7 @@ def _open_caller(clip: Path, model: str, prompt: str, host: str) -> tuple[Callab
     """Return a (call, None) for extraction on Muse Spark Open via an open-weights host:
     the whole clip where the host takes video, else evenly spaced keyframes."""
     base_url, key_env, _, native_video = OPEN_HOSTS[host]
-    api = OpenAI(base_url=base_url, api_key=require_env(key_env))
+    api = OpenAI(base_url=base_url, api_key=require_env(key_env), timeout=MODEL_TIMEOUT_SECONDS, max_retries=0)
     if native_video:
         base: list[dict] = [{"type": "text", "text": prompt},
                             {"type": "video_url", "video_url": {"url": data_url(clip, "video/mp4")}}]

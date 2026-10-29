@@ -23,7 +23,7 @@ from pathlib import Path
 import httpx2 as httpx
 from openai import OpenAI
 
-from .clients import META_BASE_URL, require_env, spark_cost_usd
+from .clients import META_BASE_URL, MODEL_TIMEOUT_SECONDS, require_env, spark_cost_usd
 
 TRANSCRIBE_URL = f"{META_BASE_URL}/asr/transcribe"
 TRANSCRIBE_MODEL = "muse-voice-transcribe-1.0"
@@ -95,7 +95,7 @@ def transcribe(wav: Path) -> list[Turn]:
     request = {"mode": "ENDPOINTING", "model": TRANSCRIBE_MODEL, "audioEncoding": "WAV"}
     r = httpx.post(TRANSCRIBE_URL, headers={"Authorization": f"Bearer {require_env('MODEL_API_KEY')}"},
                    files={"request": (None, json.dumps(request), "application/json"),
-                          "audio": (wav.name, wav.read_bytes())}, timeout=300)
+                          "audio": (wav.name, wav.read_bytes())}, timeout=MODEL_TIMEOUT_SECONDS)
     if r.status_code != 200:
         raise RuntimeError(f"transcription failed [{r.status_code}]: {r.text[:300]}")
     body = r.json()
@@ -173,7 +173,8 @@ def read_narration(turns: list[Turn], steps: list[tuple[str, float, float]]) -> 
     said = " ".join(t.text for t in turns)
     step_lines = "\n".join(f"{i}. {text}  ({s:.1f}s - {e:.1f}s)" for i, (text, s, e) in enumerate(steps, 1))
     turn_lines = "\n".join(f"[{t.start:.1f}s - {t.end:.1f}s] {t.text}" for t in turns)
-    api = OpenAI(base_url=META_BASE_URL, api_key=require_env("MODEL_API_KEY"))
+    api = OpenAI(base_url=META_BASE_URL, api_key=require_env("MODEL_API_KEY"),
+                 timeout=MODEL_TIMEOUT_SECONDS, max_retries=0)
     resp = api.responses.create(model=SPARK_MODEL, reasoning={"effort": "low"},
                                 input=PROMPT.format(steps=step_lines, turns=turn_lines))
     data = _loads(resp.output_text)

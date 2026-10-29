@@ -7,7 +7,79 @@ wrong order, the wrong place — and the moment it happened, backed by tracked v
 For training new staff, lab protocols, kitting and packing QA, assembly checks. The same learned procedure is
 precise enough to hand to a (simulated) robot arm, which carries it out and checks its own work.
 
-> Status: in active development during the event. This README is updated as each piece lands.
+> Status: working deployed prototype. The judge-facing page leads with real phone recordings,
+> reports abstentions explicitly, and offers live uploads with either demo reference or your own.
+
+## Evidence and reliability (Oct 30)
+
+The phone-footage development set contains **one reference and nine separate attempts** of a two-block
+stacking task. With the current conservative checker: **7/9 expected outcomes resolved, 2 abstentions,
+0 false accepts among six incorrect attempts, and 0 false rejects among three acceptable/occluded attempts**.
+The reference self-check is excluded from those counts; its tracker conflict now correctly requires review.
+The two missing-block attempts require review because the absent block has no supporting track.
+
+These are development results, not a held-out real-world benchmark: earlier checker changes were informed
+by these recordings. The two reversed stacks change the final structure and are diagnosed as wrong placement;
+they do not establish real-footage detection of a pure order-only error. Model naming calls the red block pink;
+guided extraction reuses that identifier. The page shows every attempt and provides the full results as JSON.
+
+The existing generated packing set still matches **24/24 expected outcomes through each of two providers**
+when cached extraction outputs are replayed with the current checker. Both providers saw the same clips;
+this is 24 examples evaluated twice. Hidden cases permit abstention rather than a false failure.
+
+An earlier generated batch used seed 73129 with labels and the checker-rule fingerprint fixed before inference:
+**14/16 expected outcomes matched; 2 tracking timeouts are retained as pipeline errors**. Network deadlines
+were added after a request stalled; successful fresh extraction outputs were reused without changing the
+checker rules. These are new variations from the same renderer, not new real tasks or a flawless benchmark.
+The frozen plan and every result are downloadable from the demo (`web/static/media/judging_eval.json`).
+
+**Tracking repair:** the same sixteen cases now match **16/16 expected outcomes, with zero pipeline or
+object-tracking errors**. Fourteen extraction caches were replayed; the two former timeout cases received
+new extraction and tracking, and correctly abstained because of occlusion. Their tracking stages completed
+in approximately 56–73 seconds. This is a development repair check, not sixteen new examples; both the original
+failure report and the repair report (`tracking_validation.json`) remain available.
+
+The tracking path now uses a box-only response format. The original format decoded every dense pixel mask
+and created cumulative snapshots, although the checker only consumes boxes. Two captured real-video responses
+produced exactly the same 325 boxes with the new parser; local parsing fell from about 6/17 seconds to under
+0.03 seconds each. This measures parser CPU work, not end-to-end model latency. The official stream parser
+still validates response finalization; truncated responses cannot become completed evidence.
+
+The public deployment passed **4/4 fresh upload checks**: two runs of a correct phone clip, one real wrong
+placement, and one generated occlusion. They completed in **35–70 seconds**, with zero object-tracking errors
+and working tracking-overlay videos. The correct runs passed, the wrong placement failed, and the occluded
+attempt required review. These are four service runs over three provided examples, not an accuracy benchmark.
+The timings and phase histories are packaged in `web/static/media/live_validation.json`.
+
+Verdicts and evidence strength are separate:
+
+- **Model only:** video interpretation without independent tracking corroboration; clearly labelled unverified.
+- **Partial:** objects were tracked, but not every relation is corroborated.
+- **Corroborated:** boxes support every reached placement. This is a 2D geometric heuristic, not proof of 3D contact.
+- **Inconclusive:** missing or conflicting evidence requires review. An empty reference never passes.
+
+Tracker disagreement and unseen reported steps cannot produce a passing verdict. A final picture without
+timestamps cannot establish a required sequence. Model output is validated for unique object/step identifiers,
+declared references and finite increasing timestamps. Human rule changes still re-check without model calls.
+Tracking and colour fallback share one 120-second deadline (`TRACK_TIMEOUT_SECONDS`). Each object request has
+a 45-second deadline and one bounded retry for transient transport or incomplete-response failures. Completed
+objects survive another object's failure, and failed requests are distinct from a completed no-detection result.
+Missing required tracking evidence ends as **review required** rather than a verified pass.
+Extraction and narration requests use a 90-second timeout (`MODEL_TIMEOUT_SECONDS`) without hidden SDK retries.
+
+```bash
+python -m unittest discover -s tests -v     # offline reliability and packaged-evidence regression checks
+python -m web.build_judging                # refresh real reports + missing demo encodes; no model calls
+python -m web.build_judging --reports-only # refresh packaged reports from cached/exported graphs
+python probes/judging_eval.py              # fresh generated clips, frozen labels/seed/checker; calls models
+python probes/tracking_eval.py             # repeat repair verification; calls models for the two former failures
+python probes/tracking_eval.py --reuse-tracks # replay completed repair tracks without model calls
+python probes/live_smoke.py --base-url URL # real uploads, tracking, verdicts and rendered videos
+```
+
+Raw personal recordings remain outside the repository. The demo contains silent, web-encoded copies and
+sanitized graphs. Near-live latency remains approximately ten seconds on the measured generated examples;
+it is not instant intervention. See `JUDGING.md` for a three-minute walkthrough and the evidence boundaries.
 
 ## What was built during the event (Oct 26 – Nov 4, 2026)
 
@@ -91,8 +163,8 @@ before running): **24/24** — 3 of 3 for each of correct, free order, unusual o
 order broken, skipped liner, skipped card, wrong place, and hidden step (reported as *can't verify*, never failed).
 Extraction cost $0.24 for all 24. One hidden-step check was tightened after a run where the tracker mistook the
 hand for the card (an object can't be bigger than the container it is in), so that row is not blind. The older three-tray test (`python probes/proc_eval.py`, 20 attempts) scored
-20/20. These are clean generated clips with computer-voiced narration; real footage is harder and is being tested
-next.
+20/20. These are clean generated clips with computer-voiced narration. The separate phone-footage results and
+their narrower scope are reported in the evidence section above.
 
 ## Web app
 
@@ -115,7 +187,7 @@ python -m uvicorn web.server:app --port 8000      # then open http://localhost:8
 reference, plus a second correct one) to `POST /api/check`; the server runs the real pipeline — listens to the
 reference, reads the steps, learns the procedure, compares, then tracks the objects and re-checks against the
 tracker — and the page polls `GET /api/jobs/{id}`, showing the verdict as soon as it exists (~20 s) and the
-evidence-checked verdict and AI-vision view when tracking finishes (~1 min). Rule changes go to
+evidence assessment and AI-vision view when tracking finishes (provider latency varies; timeouts require review). Rule changes go to
 `POST /api/recheck`. One check runs at a time; uploads are limited to 2 minutes / 80 MB
 since every check calls the hosted models. Without uploads, the demo sections are plain files and can be hosted
 statically.

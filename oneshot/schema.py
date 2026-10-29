@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 ACTIONS = ("pick", "place", "stack", "push")
 RELATIONS = ("on", "inside", "near")
@@ -63,6 +63,24 @@ class RawGraph(BaseModel):
     objects: list[Object]
     steps: list[Step]
     final_relations: list[Relation] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def coherent_graph(self):
+        ids = [o.id for o in self.objects]
+        if any(not oid.strip() for oid in ids) or len(set(ids)) != len(ids):
+            raise ValueError("object ids must be nonempty and unique")
+        orders = [s.order for s in self.steps]
+        if len(set(orders)) != len(orders):
+            raise ValueError("step orders must be unique")
+        for s in self.steps:
+            if s.object not in ids or (s.target is not None and s.target not in ids):
+                raise ValueError("every step object and target must be declared in objects")
+            if s.order < 1 or not (0 <= s.start_s < s.end_s < float("inf")):
+                raise ValueError("steps require positive order and finite, increasing nonnegative timestamps")
+        for r in self.final_relations:
+            if r.a not in ids or r.b not in ids:
+                raise ValueError("every final relation must refer to declared objects")
+        return self
 
 
 # --- what SAM contributes --------------------------------------------------
@@ -123,6 +141,8 @@ class GraphMeta(BaseModel):
     extract_seconds: Optional[float] = None
     extract_cost_usd: Optional[float] = None
     track_seconds: Optional[float] = None
+    tracking_errors: dict[str, str] = Field(default_factory=dict)
+    tracking_parser: Optional[str] = None
     warnings: list[str] = Field(default_factory=list)
 
 

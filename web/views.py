@@ -12,7 +12,8 @@ from oneshot.schema import TaskGraph
 from oneshot.words import nice
 
 KIND = {"skipped": "Skipped step", "order": "Wrong order", "wrong_place": "Wrong place",
-        "extra": "Extra step", "unknown": "Couldn't verify", "doubt": "Check this step"}
+        "extra": "Extra step", "unknown": "Couldn't verify", "doubt": "Conflicting evidence",
+        "invalid_reference": "Reference needs review"}
 WARN_KIND = {"order": "Different order"}
 
 
@@ -21,6 +22,11 @@ def report_view(report: Report, att: TaskGraph) -> dict:
         "passed": report.passed,
         "verdict": report.verdict,
         "verified": report.verified,
+        "tracking_used": report.tracking_used,
+        "evidence_status": report.evidence_status,
+        "tracking": {"parser": att.meta.tracking_parser, "seconds": att.meta.track_seconds,
+                     "objects_tracked": sum(bool(o.track) for o in att.objects),
+                     "objects_total": len(att.objects), "errors": att.meta.tracking_errors},
         "milestones": report.milestones,
         "issues": [{"kind": (WARN_KIND.get(i.kind) if i.severity == "warn" else None) or KIND.get(i.kind, i.kind),
                     "type": i.kind, "severity": i.severity, "message": i.message, "time": i.time,

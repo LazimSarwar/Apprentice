@@ -17,6 +17,7 @@ import json
 import os
 import shutil
 import threading
+import time
 import traceback
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -25,7 +26,7 @@ from typing import BinaryIO
 
 import imageio.v3 as iio
 
-from oneshot.check import compare
+from oneshot.check import Issue, Report, compare
 from oneshot.graph import add_evidence, build_task_graph
 from oneshot.media import video_info
 from oneshot.narration import listen, narrate, spoken_text
@@ -83,16 +84,20 @@ def ensure_capacity() -> None:
     """Before taking an upload: the spend cap, and a short queue (checks run one at a time)."""
     budget.ensure()
     with _lock:
-        waiting = sum(j["status"] in ("queued", "running") for j in _jobs.values())
+        waiting = sum(j["status"] in ("queued", "running", "checked") for j in _jobs.values())
     if waiting >= MAX_WAITING:
         raise UploadError("A few checks are already waiting — try again in a minute.")
 
 
-def submit(job_id: str, attempt: Path, reference: Path | None, reference2: Path | None = None) -> None:
+def submit(job_id: str, attempt: Path, reference: Path | None, reference2: Path | None = None,
+           reference_demo: str = "pack") -> None:
     with _lock:
+        if sum(j["status"] in ("queued", "running", "checked") for j in _jobs.values()) >= MAX_WAITING:
+            raise UploadError("A few checks are already waiting — try again in a minute.")
         _jobs[job_id] = {"id": job_id, "status": "queued", "stage": "Waiting for another check to finish",
-                         "custom_reference": reference is not None, "second_reference": reference2 is not None}
-    _pool.submit(_run, job_id, attempt, reference, reference2)
+                         "custom_reference": reference is not None, "second_reference": reference2 is not None,
+                         "reference_demo": reference_demo}
+    _pool.submit(_run, job_id, attempt, reference, reference2, reference_demo)
 
 
 def get(job_id: str) -> dict | None:
@@ -125,9 +130,12 @@ def _check_length(path: Path, what: str) -> float:
     return seconds
 
 
-def builtin() -> tuple[TaskGraph, Procedure]:
-    ref = TaskGraph.model_validate_json(REFERENCE.read_text(encoding="utf-8"))
-    proc = Procedure.from_dict(json.loads(PROCEDURE.read_text(encoding="utf-8")))
+def builtin(dataset: str = "pack") -> tuple[TaskGraph, Procedure]:
+    if dataset not in ("pack", "real"):
+        raise UploadError("Choose the phone-footage reference, packing reference, or your own reference.")
+    graph_path = DEMO / "real_ref.graph.json" if dataset == "real" else REFERENCE
+    ref = TaskGraph.model_validate_json(graph_path.read_text(encoding="utf-8"))
+    proc = learn([ref]) if dataset == "real" else Procedure.from_dict(json.loads(PROCEDURE.read_text(encoding="utf-8")))
     return ref, proc
 
 
@@ -137,17 +145,23 @@ def _learn_own(job_id: str, reference: Path, reference2: Path | None) -> tuple[T
     turns = listen(reference, WORK / "audio")
     budget.charge(seconds / 3600 * budget.TRANSCRIBE_USD_PER_HOUR, "transcribe reference")
     _set(job_id, stage="Reading the steps in your reference")
+    budget.ensure()
     ref = build_task_graph(reference, work_dir=WORK, track=False, spoken=spoken_text(turns))
     budget.charge(ref.meta.extract_cost_usd, "read reference")
     refs = [ref]
+    if not milestones(ref):
+        raise UploadError("No checkable steps were learned from your reference. Record clear placements and try again.")
     if reference2 is not None:
         _check_length(reference2, "second reference")
         _set(job_id, stage="Reading your second reference")
         known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in ref.objects]
+        budget.ensure()
         refs.append(build_task_graph(reference2, work_dir=WORK, known_objects=known, track=False))
         budget.charge(refs[-1].meta.extract_cost_usd, "read second reference")
     _set(job_id, stage="Learning which steps and orders matter")
+    budget.ensure()
     narration = narrate(turns, [(m.text, m.start, m.ref_time) for m in milestones(ref)])
+    budget.charge(narration.cost_usd if narration else None, "interpret reference narration")
     proc = learn(refs, narration)
     ref_clip = WORK / "clips" / f"{reference.stem}.720p.mp4"
     _set(job_id, reference={"video": _web_video(ref_clip, f"{job_id}_reference.mp4", audio_from=reference),
@@ -155,14 +169,17 @@ def _learn_own(job_id: str, reference: Path, reference2: Path | None) -> tuple[T
     return ref, proc
 
 
-def _run(job_id: str, attempt: Path, reference: Path | None, reference2: Path | None) -> None:
+def _run(job_id: str, attempt: Path, reference: Path | None, reference2: Path | None,
+         reference_demo: str = "pack") -> None:
     try:
+        budget.ensure()
         _set(job_id, status="running", stage="Opening the video")
         _check_length(attempt, "attempt")
-        ref, proc = _learn_own(job_id, reference, reference2) if reference is not None else builtin()
+        ref, proc = _learn_own(job_id, reference, reference2) if reference is not None else builtin(reference_demo)
 
         _set(job_id, stage="Reading the steps in your attempt")
         known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in ref.objects]
+        budget.ensure()
         att = build_task_graph(attempt, work_dir=WORK, known_objects=known, track=False)
         budget.charge(att.meta.extract_cost_usd, "read attempt")
         att_clip = WORK / "clips" / f"{attempt.stem}.720p.mp4"
@@ -174,7 +191,7 @@ def _run(job_id: str, attempt: Path, reference: Path | None, reference2: Path | 
             _graphs[job_id] = (ref, att, proc)
         _set(job_id, status="checked", stage="Checking with the tracker", demo=demo,
              result=report_view(report, att))
-    except UploadError as exc:
+    except (UploadError, budget.BudgetError) as exc:
         _set(job_id, status="error", stage=None, error=str(exc))
         return
     except Exception as exc:  # noqa: BLE001 - report any pipeline failure to the page
@@ -182,17 +199,40 @@ def _run(job_id: str, attempt: Path, reference: Path | None, reference2: Path | 
         _set(job_id, status="error", stage=None, error=f"Couldn't check this video ({type(exc).__name__}: {exc}).")
         return
 
-    try:                                   # evidence is a bonus: a failure here keeps the verdict
+    preliminary = report_view(report, att)
+    tracking_started = time.monotonic()
+    try:
+        budget.ensure(budget.TRACK_EST_USD)
         tracked = add_evidence(att, att_clip)
         budget.charge(budget.TRACK_EST_USD, "track attempt (estimate)")
         with _lock:
             _graphs[job_id] = (ref, tracked, proc)
         report = compare(ref, tracked, procedure=proc)
+    except Exception:  # noqa: BLE001 - a failed tracker cannot certify the provisional assessment
+        traceback.print_exc()
+        attempted = att.model_copy(update={"meta": att.meta.model_copy(update={
+            "track_seconds": round(time.monotonic() - tracking_started, 3),
+            "warnings": [*att.meta.warnings, "Tracking evidence unavailable; acceptance withheld."],
+        })})
+        with _lock:
+            _graphs[job_id] = (ref, attempted, proc)
+        review = Report(False, "unsure", report.milestones, [Issue(
+            "unknown", "unknown", "Tracking evidence is unavailable; the initial model assessment remains unverified.",
+            None, fix="Review the recording by hand or try again when tracking is available.")], report.mapping,
+            rules=report.rules, evidence_status="inconclusive")
+        _set(job_id, status="done", stage=None, seen=None, result=report_view(review, attempted),
+             preliminary_result=preliminary, note="Tracking was unavailable. This check requires review.")
+        return
+
+    # Rendering an overlay is separate from assessing the evidence. A drawing failure
+    # must not discard a completed tracking assessment.
+    _set(job_id, result=report_view(report, tracked))
+    try:
         fps = float(iio.immeta(att_clip).get("fps", 30))
         write_mp4(UPLOADS / f"{job_id}_attempt_seen.mp4", overlay_frames(att_clip, tracked), fps)
         _set(job_id, status="done", stage=None, seen=f"uploads/{job_id}_attempt_seen.mp4",
              result=report_view(report, tracked))
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001 - keep the evidence assessment if only drawing failed
         traceback.print_exc()
         _set(job_id, status="done", stage=None, seen=None, note="The tracking view couldn't be drawn for this video.")
 

@@ -1,0 +1,68 @@
+[
+  {
+    "file": "real_ref.mp4",
+    "source": "1.mp4",
+    "expected": "reference",
+    "detail": "red block down > green block on top of red (no narration; order is physical)"
+  },
+  {
+    "file": "real_ok_1.mp4",
+    "source": "1.mp4",
+    "expected": "pass",
+    "detail": "same clip as the reference (self-check only)"
+  },
+  {
+    "file": "real_ok_2.mp4",
+    "source": "2.mp4",
+    "expected": "pass",
+    "detail": "red down then green on top; second take"
+  },
+  {
+    "file": "real_ok_3.mp4",
+    "source": "3.mp4",
+    "expected": "pass",
+    "detail": "red down then green on top; third take (angle/speed varied)"
+  },
+  {
+    "file": "real_order_1.mp4",
+    "source": "4.mp4",
+    "expected": "wrong_order",
+    "detail": "green down first then red on top"
+  },
+  {
+    "file": "real_order_2.mp4",
+    "source": "5.mp4",
+    "expected": "wrong_order",
+    "detail": "green down first then red on top; second take"
+  },
+  {
+    "file": "real_wrongplace_1.mp4",
+    "source": "6.mp4",
+    "expected": "wrong_place",
+    "detail": "red down; green placed beside red not on it"
+  },
+  {
+    "file": "real_wrongplace_2.mp4",
+    "source": "7.mp4",
+    "expected": "wrong_place",
+    "detail": "red down; green placed beside red not on it; second take"
+  },
+  {
+    "file": "real_skip_1.mp4",
+    "source": "8.mp4",
+    "expected": "skipped",
+    "detail": "red down; green never placed"
+  },
+  {
+    "file": "real_skip_2.mp4",
+    "source": "9.mp4",
+    "expected": "skipped",
+    "detail": "red down; green never placed; second take"
+  },
+  {
+    "file": "real_hidden_1.mp4",
+    "source": "10.mp4",
+    "expected": "no_false_fail",
+    "detail": "red down; green on top but a hand covers red as it lands (pass or can't verify both OK)"
+  }
+]

@@ -1,0 +1,182 @@
+{
+  "type": "public upload verification",
+  "verified_on": "2026-10-30",
+  "pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
+  "scope": "Four real service runs over three provided examples; the correct clip was deliberately repeated. This is an availability and integration check, not an accuracy benchmark.",
+  "results": [
+    {
+      "case": "correct",
+      "seconds": 46.7,
+      "verdict": "pass",
+      "evidence_status": "partial",
+      "tracking": {
+        "parser": "sam_boxes_v1",
+        "seconds": 15.07,
+        "objects_tracked": 3,
+        "objects_total": 3,
+        "errors": {}
+      },
+      "overlay_verified": true,
+      "history": [
+        {
+          "seconds": 10.68,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 28.98,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "pass"
+          ]
+        },
+        {
+          "seconds": 46.7,
+          "state": [
+            "done",
+            null,
+            "pass"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "correct",
+      "seconds": 34.91,
+      "verdict": "pass",
+      "evidence_status": "partial",
+      "tracking": {
+        "parser": "sam_boxes_v1",
+        "seconds": 18.88,
+        "objects_tracked": 3,
+        "objects_total": 3,
+        "errors": {}
+      },
+      "overlay_verified": true,
+      "history": [
+        {
+          "seconds": 1.74,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 14.21,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "pass"
+          ]
+        },
+        {
+          "seconds": 34.91,
+          "state": [
+            "done",
+            null,
+            "pass"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "wrong-place",
+      "seconds": 36.12,
+      "verdict": "fail",
+      "evidence_status": "partial",
+      "tracking": {
+        "parser": "sam_boxes_v1",
+        "seconds": 19.8,
+        "objects_tracked": 2,
+        "objects_total": 2,
+        "errors": {}
+      },
+      "overlay_verified": true,
+      "history": [
+        {
+          "seconds": 1.76,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 13.88,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "fail"
+          ]
+        },
+        {
+          "seconds": 36.12,
+          "state": [
+            "done",
+            null,
+            "fail"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "hidden",
+      "seconds": 70.1,
+      "verdict": "unsure",
+      "evidence_status": "inconclusive",
+      "tracking": {
+        "parser": "sam_boxes_v1",
+        "seconds": 48.99,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      },
+      "overlay_verified": true,
+      "history": [
+        {
+          "seconds": 1.37,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 17.44,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "fail"
+          ]
+        },
+        {
+          "seconds": 66.74,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "unsure"
+          ]
+        },
+        {
+          "seconds": 70.1,
+          "state": [
+            "done",
+            null,
+            "unsure"
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "runs": 4,
+    "passed_checks": 4,
+    "tracking_errors": 0,
+    "all_overlays_verified": true
+  }
+}

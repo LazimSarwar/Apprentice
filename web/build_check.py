@@ -134,6 +134,9 @@ def main() -> None:
     (APP / "web" / "reference.graph.json").write_text(ref.model_dump_json(indent=2), encoding="utf-8")
     (APP / "web" / "reference.procedure.json").write_text(json.dumps(proc.to_dict(), indent=2), encoding="utf-8")
     print("wrote", MEDIA / "check.json")
+    from web.build_judging import refresh
+    if (RUNS / "real_ref.graph.json").exists() or (DEMO / "real_ref.graph.json").exists():
+        refresh()
 
 
 if __name__ == "__main__":

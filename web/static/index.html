@@ -155,18 +155,54 @@
   .lag{display:inline-block;margin-left:8px;font-size:12px;font-weight:600;color:var(--dim);background:#eef1f5;border-radius:6px;padding:1px 6px;text-transform:none;letter-spacing:0}
   .wstat{font-size:13px;color:var(--dim)}
   #wfinal:not(:empty){margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .judge-nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+  .judge-nav a{display:inline-block;text-decoration:none;background:var(--accent);color:white;padding:10px 16px;border-radius:10px;font-weight:600}
+  .judge-nav a.secondary{background:white;color:var(--accent);border:1px solid var(--line)}
+  .proof-strip{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+  .proof-strip span{padding:7px 12px;border-radius:8px;background:var(--accent-soft);color:#244799;font-size:14px}
+  .real-cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+  .real-case{font:inherit;text-align:left;border:1.5px solid var(--line);background:white;border-radius:12px;padding:12px;cursor:pointer;color:var(--ink)}
+  .real-case.active{border-color:var(--accent);background:var(--accent-soft)}
+  .real-case strong{display:block;font-size:14px;margin-bottom:6px}
+  .assurance{font-size:13px;border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 12px;margin:12px 0;color:#244799}
+  .assurance.review{border-color:#667085;background:#eef1f5;color:#344054}
+  .real-evidence{margin-top:18px}
+  .real-videos{grid-template-columns:1fr 1fr}
+  @media(max-width:900px){.real-videos{grid-template-columns:1fr}}
+  .evidence-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:14px}
+  .evidence-table th,.evidence-table td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  details.judge-method{margin-top:16px} details.judge-method summary{cursor:pointer;font-weight:600}
+  details.judge-method p{font-size:14px;color:var(--dim)}
+  @media(max-width:650px){.real-cases{grid-template-columns:repeat(2,minmax(0,1fr))}.proof-strip{gap:6px}.evidence-table{font-size:12px}.bar{flex-wrap:wrap}}
 </style>
 </head>
 <body>
 <div class="hero"><div class="wrap">
   <div class="brand">OneShot</div>
   <h1>Show it once. Say why.<br>Check every attempt.</h1>
-  <p class="lede">Record a procedure done right — once — talking through it. OneShot learns the steps, which ones are critical and why, and which orders actually matter. Then it checks anyone else's attempt and tells you what went wrong, the moment it happened, why it matters, and how to fix it.</p>
-  <div class="uses"><span class="use">Pack-out &amp; kitting QA</span><span class="use">Training new staff</span><span class="use">Lab bench setup</span><span class="use">Assembly checks</span></div>
+  <p class="lede">Record a short tabletop procedure once. Add narration to explain what matters. OneShot learns the steps and rules, checks another attempt, and points to what went wrong, when, and how to fix it. When evidence is missing or conflicting, it asks for review.</p>
+  <div class="uses"><span class="use">Procedure verification</span><span class="use">Pack-out &amp; kitting QA</span><span class="use">Training new staff</span></div>
+  <div class="judge-nav"><a href="#real">See the phone-footage results</a><a class="secondary" href="#try">Try your own attempt</a><a class="secondary" href="#packing">Explore the narrated packing example</a></div>
 </div></div>
 
 <div class="wrap">
-  <section class="step">
+  <section class="step" id="real">
+    <div class="step-head"><div class="num">▶</div><div><h2>One reference. Real phone footage. Inspect every verdict.</h2>
+      <p>Two physical blocks, filmed by the builder. Learn red down → green on red, then check nine separate attempts. Select a case and click its timestamp to inspect the evidence.</p></div></div>
+    <div class="proof-strip" id="realmetrics"></div>
+    <div class="two real-videos">
+      <div class="media"><div class="screen"><video id="realref" controls muted loop playsinline preload="metadata"></video></div><div class="bar"><b>The reference · done right</b><span class="hint">Silent phone recording</span></div></div>
+      <div class="media"><div class="screen"><video id="realatt" controls muted loop playsinline preload="metadata"></video></div><div class="bar"><b id="realcase"></b><label class="toggle"><input type="checkbox" id="realvision"><span class="switch"></span>Tracking overlay</label></div></div>
+    </div>
+    <div class="bar"><button class="soundbtn" id="playboth">▶ Play reference and attempt</button><span class="hint">Each recording keeps its original pace. Click a reported moment to inspect it.</span></div>
+    <div class="real-cases" id="realcases"></div>
+    <div class="two real-evidence"><div class="card" id="realreport" aria-live="polite"></div><div class="card">
+      <h3>What this evaluation establishes</h3><div id="realmethod"></div>
+      <details class="judge-method"><summary>All results and evaluation limits</summary><div id="realtable"></div><p id="realscope"></p>
+        <p><a href="/static/media/real_results.json" download>Download all real-footage reports (JSON)</a></p></details>
+    </div></div>
+  </section>
+  <section class="step" id="packing">
     <div class="step-head"><div class="num">1</div><div><h2>The reference: done right once, explained out loud</h2>
       <p id="refblurb"></p></div></div>
     <div class="two">
@@ -214,7 +250,7 @@
 
   <section class="step" id="watch">
     <div class="step-head"><div class="num">4</div><div><h2>Catch it while it happens</h2>
-      <p>Don’t wait until the box is sealed. While someone works, it re-reads the video so far every two seconds and warns as soon as a mistake can no longer be undone, with the fix. Skipped steps can only be called once the attempt is over.</p></div></div>
+      <p>While someone works, it re-reads the video so far every two seconds. Warnings arrived a median 10.5 seconds after mistakes in the six generated sample attempts. Skipped steps wait for the final check.</p></div></div>
     <div class="srcs" id="wsrc">
       <span class="lbl">Play a sample as if live:</span>
       <button class="src" data-demo="pack_order">Liner too late</button>
@@ -246,11 +282,12 @@
 
   <section class="step" id="try">
     <div class="step-head"><div class="num">5</div><div><h2>Try it with your own video</h2>
-      <p>Upload an attempt and it is checked against the reference — live, with the real models, in about a minute.</p></div></div>
+      <p>Upload an attempt to run the real pipeline. A provisional model assessment appears first; the final result follows tracking, or requests review if tracking is unavailable.</p></div></div>
     <div class="two">
       <div class="card">
         <h3>1 · Reference</h3>
-        <label class="radio"><input type="radio" name="refmode" value="builtin" checked> The packing reference above</label>
+        <label class="radio"><input type="radio" name="refmode" value="real" checked> The two-block phone reference above</label>
+        <label class="radio"><input type="radio" name="refmode" value="pack"> The narrated packing reference</label>
         <label class="radio"><input type="radio" name="refmode" value="own"> My own reference video — talk while you record it</label>
         <div id="ownrefs" hidden>
           <label class="drop" id="refdrop"><input type="file" id="reffile" accept="video/*"><span id="reflabel">Choose or drop your reference video</span></label>
@@ -258,7 +295,11 @@
         </div>
         <h3>2 · Attempt</h3>
         <label class="drop" id="attdrop"><input type="file" id="attfile" accept="video/*"><span id="attlabel">Choose or drop a video of someone doing it</span></label>
-        <div class="samples">No video handy? Download a sample attempt and upload it:
+        <div class="samples" id="realsamples">No video handy? Download a phone attempt and upload it:
+          <a download href="/static/media/real_ok_3_demo.mp4">correct</a> ·
+          <a download href="/static/media/real_wrongplace_1_demo.mp4">beside, not on</a> ·
+          <a download href="/static/media/real_skip_1_demo.mp4">green missing</a></div>
+        <div class="samples" id="packsamples" hidden>Packing samples for the narrated packing reference:
           <a download href="/static/media/pack_ok_demo.mp4">correct</a> ·
           <a download href="/static/media/pack_order_demo.mp4">liner too late</a> ·
           <a download href="/static/media/pack_skip_card_demo.mp4">no card</a> ·
@@ -286,11 +327,14 @@
       <p id="accintro"></p></div></div>
     <div class="acc" id="acc"></div>
     <div class="caveat" id="acccaveat"></div>
+    <div class="card" id="fresh-eval" style="margin-top:18px" hidden></div>
+    <div class="card" id="tracking-repair" style="margin-top:18px" hidden></div>
+    <div class="card" id="live-validation" style="margin-top:18px" hidden></div>
   </section>
 
   <section class="step">
     <div class="step-head"><div class="num">7</div><div><h2>It understands steps well enough to do them</h2>
-      <p>A learned procedure, handed to a simulated robot arm — nobody wrote instructions for it.</p></div></div>
+      <p>Optional extension: an earlier learned task graph drives deterministic skills on a simulated arm. No physical robot is claimed.</p></div></div>
     <div class="two">
       <div class="media"><div class="screen"><video id="robot" muted loop playsinline autoplay></video></div></div>
       <div class="card" id="robotres"></div>
@@ -309,7 +353,7 @@
   </section>
 
   <footer>
-    Demo clips are generated test videos (flat shapes, computer-voiced narration); the robot is a simulated Franka Panda (MuJoCo). Verdicts and rates come straight from the pipeline and include every failure.
+    The first section uses real phone recordings. The packing examples use generated shapes and computer-voiced narration; the robot is simulated. Verdicts are rebuilt from cached model outputs with the current checker. Real footage is a development set; self-checks and abstentions are reported separately.
   </footer>
 </div>
 
@@ -335,7 +379,7 @@ function saidLine(quote,reason){
 }
 
 async function init(){
-  D=await (await fetch(BASE+'media/check.json')).json();
+  D=await (await fetch(BASE+'media/check.json',{cache:'no-store'})).json();
   const R=D.reference;
   $('refblurb').textContent=R.blurb;
   setVideo($('ref'),R.seen,false);
@@ -352,7 +396,7 @@ async function init(){
   renderAttempts();
   $('attvision').onchange=()=>{const a=D.attempts[cur];setVideo($('att'),$('attvision').checked?a.seen:a.demo,true);};
   select(cur);
-  renderAcc(); renderRobot(); initLive(); initWatch();
+  renderReal(); renderAcc(); renderRobot(); initLive(); initWatch();
 }
 
 // --- rules -------------------------------------------------------------------
@@ -397,15 +441,25 @@ function renderAttempts(){
   document.querySelectorAll('.att').forEach(b=>b.onclick=()=>select(+b.dataset.i));
 }
 const EV={confirmed:'tracker agrees',seen:'seen by tracker',unseen:'not seen by tracker',contradicted:'tracker disagrees'};
+const ASSURANCE={
+  model_only:['Model assessment · tracking has not corroborated this result','This verdict comes from video interpretation. A completed model-only check is still unverified.'],
+  partial:['Partial tracking evidence','Objects were tracked, but their boxes do not independently confirm every placement. Review the video before relying on the result.'],
+  corroborated:['Placements corroborated by tracking','The tracked boxes support each reported placement. This is a 2D check, not proof of 3D contact or safety.'],
+  inconclusive:['Review required · evidence is incomplete or conflicting','The system is withholding acceptance. Inspect the highlighted steps or provide a clearer recording.']
+};
 function renderReport(a, el, video, sub){
   const fails=a.issues.filter(x=>x.severity==='fail');
   const V={pass:['v-ok','✓','Follows the procedure','Every step done, in an allowed order, in the right place.'],
     pass_notes:['v-note','✓','Follows the procedure — with a note','Nothing required was broken.'],
-    unsure:['v-unsure','?','Can’t verify every step','Part of the attempt was hidden from the camera. Nothing it could see was wrong.'],
+    unsure:['v-unsure','?','Review required','The available evidence cannot support a conclusive acceptance. See the reason below.'],
     fail:['v-bad','✕',`${fails.length} problem${fails.length===1?'':'s'} found`,sub||'']}[a.verdict];
-  let h=`<div class="verdict ${V[0]}"><span class="mark">${V[1]}</span>${V[2]}</div><div class="sub">${esc(V[3])}</div>`;
+  if(a.evidence_status==='model_only'&&a.passed) V[2]='Model suggests a pass · unverified';
+  else if(a.evidence_status==='partial'&&a.passed) V[2]='Appears to follow the procedure';
+  let h=`<div class="verdict ${V[0]}"><span class="mark">${V[1]}</span>${V[2]}</div><div class="sub">${esc(V[3])}${sub&&a.verdict!=='fail'?' '+esc(sub):''}</div>`;
+  const assurance=ASSURANCE[a.evidence_status||'model_only'];
+  h+=`<div class="assurance ${a.evidence_status==='inconclusive'?'review':''}"><b>${assurance[0]}</b><br>${assurance[1]}</div>`;
   if(a.issues.length){
-    h+=`<h3>${fails.length?'Problems':'Notes'}</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':x.severity==='unknown'?'unknown':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div>
+    h+=`<h3>${fails.length?'Problems':a.verdict==='unsure'?'Needs review':'Notes'}</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':x.severity==='unknown'?'unknown':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div>
       <span class="k">${esc(x.kind)}${x.critical?'<span class="badge b-crit">Critical</span>':''}</span><span class="m">${esc(x.message)}</span>
       ${saidLine(x.quote,x.reason)}${x.fix?`<span class="fix"><b>Fix:</b> ${esc(x.fix)}</span>`:''}</div></div>`).join('');
   }
@@ -420,6 +474,30 @@ function select(i,keep){
   document.querySelectorAll('.att').forEach(b=>b.classList.toggle('active',+b.dataset.i===i));
   if(!keep) setVideo($('att'),$('attvision').checked?a.seen:a.demo,false);
   renderReport(a,$('report'),$('att'),a.what);
+}
+
+let realIndex=0;
+function renderReal(){
+  const R=D.real;
+  if(!R) throw new Error('Real-footage evidence is missing. Please refresh or rebuild the demo.');
+  const S=R.summary;
+  $('realref').src=BASE+R.reference.demo; $('realref').poster=BASE+R.reference.poster;
+  $('realmetrics').innerHTML=`<span><b>${S.independent_attempts}</b> separate attempts</span><span><b>${S.resolved_correctly}/${S.independent_attempts}</b> expected outcomes resolved</span><span><b>${S.abstentions}</b> require review</span><span><b>${S.false_accepts}/${S.incorrect_attempts}</b> incorrect attempts accepted</span>`;
+  $('realcases').innerHTML=R.attempts.map((a,i)=>{const [c,t]=pill(a);return `<button class="real-case" data-real="${i}"><strong>${esc(a.title)}</strong><span class="pill ${c}">${t}</span></button>`;}).join('');
+  document.querySelectorAll('.real-case').forEach(b=>b.onclick=()=>selectReal(+b.dataset.real));
+  $('realvision').onchange=()=>selectReal(realIndex,true);
+  $('playboth').onclick=()=>{for(const v of [$('realref'),$('realatt')]){v.currentTime=0;v.play().catch(()=>{});}};
+  $('realmethod').innerHTML=`<p>One silent reference learned two steps. The same checker assessed every attempt; no per-clip rules were added.</p><p><b>${S.resolved_correctly} expected outcomes resolved; ${S.abstentions} abstentions.</b> Missing tracking evidence sends a case to review, even when the video model thinks a step was skipped.</p><p>The reference self-check is <b>excluded</b>. It currently requires review because the tracker disagrees with a placement.</p><p><b>Development replay.</b> The recordings informed earlier fixes. They are separate takes, not an unseen benchmark or evidence of workplace accuracy.</p>`;
+  $('realtable').innerHTML=`<table class="evidence-table"><thead><tr><th>Attempt</th><th>Expected</th><th>Result</th></tr></thead><tbody>${R.attempts.map(a=>`<tr><td>${esc(a.title)}</td><td>${esc(a.expected_outcome)}</td><td>${esc(a.verdict==='unsure'?'review':a.verdict.replace('_',' '))}</td></tr>`).join('')}</tbody></table>`;
+  $('realscope').textContent=R.method.scope+' '+R.method.order_caveat+' '+R.method.tracking_caveat+' '+R.method.reference_caveat;
+  selectReal(4);
+}
+function selectReal(i,keep=false){
+  realIndex=i; const a=D.real.attempts[i];
+  $('realcase').textContent=a.title; $('realatt').poster=BASE+(a.poster||'');
+  setVideo($('realatt'),$('realvision').checked?a.seen:a.demo,keep);
+  document.querySelectorAll('.real-case').forEach(b=>b.classList.toggle('active',+b.dataset.real===i));
+  renderReport(a,$('realreport'),$('realatt'),a.what);
 }
 
 // --- live checking -----------------------------------------------------------
@@ -445,6 +523,7 @@ async function startLive(){
   $('liveerr').hidden=true; $('livereport').hidden=true; $('liveproc').hidden=true; $('livemedia').hidden=true; $('liveempty').hidden=false;
   L.ov={}; L.shownRules=false; L.last=null;
   const fd=new FormData(); fd.append('attempt',L.att);
+  if(!ownRef()) fd.append('reference_demo',document.querySelector('input[name=refmode]:checked').value);
   if(ownRef()&&L.ref){ fd.append('reference',L.ref); if(L.ref2) fd.append('reference2',L.ref2); }
   $('go').disabled=true; $('go').textContent='Uploading…';
   let r;
@@ -476,7 +555,13 @@ async function recheckLive(){
   renderReport(res[L.job],$('livereport'),$('livevid'),'Re-checked with your rule changes.');
 }
 async function poll(){
-  const j=await (await fetch(`/api/jobs/${L.job}`)).json();
+  let j;
+  try {
+    const r=await fetch(`/api/jobs/${L.job}`);
+    if(r.status===404) return liveError('This check expired after a server restart. Please upload it again.');
+    if(!r.ok) throw new Error('poll failed');
+    j=await r.json(); L.pollFailures=0;
+  } catch(e) { L.pollFailures=(L.pollFailures||0)+1; if(L.pollFailures>=3)liveError('Connection lost. Please try this check again.'); return; }
   if(j.status==='error') { $('stages').hidden=true; return liveError(j.error); }
   showStages(j.stage,j.custom_reference,j.second_reference,j.status==='done');
   if(j.reference) renderLiveProc(j.reference);
@@ -486,7 +571,7 @@ async function poll(){
     L.last=snap;
     if($('livemedia').hidden){ L.demo=j.demo; setVideo($('livevid'),j.demo,false); }
     $('liveempty').hidden=true; $('livemedia').hidden=false; $('livereport').hidden=false;
-    const sub=j.custom_reference?'Checked against your reference video.':'Checked against the packing reference.';
+    const sub=j.status==='checked'&&j.result.evidence_status==='model_only'?'Provisional model result · tracking is still running.':j.custom_reference?'Checked against your reference video.':j.reference_demo==='real'?'Checked against the phone-footage reference.':'Checked against the packing reference.';
     renderReport(j.result,$('livereport'),$('livevid'),sub);
   }
   if(j.status==='done'){
@@ -500,7 +585,8 @@ function initLive(){
   wireDrop($('refdrop'),$('reffile'),$('reflabel'),'ref','Choose or drop your reference video');
   wireDrop($('ref2drop'),$('ref2file'),$('ref2label'),'ref2','Optional: a second correct way to do it');
   wireDrop($('attdrop'),$('attfile'),$('attlabel'),'att','Choose or drop a video of someone doing it');
-  document.querySelectorAll('input[name=refmode]').forEach(r=>r.onchange=()=>{ $('ownrefs').hidden=!ownRef(); ready(); });
+  document.querySelectorAll('input[name=refmode]').forEach(r=>r.onchange=()=>{ $('ownrefs').hidden=!ownRef();
+    $('realsamples').hidden=r.value!=='real'; $('packsamples').hidden=r.value!=='pack'; ready(); });
   $('livevision').onchange=()=>setVideo($('livevid'),$('livevision').checked?L.seen:L.demo,true);
   $('go').onclick=startLive;
 }
@@ -636,10 +722,16 @@ function renderAcc(){
   const rows=[['ok','correct attempts passed'],['ok_alt','free-order attempts passed'],['loose','unusual orders noted, not failed'],['order','required orders caught'],
     ['skip_liner','skipped critical step caught'],['skip_card','skipped steps caught'],['wrong_place','wrong places caught'],['hidden','hidden steps not wrongly failed']].filter(([k])=>P[k]);
   const total=rows.reduce((s,[k])=>s+P[k][1],0);
-  $('accintro').textContent=`Measured on ${total} freshly generated packing attempts with randomly varied positions and timing — each read by the real models and checked against the learned procedure. Expected verdicts were written before running; one hidden-step check was tightened after a run where the tracker mistook the hand for the card.`;
+  $('accintro').textContent=`Generated-video development evaluation: ${total} packing attempts with varied positions and timing, replayed from cached model outputs. These same clips were used with two model providers; they are not ${total*2} independent examples. Expected labels were written before the original runs; checker fixes followed some failures.`;
   $('acc').innerHTML=rows.map(([k,l])=>{const [g,n]=P[k];return `<div class="card"><div class="big">${g} of ${n}</div><div class="lab">${l}</div><div class="meter"><span style="width:${100*g/n}%"></span></div></div>`;}).join('');
   const t=Object.values(T).reduce((a,[g,n])=>[a[0]+g,a[1]+n],[0,0]);
-  $('acccaveat').innerHTML=`<b>Honest scope:</b> these are clean generated clips with computer-voiced narration${t[1]?`; an earlier three-tray test scored ${t[0]} of ${t[1]}`:''}. Real phone footage — hands, shadows, clutter — is harder, and is what we test next.`;
+  $('acccaveat').innerHTML=`<b>Honest scope:</b> these are clean generated clips with computer-voiced narration${t[1]?`; an earlier three-tray development test scored ${t[0]} of ${t[1]}`:''}. The phone-footage results above report nine separate attempts, abstentions, and an excluded self-check. Neither set establishes production accuracy.`;
+  if(D.fresh_evaluation){const F=D.fresh_evaluation,S=F.summary;$('fresh-eval').hidden=false;
+    $('fresh-eval').innerHTML=`<h3>${D.fresh_evaluation_current?'Fresh generated clips · checker rules frozen before inference':'Earlier generated batch · before tracking repair'}</h3><p><b>${S.matched_expected}/${S.total}</b> expected outcomes matched; <b>${S.abstentions}</b> abstentions and <b>${S.errors}</b> pipeline errors are reported separately. Every case stays in the denominator.</p><p class="sub">Labels, seeds, and the checker fingerprint were written before inference. These are new variations from the same renderer, not new real-world tasks. Hidden cases test avoidance of a false failure; an abstention is an allowed outcome. The original report is preserved so the two timeout failures remain inspectable.</p><a href="/static/media/judging_eval.json" download>Download original plan and every result</a>`;}
+  if(D.tracking_validation){const S=D.tracking_validation.summary;$('tracking-repair').hidden=false;
+    $('tracking-repair').innerHTML=`<h3>Tracking repair · same cases checked again</h3><p><b>${S.matched_expected}/${S.total}</b> expected outcomes matched; <b>${S.pipeline_errors}</b> pipeline errors and <b>${S.object_tracking_errors}</b> object tracking errors. <b>${S.abstentions}</b> cases require review.</p><p class="sub">Fourteen original extraction caches were replayed. The two former timeout cases were extracted and tracked again. This verifies the repair on the same development examples; it is not sixteen new unseen clips. Review is the expected outcome when an object is hidden.</p><a href="/static/media/tracking_validation.json" download>Download the repair verification and timings</a>`;}
+  if(D.live_validation){const S=D.live_validation.summary,R=D.live_validation.results;$('live-validation').hidden=false;
+    $('live-validation').innerHTML=`<h3>Public upload checks · real inference and tracking</h3><p><b>${S.passed_checks}/${S.runs}</b> checks passed, with <b>${S.tracking_errors}</b> tracking errors and working overlay videos. Completed in about <b>${Math.round(Math.min(...R.map(r=>r.seconds)))}–${Math.round(Math.max(...R.map(r=>r.seconds)))} seconds</b>.</p><p class="sub">Two fresh uploads of a correct phone clip passed. A real wrong placement failed. A generated occlusion required review. Four service runs over three provided examples; this checks integration and availability, not general accuracy.</p><a href="/static/media/live_validation.json" download>Download public-check results and timings</a>`;}
 }
 function renderRobot(){
   const R=D.robot; setVideo($('robot'),R.video,false);
@@ -648,7 +740,7 @@ function renderRobot(){
     <h3>Goals reached · ${n} of ${R.goals.length}</h3>`+R.goals.map(g=>`<div class="check"><span class="i ${g.ok?'yes':'no'}">${g.ok?'✓':'✕'}</span>${esc(g.text)}</div>`).join('')
     +`<div class="note">Learned from an earlier three-tray demonstration. More: the robot under stress — objects moved, a block knocked over, steps done out of order. <a href="/static/robot.html">See the robot tests →</a></div>`;
 }
-init();
+init().catch(error=>{console.error('Could not load demo evidence:',error);const el=$('realmetrics');if(el)el.textContent='The demo evidence could not load. Please refresh the page.';});
 </script>
 </body>
 </html>

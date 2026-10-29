@@ -200,7 +200,16 @@
         "brown box",
         "yellow card",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "corroborated",
+      "tracking": {
+        "parser": null,
+        "seconds": 455.82,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     },
     {
       "id": "pack_ok_alt",
@@ -261,7 +270,16 @@
         "brown box",
         "yellow card",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "corroborated",
+      "tracking": {
+        "parser": null,
+        "seconds": 433.7,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     },
     {
       "id": "pack_loose",
@@ -334,7 +352,16 @@
         "brown box",
         "yellow card",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "corroborated",
+      "tracking": {
+        "parser": null,
+        "seconds": 434.81,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     },
     {
       "id": "pack_order",
@@ -407,7 +434,16 @@
         "brown box",
         "yellow card",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "corroborated",
+      "tracking": {
+        "parser": null,
+        "seconds": 436.79,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     },
     {
       "id": "pack_skip_liner",
@@ -417,7 +453,7 @@
       "seen": "media/pack_skip_liner_seen.mp4",
       "passed": false,
       "verdict": "fail",
-      "verified": true,
+      "verified": false,
       "milestones": [
         {
           "text": "Places the blue liner in the brown box",
@@ -491,7 +527,16 @@
         "yellow card",
         "brown box",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "partial",
+      "tracking": {
+        "parser": null,
+        "seconds": 330.59,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     },
     {
       "id": "pack_skip_card",
@@ -501,7 +546,7 @@
       "seen": "media/pack_skip_card_seen.mp4",
       "passed": false,
       "verdict": "fail",
-      "verified": true,
+      "verified": false,
       "milestones": [
         {
           "text": "Places the blue liner in the brown box",
@@ -564,7 +609,16 @@
         "brown box",
         "yellow card",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "partial",
+      "tracking": {
+        "parser": null,
+        "seconds": 341.35,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     },
     {
       "id": "pack_wrong_place",
@@ -574,7 +628,7 @@
       "seen": "media/pack_wrong_place_seen.mp4",
       "passed": false,
       "verdict": "fail",
-      "verified": true,
+      "verified": false,
       "milestones": [
         {
           "text": "Places the blue liner in the brown box",
@@ -637,7 +691,16 @@
         "brown box",
         "yellow card",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "partial",
+      "tracking": {
+        "parser": null,
+        "seconds": 437.79,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     },
     {
       "id": "pack_hidden",
@@ -647,7 +710,7 @@
       "seen": "media/pack_hidden_seen.mp4",
       "passed": false,
       "verdict": "unsure",
-      "verified": true,
+      "verified": false,
       "milestones": [
         {
           "text": "Places the blue liner in the brown box",
@@ -695,7 +758,7 @@
           "kind": "Couldn't verify",
           "type": "unknown",
           "severity": "unknown",
-          "message": "Couldn't verify where the yellow card went \u2014 it was hidden when it was moved (the video model thought in the brown box)",
+          "message": "Couldn't verify where the yellow card went \u2014 the tracker could not support the reported placement (in the brown box)",
           "time": 10.5,
           "critical": false,
           "reason": null,
@@ -710,7 +773,16 @@
         "brown box",
         "yellow card",
         "gray block"
-      ]
+      ],
+      "tracking_used": true,
+      "evidence_status": "inconclusive",
+      "tracking": {
+        "parser": null,
+        "seconds": 419.74,
+        "objects_tracked": 6,
+        "objects_total": 6,
+        "errors": {}
+      }
     }
   ],
   "robot": {
@@ -783,6 +855,3576 @@
         5,
         5
       ]
+    }
+  },
+  "real": {
+    "reference": {
+      "id": "real_ref",
+      "demo": "media/real_ref_demo.mp4",
+      "seen": "media/real_ref_seen.mp4",
+      "poster": "media/real_ref.jpg",
+      "steps": [
+        {
+          "text": "Puts down the pink block",
+          "start": 0.8,
+          "end": 2.5,
+          "critical": false,
+          "reason": null,
+          "quote": null
+        },
+        {
+          "text": "Stacks the green block on the pink block",
+          "start": 3.5,
+          "end": 5.6,
+          "critical": false,
+          "reason": null,
+          "quote": null
+        }
+      ],
+      "rules": [
+        {
+          "id": "on/pink_block/surface -> on/green_block/pink_block",
+          "strength": "required",
+          "source": "physical",
+          "why": "The green block goes on the pink block, so the pink block was on the surface first.",
+          "quote": null,
+          "before": "Puts down the pink block",
+          "after": "Stacks the green block on the pink block"
+        }
+      ],
+      "heard": [],
+      "references": 1
+    },
+    "attempts": [
+      {
+        "id": "real_ok_2",
+        "title": "Correct \u00b7 take 2",
+        "what": "The green block finishes on top of the red block.",
+        "original_label": "pass",
+        "expected_outcome": "pass",
+        "resolved_correctly": true,
+        "clip_sha256": "396cd502c7c5765963980453a286e9db417c9830b82f905c4c423f3b1d27f2f0",
+        "demo": "media/real_ok_2_demo.mp4",
+        "seen": "media/real_ok_2_seen.mp4",
+        "poster": "media/real_ok_2.jpg",
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": null,
+          "seconds": 113.7,
+          "objects_tracked": 3,
+          "objects_total": 3,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 3.5,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": true,
+            "time": 7.0,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "pink block",
+          "green block",
+          "brown table"
+        ]
+      },
+      {
+        "id": "real_ok_3",
+        "title": "Correct \u00b7 take 3",
+        "what": "A separate correct attempt at a different pace.",
+        "original_label": "pass",
+        "expected_outcome": "pass",
+        "resolved_correctly": true,
+        "clip_sha256": "420a0a0260e6b539b3b68aec1f6e3321c4745b9c3834280adefd9ed849d28c43",
+        "demo": "media/real_ok_3_demo.mp4",
+        "seen": "media/real_ok_3_seen.mp4",
+        "poster": "media/real_ok_3.jpg",
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": null,
+          "seconds": 21.9,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 3.0,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": true,
+            "time": 6.5,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "pink block",
+          "green block"
+        ]
+      },
+      {
+        "id": "real_order_1",
+        "title": "Stack reversed \u00b7 take 1",
+        "what": "Red ends on green. This changes the structure, not just the order.",
+        "original_label": "wrong_order",
+        "expected_outcome": "fail",
+        "resolved_correctly": true,
+        "clip_sha256": "3885bec4bc82a3fc89257583292a4b5c8c134ae6320b6545ae38315c7e13c124",
+        "demo": "media/real_order_1_demo.mp4",
+        "seen": "media/real_order_1_seen.mp4",
+        "poster": "media/real_order_1.jpg",
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": null,
+          "seconds": 38.99,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the green block on the surface instead of on the pink block",
+            "time": 3.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Move the green block onto the pink block."
+          },
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the pink block on the green block instead of on the surface",
+            "time": 7.0,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Move the pink block onto the surface."
+          }
+        ],
+        "objects": [
+          "green block",
+          "pink block"
+        ]
+      },
+      {
+        "id": "real_order_2",
+        "title": "Stack reversed \u00b7 take 2",
+        "what": "Another attempt with the wrong block on top.",
+        "original_label": "wrong_order",
+        "expected_outcome": "fail",
+        "resolved_correctly": true,
+        "clip_sha256": "4f8d596f3e50d1cdaa517016f1eee32a04f0e9064326392f767db935722224a0",
+        "demo": "media/real_order_2_demo.mp4",
+        "seen": "media/real_order_2_seen.mp4",
+        "poster": "media/real_order_2.jpg",
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": null,
+          "seconds": 81.76,
+          "objects_tracked": 3,
+          "objects_total": 3,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the green block on the surface instead of on the pink block",
+            "time": 2.3,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Move the green block onto the pink block."
+          },
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the pink block on the green block instead of on the surface",
+            "time": 5.4,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Move the pink block onto the surface."
+          }
+        ],
+        "objects": [
+          "green block",
+          "pink block",
+          "brown table"
+        ]
+      },
+      {
+        "id": "real_wrongplace_1",
+        "title": "Beside, not on \u00b7 take 1",
+        "what": "Green is placed beside red instead of stacked on it.",
+        "original_label": "wrong_place",
+        "expected_outcome": "fail",
+        "resolved_correctly": true,
+        "clip_sha256": "06d4fd6e0592aff481ee08ed63e371d1974257668795aac8eff1f54146d59fcf",
+        "demo": "media/real_wrongplace_1_demo.mp4",
+        "seen": "media/real_wrongplace_1_seen.mp4",
+        "poster": "media/real_wrongplace_1.jpg",
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": null,
+          "seconds": 133.66,
+          "objects_tracked": 3,
+          "objects_total": 3,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 5.8,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the green block on the surface instead of on the pink block",
+            "time": 9.2,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Move the green block onto the pink block."
+          }
+        ],
+        "objects": [
+          "pink block",
+          "green block",
+          "brown table"
+        ]
+      },
+      {
+        "id": "real_wrongplace_2",
+        "title": "Beside, not on \u00b7 take 2",
+        "what": "A second wrong-placement attempt.",
+        "original_label": "wrong_place",
+        "expected_outcome": "fail",
+        "resolved_correctly": true,
+        "clip_sha256": "4ec662c504756907a1d2c33e0ec2b7cca8f6e81bf6dd3b8e42cd0341a4789b81",
+        "demo": "media/real_wrongplace_2_demo.mp4",
+        "seen": "media/real_wrongplace_2_seen.mp4",
+        "poster": "media/real_wrongplace_2.jpg",
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": null,
+          "seconds": 101.49,
+          "objects_tracked": 3,
+          "objects_total": 3,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 3.8,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the green block next to the pink block instead of on the pink block",
+            "time": 7.0,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Move the green block onto the pink block."
+          }
+        ],
+        "objects": [
+          "pink block",
+          "green block",
+          "brown table"
+        ]
+      },
+      {
+        "id": "real_skip_1",
+        "title": "Green missing \u00b7 take 1",
+        "what": "Only the red block appears. Missing tracking evidence may require review.",
+        "original_label": "skipped",
+        "expected_outcome": "fail",
+        "resolved_correctly": false,
+        "clip_sha256": "5deaf708fc0c82df6726c193e8f583f53d885edf7c10dd75bb37bca60109a4f9",
+        "demo": "media/real_skip_1_demo.mp4",
+        "seen": "media/real_skip_1_seen.mp4",
+        "poster": "media/real_skip_1.jpg",
+        "passed": false,
+        "verdict": "unsure",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "inconclusive",
+        "tracking": {
+          "parser": null,
+          "seconds": 95.15,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 2.5,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify: Stacks the green block on the pink block \u2014 the green block was hidden or out of view when this step should have happened",
+            "time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Re-record with the whole workspace in view, or check this step by hand."
+          }
+        ],
+        "objects": [
+          "pink block",
+          "brown table"
+        ]
+      },
+      {
+        "id": "real_skip_2",
+        "title": "Green missing \u00b7 take 2",
+        "what": "A second missing-step attempt; abstention is shown explicitly.",
+        "original_label": "skipped",
+        "expected_outcome": "fail",
+        "resolved_correctly": false,
+        "clip_sha256": "1aaf7c1876bd8206f8451b139f03c379e4394eac35f5fabfc29778a2cc9700d8",
+        "demo": "media/real_skip_2_demo.mp4",
+        "seen": "media/real_skip_2_seen.mp4",
+        "poster": "media/real_skip_2.jpg",
+        "passed": false,
+        "verdict": "unsure",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "inconclusive",
+        "tracking": {
+          "parser": null,
+          "seconds": 97.77,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 2.5,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify: Stacks the green block on the pink block \u2014 the green block was hidden or out of view when this step should have happened",
+            "time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Re-record with the whole workspace in view, or check this step by hand."
+          }
+        ],
+        "objects": [
+          "pink block",
+          "brown table"
+        ]
+      },
+      {
+        "id": "real_hidden_1",
+        "title": "Hand blocks the view",
+        "what": "The hand partly covers the placement; inspect the evidence strength.",
+        "original_label": "no_false_fail",
+        "expected_outcome": "no false failure",
+        "resolved_correctly": true,
+        "clip_sha256": "2f004ba3d0cc345faf246c9e42ab052ce5fddeceabce4f32be40ceb90fd5b02f",
+        "demo": "media/real_hidden_1_demo.mp4",
+        "seen": "media/real_hidden_1_seen.mp4",
+        "poster": "media/real_hidden_1.jpg",
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": null,
+          "seconds": 42.92,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 3.5,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": true,
+            "time": 6.5,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "pink block",
+          "green block"
+        ]
+      }
+    ],
+    "self_check": {
+      "excluded_from_score": true,
+      "reason": "Same source recording as the reference.",
+      "passed": false,
+      "verdict": "unsure",
+      "verified": false,
+      "tracking_used": true,
+      "evidence_status": "inconclusive",
+      "tracking": {
+        "parser": null,
+        "seconds": 49.64,
+        "objects_tracked": 2,
+        "objects_total": 2,
+        "errors": {}
+      },
+      "milestones": [
+        {
+          "text": "Puts down the pink block",
+          "done": true,
+          "time": 2.5,
+          "ref_time": 2.5,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "evidence": "seen"
+        },
+        {
+          "text": "Stacks the green block on the pink block",
+          "done": true,
+          "time": 5.5,
+          "ref_time": 5.6,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "evidence": "contradicted"
+        }
+      ],
+      "issues": [
+        {
+          "kind": "Conflicting evidence",
+          "type": "doubt",
+          "severity": "unknown",
+          "message": "Check this step: the tracker shows the green block ending up away from the pink block",
+          "time": 5.5,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Review this moment or re-record with both objects in view."
+        }
+      ],
+      "objects": [
+        "pink block",
+        "green block"
+      ]
+    },
+    "summary": {
+      "independent_attempts": 9,
+      "resolved_correctly": 7,
+      "abstentions": 2,
+      "false_accepts": 0,
+      "false_rejects": 0,
+      "incorrect_attempts": 6
+    },
+    "method": {
+      "type": "development replay",
+      "fresh_model_inference": false,
+      "checker_sha256": "6541b645849b2041a0b8a55e5aaf350b47b6fa29e70bb4d51aab520e8e39f907",
+      "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
+      "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
+      "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",
+      "reference_caveat": "The red block is named pink by the extractor. The same learned identifier is reused across attempts."
+    }
+  },
+  "fresh_evaluation": {
+    "plan": {
+      "checker_sha256": "ed9e950f4731c5a1bcf1ee872772ea72fb17e38ab210fe023d1b7795bfd6d4f9",
+      "seed": 73129,
+      "scope": "New generated clips from the existing renderer; not new real-world tasks.",
+      "cases": [
+        {
+          "id": "judge_ok_0",
+          "kind": "ok",
+          "seed": 73129,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_ok_1",
+          "kind": "ok",
+          "seed": 73130,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_ok_alt_0",
+          "kind": "ok_alt",
+          "seed": 73160,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_ok_alt_1",
+          "kind": "ok_alt",
+          "seed": 73161,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_loose_0",
+          "kind": "loose",
+          "seed": 73191,
+          "expected": "pass_notes"
+        },
+        {
+          "id": "judge_loose_1",
+          "kind": "loose",
+          "seed": 73192,
+          "expected": "pass_notes"
+        },
+        {
+          "id": "judge_order_0",
+          "kind": "order",
+          "seed": 73222,
+          "expected": "order"
+        },
+        {
+          "id": "judge_order_1",
+          "kind": "order",
+          "seed": 73223,
+          "expected": "order"
+        },
+        {
+          "id": "judge_skip_liner_0",
+          "kind": "skip_liner",
+          "seed": 73253,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_skip_liner_1",
+          "kind": "skip_liner",
+          "seed": 73254,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_skip_card_0",
+          "kind": "skip_card",
+          "seed": 73284,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_skip_card_1",
+          "kind": "skip_card",
+          "seed": 73285,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_wrong_place_0",
+          "kind": "wrong_place",
+          "seed": 73315,
+          "expected": "wrong_place"
+        },
+        {
+          "id": "judge_wrong_place_1",
+          "kind": "wrong_place",
+          "seed": 73316,
+          "expected": "wrong_place"
+        },
+        {
+          "id": "judge_hidden_0",
+          "kind": "hidden",
+          "seed": 73346,
+          "expected": "no_false_fail"
+        },
+        {
+          "id": "judge_hidden_1",
+          "kind": "hidden",
+          "seed": 73347,
+          "expected": "no_false_fail"
+        }
+      ]
+    },
+    "results": [
+      {
+        "id": "judge_ok_0",
+        "kind": "ok",
+        "seed": 73129,
+        "expected": "pass",
+        "correct": true,
+        "cost_usd": 0.0101,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 10.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 13.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_ok_1",
+        "kind": "ok",
+        "seed": 73130,
+        "expected": "pass",
+        "correct": true,
+        "cost_usd": 0.009926,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.2,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.2,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 8.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 11.5,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_ok_alt_0",
+        "kind": "ok_alt",
+        "seed": 73160,
+        "expected": "pass",
+        "correct": true,
+        "cost_usd": 0.008991,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 13.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 10.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_ok_alt_1",
+        "kind": "ok_alt",
+        "seed": 73161,
+        "expected": "pass",
+        "correct": true,
+        "cost_usd": 0.011655,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 12.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 9.5,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_loose_0",
+        "kind": "loose",
+        "seed": 73191,
+        "expected": "pass_notes",
+        "correct": true,
+        "cost_usd": 0.010497,
+        "result": {
+          "passed": true,
+          "verdict": "pass_notes",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 8.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 5.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 11.5,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Different order",
+              "type": "order",
+              "severity": "warn",
+              "message": "Different order from the reference: \u201cPlaces the green charger in the brown box\u201d happened before \u201cStacks the red product on the blue liner\u201d",
+              "time": 5.5,
+              "critical": false,
+              "reason": "Nothing says this order matters. Mark it as required if it does.",
+              "quote": null,
+              "fix": null
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_loose_1",
+        "kind": "loose",
+        "seed": 73192,
+        "expected": "pass_notes",
+        "correct": true,
+        "cost_usd": 0.00963,
+        "result": {
+          "passed": true,
+          "verdict": "pass_notes",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 9.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Different order",
+              "type": "order",
+              "severity": "warn",
+              "message": "Different order from the reference: \u201cPlaces the green charger in the brown box\u201d happened before \u201cStacks the red product on the blue liner\u201d",
+              "time": 6.5,
+              "critical": false,
+              "reason": "Nothing says this order matters. Mark it as required if it does.",
+              "quote": null,
+              "fix": null
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_order_0",
+        "kind": "order",
+        "seed": 73222,
+        "expected": "order",
+        "correct": true,
+        "cost_usd": 0.009783,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 9.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong order",
+              "type": "order",
+              "severity": "fail",
+              "message": "Wrong order: \u201cPlaces the green charger in the brown box\u201d happened before \u201cPlaces the blue liner in the brown box\u201d",
+              "time": 3.0,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box first."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_order_1",
+        "kind": "order",
+        "seed": 73223,
+        "expected": "order",
+        "correct": true,
+        "cost_usd": 0.009826,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 5.6,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 9.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 2.8,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.8,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong order",
+              "type": "order",
+              "severity": "fail",
+              "message": "Wrong order: \u201cPlaces the green charger in the brown box\u201d happened before \u201cPlaces the blue liner in the brown box\u201d",
+              "time": 2.8,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box first."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_skip_liner_0",
+        "kind": "skip_liner",
+        "seed": 73253,
+        "expected": "skipped",
+        "correct": true,
+        "cost_usd": 0.008636,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": false,
+              "time": null,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 9.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the red product in the brown box instead of on the blue liner",
+              "time": 3.0,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "fix": "Move the red product onto the blue liner."
+            },
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Places the blue liner in the brown box",
+              "time": null,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_skip_liner_1",
+        "kind": "skip_liner",
+        "seed": 73254,
+        "expected": "skipped",
+        "correct": true,
+        "cost_usd": 0.007961,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": false,
+              "time": null,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 5.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 8.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the red product in the brown box instead of on the blue liner",
+              "time": 3.0,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "fix": "Move the red product onto the blue liner."
+            },
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Places the blue liner in the brown box",
+              "time": null,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_skip_card_0",
+        "kind": "skip_card",
+        "seed": 73284,
+        "expected": "skipped",
+        "correct": true,
+        "cost_usd": 0.007678,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.2,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 8.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": false,
+              "time": null,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Stacks the yellow card on the red product (expected after 0:08)",
+              "time": 8.5,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "fix": "Stack the yellow card on the red product."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_skip_card_1",
+        "kind": "skip_card",
+        "seed": 73285,
+        "expected": "skipped",
+        "correct": true,
+        "cost_usd": 0.008093,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 5.4,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 7.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": false,
+              "time": null,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Stacks the yellow card on the red product (expected after 0:07)",
+              "time": 7.5,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "fix": "Stack the yellow card on the red product."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_wrong_place_0",
+        "kind": "wrong_place",
+        "seed": 73315,
+        "expected": "wrong_place",
+        "correct": true,
+        "cost_usd": 0.008917,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.2,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.2,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the green charger on the gray block instead of in the brown box",
+              "time": 8.8,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "fix": "Move the green charger into the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_wrong_place_1",
+        "kind": "wrong_place",
+        "seed": 73316,
+        "expected": "wrong_place",
+        "correct": true,
+        "cost_usd": 0.009338,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the green charger on the gray block instead of in the brown box",
+              "time": 9.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "fix": "Move the green charger into the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        }
+      },
+      {
+        "id": "judge_hidden_0",
+        "kind": "hidden",
+        "seed": 73346,
+        "expected": "no_false_fail",
+        "correct": false,
+        "error": "TimeoutError: "
+      },
+      {
+        "id": "judge_hidden_1",
+        "kind": "hidden",
+        "seed": 73347,
+        "expected": "no_false_fail",
+        "correct": false,
+        "error": "TimeoutError: "
+      }
+    ],
+    "summary": {
+      "total": 16,
+      "completed": 16,
+      "matched_expected": 14,
+      "errors": 2,
+      "abstentions": 0
+    }
+  },
+  "fresh_evaluation_current": false,
+  "tracking_validation": {
+    "type": "development repair replay",
+    "pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
+    "previous_summary": {
+      "total": 16,
+      "completed": 16,
+      "matched_expected": 14,
+      "errors": 2,
+      "abstentions": 0
+    },
+    "original_plan": {
+      "checker_sha256": "ed9e950f4731c5a1bcf1ee872772ea72fb17e38ab210fe023d1b7795bfd6d4f9",
+      "seed": 73129,
+      "scope": "New generated clips from the existing renderer; not new real-world tasks.",
+      "cases": [
+        {
+          "id": "judge_ok_0",
+          "kind": "ok",
+          "seed": 73129,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_ok_1",
+          "kind": "ok",
+          "seed": 73130,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_ok_alt_0",
+          "kind": "ok_alt",
+          "seed": 73160,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_ok_alt_1",
+          "kind": "ok_alt",
+          "seed": 73161,
+          "expected": "pass"
+        },
+        {
+          "id": "judge_loose_0",
+          "kind": "loose",
+          "seed": 73191,
+          "expected": "pass_notes"
+        },
+        {
+          "id": "judge_loose_1",
+          "kind": "loose",
+          "seed": 73192,
+          "expected": "pass_notes"
+        },
+        {
+          "id": "judge_order_0",
+          "kind": "order",
+          "seed": 73222,
+          "expected": "order"
+        },
+        {
+          "id": "judge_order_1",
+          "kind": "order",
+          "seed": 73223,
+          "expected": "order"
+        },
+        {
+          "id": "judge_skip_liner_0",
+          "kind": "skip_liner",
+          "seed": 73253,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_skip_liner_1",
+          "kind": "skip_liner",
+          "seed": 73254,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_skip_card_0",
+          "kind": "skip_card",
+          "seed": 73284,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_skip_card_1",
+          "kind": "skip_card",
+          "seed": 73285,
+          "expected": "skipped"
+        },
+        {
+          "id": "judge_wrong_place_0",
+          "kind": "wrong_place",
+          "seed": 73315,
+          "expected": "wrong_place"
+        },
+        {
+          "id": "judge_wrong_place_1",
+          "kind": "wrong_place",
+          "seed": 73316,
+          "expected": "wrong_place"
+        },
+        {
+          "id": "judge_hidden_0",
+          "kind": "hidden",
+          "seed": 73346,
+          "expected": "no_false_fail"
+        },
+        {
+          "id": "judge_hidden_1",
+          "kind": "hidden",
+          "seed": 73347,
+          "expected": "no_false_fail"
+        }
+      ]
+    },
+    "scope": "Same sixteen generated clips: fourteen extraction caches replayed, two former timeout cases extracted and tracked again.",
+    "results": [
+      {
+        "id": "judge_ok_0",
+        "kind": "ok",
+        "seed": 73129,
+        "expected": "pass",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 10.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 13.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_ok_1",
+        "kind": "ok",
+        "seed": 73130,
+        "expected": "pass",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.2,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.2,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 8.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 11.5,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_ok_alt_0",
+        "kind": "ok_alt",
+        "seed": 73160,
+        "expected": "pass",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 13.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 10.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_ok_alt_1",
+        "kind": "ok_alt",
+        "seed": 73161,
+        "expected": "pass",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": true,
+          "verdict": "pass",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 12.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 9.5,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_loose_0",
+        "kind": "loose",
+        "seed": 73191,
+        "expected": "pass_notes",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": true,
+          "verdict": "pass_notes",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 8.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 5.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 11.5,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Different order",
+              "type": "order",
+              "severity": "warn",
+              "message": "Different order from the reference: \u201cPlaces the green charger in the brown box\u201d happened before \u201cStacks the red product on the blue liner\u201d",
+              "time": 5.5,
+              "critical": false,
+              "reason": "Nothing says this order matters. Mark it as required if it does.",
+              "quote": null,
+              "fix": null
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_loose_1",
+        "kind": "loose",
+        "seed": 73192,
+        "expected": "pass_notes",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": true,
+          "verdict": "pass_notes",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 9.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Different order",
+              "type": "order",
+              "severity": "warn",
+              "message": "Different order from the reference: \u201cPlaces the green charger in the brown box\u201d happened before \u201cStacks the red product on the blue liner\u201d",
+              "time": 6.5,
+              "critical": false,
+              "reason": "Nothing says this order matters. Mark it as required if it does.",
+              "quote": null,
+              "fix": null
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_order_0",
+        "kind": "order",
+        "seed": 73222,
+        "expected": "order",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 6.5,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 9.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong order",
+              "type": "order",
+              "severity": "fail",
+              "message": "Wrong order: \u201cPlaces the green charger in the brown box\u201d happened before \u201cPlaces the blue liner in the brown box\u201d",
+              "time": 3.0,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box first."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_order_1",
+        "kind": "order",
+        "seed": 73223,
+        "expected": "order",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 5.6,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 9.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 2.8,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.8,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong order",
+              "type": "order",
+              "severity": "fail",
+              "message": "Wrong order: \u201cPlaces the green charger in the brown box\u201d happened before \u201cPlaces the blue liner in the brown box\u201d",
+              "time": 2.8,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box first."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_skip_liner_0",
+        "kind": "skip_liner",
+        "seed": 73253,
+        "expected": "skipped",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": false,
+              "time": null,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 9.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the red product in the brown box instead of on the blue liner",
+              "time": 3.0,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "fix": "Move the red product onto the blue liner."
+            },
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Places the blue liner in the brown box",
+              "time": null,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_skip_liner_1",
+        "kind": "skip_liner",
+        "seed": 73254,
+        "expected": "skipped",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": false,
+              "time": null,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 5.0,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 8.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the red product in the brown box instead of on the blue liner",
+              "time": 3.0,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "fix": "Move the red product onto the blue liner."
+            },
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Places the blue liner in the brown box",
+              "time": null,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "fix": "Place the blue liner in the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_skip_card_0",
+        "kind": "skip_card",
+        "seed": 73284,
+        "expected": "skipped",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.2,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 8.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": false,
+              "time": null,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Stacks the yellow card on the red product (expected after 0:08)",
+              "time": 8.5,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "fix": "Stack the yellow card on the red product."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_skip_card_1",
+        "kind": "skip_card",
+        "seed": 73285,
+        "expected": "skipped",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 5.4,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 7.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": false,
+              "time": null,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Skipped step",
+              "type": "skipped",
+              "severity": "fail",
+              "message": "Skipped: Stacks the yellow card on the red product (expected after 0:07)",
+              "time": 7.5,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "fix": "Stack the yellow card on the red product."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_wrong_place_0",
+        "kind": "wrong_place",
+        "seed": 73315,
+        "expected": "wrong_place",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.2,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.2,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the green charger on the gray block instead of in the brown box",
+              "time": 8.8,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "fix": "Move the green charger into the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_wrong_place_1",
+        "kind": "wrong_place",
+        "seed": 73316,
+        "expected": "wrong_place",
+        "extraction": "replayed original cache",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "fail",
+          "verified": false,
+          "tracking_used": false,
+          "evidence_status": "model_only",
+          "tracking": {
+            "parser": null,
+            "seconds": null,
+            "objects_tracked": 0,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.0,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": null
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": false,
+              "time": null,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": null
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": true,
+              "time": 12.0,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Wrong place",
+              "type": "wrong_place",
+              "severity": "fail",
+              "message": "Put the green charger on the gray block instead of in the brown box",
+              "time": 9.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "fix": "Move the green charger into the brown box."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": null,
+        "seconds": 0.0
+      },
+      {
+        "id": "judge_hidden_0",
+        "kind": "hidden",
+        "seed": 73346,
+        "expected": "no_false_fail",
+        "tracking_request": "replayed completed repair tracking",
+        "extraction": "new extraction of former timeout case",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "unsure",
+          "verified": false,
+          "tracking_used": true,
+          "evidence_status": "inconclusive",
+          "tracking": {
+            "parser": "sam_boxes_v1",
+            "seconds": 74.63,
+            "objects_tracked": 7,
+            "objects_total": 7,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.2,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": "confirmed"
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 6.2,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": "confirmed"
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 8.8,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": "confirmed"
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": false,
+              "time": null,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Extra step",
+              "type": "extra",
+              "severity": "warn",
+              "message": "Extra step not in the reference: peach lid in the brown box",
+              "time": 10.6,
+              "critical": false,
+              "reason": null,
+              "quote": null,
+              "fix": null
+            },
+            {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify where the yellow card went \u2014 the tracker could not support the reported placement (in the brown box)",
+              "time": 11.2,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "fix": "Re-record with the whole workspace in view, or check this step by hand."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block",
+            "peach lid"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": 74.63,
+        "seconds": 0.02
+      },
+      {
+        "id": "judge_hidden_1",
+        "kind": "hidden",
+        "seed": 73347,
+        "expected": "no_false_fail",
+        "tracking_request": "replayed completed repair tracking",
+        "extraction": "new extraction of former timeout case",
+        "correct": true,
+        "result": {
+          "passed": false,
+          "verdict": "unsure",
+          "verified": false,
+          "tracking_used": true,
+          "evidence_status": "inconclusive",
+          "tracking": {
+            "parser": "sam_boxes_v1",
+            "seconds": 55.61,
+            "objects_tracked": 6,
+            "objects_total": 6,
+            "errors": {}
+          },
+          "milestones": [
+            {
+              "text": "Places the blue liner in the brown box",
+              "done": true,
+              "time": 3.0,
+              "ref_time": 3.5,
+              "critical": true,
+              "reason": "so the product doesn't get scratched",
+              "quote": "liner first",
+              "evidence": "confirmed"
+            },
+            {
+              "text": "Stacks the red product on the blue liner",
+              "done": true,
+              "time": 5.5,
+              "ref_time": 6.5,
+              "critical": false,
+              "reason": null,
+              "quote": "product goes on the liner",
+              "evidence": "confirmed"
+            },
+            {
+              "text": "Places the green charger in the brown box",
+              "done": true,
+              "time": 8.5,
+              "ref_time": 10.0,
+              "critical": false,
+              "reason": null,
+              "quote": "charger in the box",
+              "evidence": "confirmed"
+            },
+            {
+              "text": "Stacks the yellow card on the red product",
+              "done": false,
+              "time": null,
+              "ref_time": 13.0,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "evidence": null
+            }
+          ],
+          "issues": [
+            {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify where the yellow card went \u2014 the tracker could not support the reported placement (in the brown box)",
+              "time": 10.5,
+              "critical": false,
+              "reason": null,
+              "quote": "thank you card on top of the product",
+              "fix": "Re-record with the whole workspace in view, or check this step by hand."
+            }
+          ],
+          "objects": [
+            "blue liner",
+            "red product",
+            "green charger",
+            "brown box",
+            "yellow card",
+            "gray block"
+          ]
+        },
+        "tracking_errors": {},
+        "tracking_seconds": 55.61,
+        "seconds": 0.04
+      }
+    ],
+    "summary": {
+      "total": 16,
+      "completed": 16,
+      "matched_expected": 16,
+      "pipeline_errors": 0,
+      "object_tracking_errors": 0,
+      "abstentions": 2
+    }
+  },
+  "live_validation": {
+    "type": "public upload verification",
+    "verified_on": "2026-10-30",
+    "pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
+    "scope": "Four real service runs over three provided examples; the correct clip was deliberately repeated. This is an availability and integration check, not an accuracy benchmark.",
+    "results": [
+      {
+        "case": "correct",
+        "seconds": 46.7,
+        "verdict": "pass",
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 15.07,
+          "objects_tracked": 3,
+          "objects_total": 3,
+          "errors": {}
+        },
+        "overlay_verified": true,
+        "history": [
+          {
+            "seconds": 10.68,
+            "state": [
+              "running",
+              "Reading the steps in your attempt",
+              null
+            ]
+          },
+          {
+            "seconds": 28.98,
+            "state": [
+              "checked",
+              "Checking with the tracker",
+              "pass"
+            ]
+          },
+          {
+            "seconds": 46.7,
+            "state": [
+              "done",
+              null,
+              "pass"
+            ]
+          }
+        ]
+      },
+      {
+        "case": "correct",
+        "seconds": 34.91,
+        "verdict": "pass",
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 18.88,
+          "objects_tracked": 3,
+          "objects_total": 3,
+          "errors": {}
+        },
+        "overlay_verified": true,
+        "history": [
+          {
+            "seconds": 1.74,
+            "state": [
+              "running",
+              "Reading the steps in your attempt",
+              null
+            ]
+          },
+          {
+            "seconds": 14.21,
+            "state": [
+              "checked",
+              "Checking with the tracker",
+              "pass"
+            ]
+          },
+          {
+            "seconds": 34.91,
+            "state": [
+              "done",
+              null,
+              "pass"
+            ]
+          }
+        ]
+      },
+      {
+        "case": "wrong-place",
+        "seconds": 36.12,
+        "verdict": "fail",
+        "evidence_status": "partial",
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 19.8,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {}
+        },
+        "overlay_verified": true,
+        "history": [
+          {
+            "seconds": 1.76,
+            "state": [
+              "running",
+              "Reading the steps in your attempt",
+              null
+            ]
+          },
+          {
+            "seconds": 13.88,
+            "state": [
+              "checked",
+              "Checking with the tracker",
+              "fail"
+            ]
+          },
+          {
+            "seconds": 36.12,
+            "state": [
+              "done",
+              null,
+              "fail"
+            ]
+          }
+        ]
+      },
+      {
+        "case": "hidden",
+        "seconds": 70.1,
+        "verdict": "unsure",
+        "evidence_status": "inconclusive",
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 48.99,
+          "objects_tracked": 6,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "overlay_verified": true,
+        "history": [
+          {
+            "seconds": 1.37,
+            "state": [
+              "running",
+              "Reading the steps in your attempt",
+              null
+            ]
+          },
+          {
+            "seconds": 17.44,
+            "state": [
+              "checked",
+              "Checking with the tracker",
+              "fail"
+            ]
+          },
+          {
+            "seconds": 66.74,
+            "state": [
+              "checked",
+              "Checking with the tracker",
+              "unsure"
+            ]
+          },
+          {
+            "seconds": 70.1,
+            "state": [
+              "done",
+              null,
+              "unsure"
+            ]
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "runs": 4,
+      "passed_checks": 4,
+      "tracking_errors": 0,
+      "all_overlays_verified": true
     }
   }
 }

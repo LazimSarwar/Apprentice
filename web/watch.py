@@ -185,6 +185,7 @@ def _launch(s: Session) -> None:
 
 def _read(s: Session, seq: int, src: Path, upto: float | None) -> None:
     try:
+        budget.ensure()
         begun, t = time.monotonic(), time.perf_counter()
         clip = cut(src, upto, WORK / f"{s.id}_{seq:03d}.mp4", fps=READ_FPS)
         seconds = upto if upto is not None else video_info(clip).duration_s
@@ -199,6 +200,9 @@ def _read(s: Session, seq: int, src: Path, upto: float | None) -> None:
               f" cut {t1 - t:.1f}s, graph {time.perf_counter() - t1:.1f}s (model {att.meta.extract_seconds}s), "
               f"done +{time.monotonic() - s.started:.1f}s, {'used' if used else 'stale'}, "
               f"{sum(a.status == 'open' for a in s.watch.alerts.values())} open", flush=True)
+    except budget.BudgetError as exc:
+        with s.lock:
+            s.status, s.pending, s.error = "error", None, str(exc)
     except Exception:  # noqa: BLE001 - one failed read must not end the session
         traceback.print_exc()
         with s.lock:
@@ -221,6 +225,7 @@ def finish(sid: str) -> None:
 
 def _finish(s: Session) -> None:
     try:
+        budget.ensure()
         clip = cut(s.src, None, WORK / f"{s.id}_whole.mp4")
         att = build_task_graph(clip, work_dir=WORK, known_objects=s.known, track=False)
         budget.charge(att.meta.extract_cost_usd, "live final check")

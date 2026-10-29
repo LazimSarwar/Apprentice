@@ -25,6 +25,14 @@ app = FastAPI(title="OneShot")
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
+@app.middleware("http")
+async def current_evidence(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path == "/" or request.url.path.endswith(".json") or request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(STATIC / "index.html")
@@ -38,12 +46,14 @@ def health() -> dict:
 
 @app.post("/api/check")
 def check(attempt: UploadFile = File(...), reference: UploadFile | None = File(None),
-          reference2: UploadFile | None = File(None)) -> dict:
+          reference2: UploadFile | None = File(None), reference_demo: str = Form("pack")) -> dict:
     """Start a live check. Returns a job id to poll at /api/jobs/{id}."""
     try:
         live.ensure_capacity()
     except (budget.BudgetError, live.UploadError) as exc:
         raise HTTPException(429, str(exc)) from exc
+    if reference_demo not in ("pack", "real"):
+        raise HTTPException(400, "Unknown built-in reference.")
     job_id = live.new_job_id()
     try:
         att_path = live.save_upload(attempt.file, attempt.filename, job_id, "attempt")
@@ -53,7 +63,13 @@ def check(attempt: UploadFile = File(...), reference: UploadFile | None = File(N
                      if ref_path is not None and reference2 is not None and reference2.filename else None)
     except live.UploadError as exc:
         raise HTTPException(400, str(exc)) from exc
-    live.submit(job_id, att_path, ref_path, ref2_path)
+    try:
+        live.submit(job_id, att_path, ref_path, ref2_path, reference_demo)
+    except live.UploadError as exc:
+        for path in (att_path, ref_path, ref2_path):
+            if path is not None:
+                path.unlink(missing_ok=True)
+        raise HTTPException(429, str(exc)) from exc
     return {"job": job_id}
 
 

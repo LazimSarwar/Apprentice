@@ -10,9 +10,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+import time
 
 from .clients import ROOT
-from .evidence import track_objects
+from .evidence import TRACK_TIMEOUT_SECONDS, TrackingBatch, track_objects
 from .extract import extract_graph
 from .media import small_mp4, video_info
 from .schema import (
@@ -35,22 +36,28 @@ def _downsample(boxes: list, limit: int = MAX_SAMPLES) -> list:
 
 
 def track_with_fallback(clip: Path, objects: list, fps: float | None,
-                        file_id: str | None = None) -> tuple[dict[str, object], float]:
+                        file_id: str | None = None) -> TrackingBatch:
     """SAM track per object id. An object its usual concept ("blue sheet") finds nothing for
     is retried once with a plainer one ("blue rectangle") — only when its colour is unique
     among the objects, so the retry can't latch onto a different object."""
     concepts = {o.id: o.concept() for o in objects}
-    tracks, seconds = track_objects(clip, sorted(set(concepts.values())), fps, file_id=file_id)
-    by_id = {oid: tracks.get(c) for oid, c in concepts.items()}
+    start = time.monotonic()
+    batch = track_objects(clip, sorted(set(concepts.values())), fps, file_id=file_id)
+    by_id = {oid: batch.tracks.get(c) for oid, c in concepts.items()}
+    errors = {oid: batch.errors[c] for oid, c in concepts.items() if c in batch.errors}
     colours = [o.color for o in objects if o.color]
     missing = {o.id: f"{o.color} rectangle" for o in objects
-               if by_id[o.id] is None and o.color and colours.count(o.color) == 1}
-    if missing:
-        more, extra = track_objects(clip, sorted(set(missing.values())), fps, file_id=file_id)
+               if by_id[o.id] is None and o.id not in errors and o.color and colours.count(o.color) == 1}
+    remaining = TRACK_TIMEOUT_SECONDS - (time.monotonic() - start)
+    if missing and remaining > 0:
+        more = track_objects(clip, sorted(set(missing.values())), fps, file_id=batch.file_id,
+                             timeout_seconds=remaining)
         for oid, concept in missing.items():
-            by_id[oid] = more.get(concept)
-        seconds = round(seconds + extra, 2)
-    return by_id, seconds
+            by_id[oid] = more.tracks.get(concept)
+            if concept in more.errors:
+                errors[oid] = more.errors[concept]
+    return TrackingBatch(tracks=by_id, errors=errors, seconds=round(time.monotonic() - start, 2),
+                         file_id=batch.file_id)
 
 
 def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = "hosted",
@@ -74,8 +81,10 @@ def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = 
 
     concepts = {obj.id: obj.concept() for obj in raw.objects}
     if track:
-        tracks_by_id, track_seconds = track_with_fallback(clip, raw.objects, info.fps, file_id=meta.get("file_id"))
+        tracking = track_with_fallback(clip, raw.objects, info.fps, file_id=meta.get("file_id"))
+        tracks_by_id, track_seconds = tracking.tracks, tracking.seconds
     else:
+        tracking = TrackingBatch()
         tracks_by_id, track_seconds = {}, None
 
     warnings: list[str] = []
@@ -129,6 +138,8 @@ def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = 
             extract_cost_usd=meta["extract_cost_usd"],
             track_seconds=track_seconds,
             warnings=warnings,
+            tracking_errors=tracking.errors,
+            tracking_parser="sam_boxes_v1" if track else None,
         ),
     )
 
@@ -137,7 +148,8 @@ def add_evidence(graph: TaskGraph, clip: Path) -> TaskGraph:
     """Attach SAM tracks to a graph that was built without tracking (e.g. `track=False`),
     so the same extraction can later be shown with its evidence."""
     info = video_info(clip)
-    tracks, seconds = track_with_fallback(clip, graph.objects, info.fps)
+    tracking = track_with_fallback(clip, graph.objects, info.fps)
+    tracks = tracking.tracks
     objects = [
         ObjectWithEvidence(id=o.id, color=o.color, shape=o.shape,
                            tracked=tracks.get(o.id) is not None, track=tracks.get(o.id))
@@ -145,5 +157,6 @@ def add_evidence(graph: TaskGraph, clip: Path) -> TaskGraph:
     ]
     return graph.model_copy(update={
         "objects": objects,
-        "meta": graph.meta.model_copy(update={"track_seconds": seconds}),
+        "meta": graph.meta.model_copy(update={"track_seconds": tracking.seconds,
+            "tracking_errors": tracking.errors, "tracking_parser": "sam_boxes_v1"}),
     })

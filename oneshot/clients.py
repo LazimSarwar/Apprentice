@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
 META_BASE_URL = "https://api.meta.ai/v1"
+MODEL_TIMEOUT_SECONDS = float(os.environ.get("MODEL_TIMEOUT_SECONDS", "90"))
 
 # Open-weights (Muse Spark Open) inference provider. Fireworks is OpenAI-compatible;
 # override the base URL / model via .env if needed.
