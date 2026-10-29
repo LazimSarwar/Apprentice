@@ -15,7 +15,6 @@ from typing import Iterable
 
 import mujoco
 import numpy as np
-from robot_descriptions import panda_mj_description
 
 from ..schema import Object
 
@@ -135,6 +134,11 @@ def build_scene(objects: Iterable[Object], layout: dict[str, tuple[float, float]
     blocks = [o for o in objects if not _is_container(o)]
     trays = [o for o in objects if _is_container(o)]
     places = layout or _default_layout(blocks, trays)
+
+    # Imported here, not at the top: robot_descriptions needs a git binary and clones the
+    # Menagerie on first use, and the checker's web app imports this module without ever
+    # building a scene.
+    from robot_descriptions import panda_mj_description
 
     spec = mujoco.MjSpec.from_file(panda_mj_description.MJCF_PATH)
     spec.option.timestep = 0.002
