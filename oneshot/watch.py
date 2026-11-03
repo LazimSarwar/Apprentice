@@ -79,7 +79,7 @@ def wrong_now(ref: TaskGraph, att: TaskGraph, proc: Procedure) -> list[Issue]:
     Order problems are grouped on the step that is missing or late ("the liner isn't in yet,
     but the charger and the card are"), so one root cause stays one alert as more steps pile
     up behind it, and keeps its identity when the late step finally happens."""
-    out = [i for i in compare(ref, att, procedure=proc).issues if i.kind == "wrong_place"]
+    out = [i for i in compare(ref, att, procedure=proc, final=False).issues if i.kind == "wrong_place"]
     misplaced = {i.objects[0] for i in out}
     first = reached(ref, att, proc)
 
@@ -187,7 +187,7 @@ def main() -> None:
     ref = TaskGraph.model_validate_json(args.reference.read_text(encoding="utf-8"))
     proc = (Procedure.from_dict(json.loads(args.procedure.read_text(encoding="utf-8")))
             if args.procedure else learn([ref]))
-    known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in ref.objects]
+    known = [o.reference_hint() for o in ref.objects]
     work = ROOT / "runs" / "watch"
     duration = video_info(args.attempt).duration_s
     w = Watch(ref, proc)
@@ -195,7 +195,7 @@ def main() -> None:
     while True:
         upto = min(t, duration)
         if upto >= duration:                   # the whole video: the full check, at full effort
-            att = build_task_graph(args.attempt, work_dir=work, known_objects=known, track=False)
+            att = build_task_graph(args.attempt, work_dir=work, known_objects=known, track=True)
             break
         clip = cut(args.attempt, upto, work / f"{args.attempt.stem}_{int(upto * 10):04d}.mp4", fps=5)
         att = build_task_graph(clip, work_dir=work, known_objects=known, track=False, effort="minimal")

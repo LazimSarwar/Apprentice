@@ -1,0 +1,2817 @@
+{
+  "type": "offline development replay",
+  "fresh_model_inference": false,
+  "pipeline_sha256": "a0cbf5e579c85a4a29801f4682c2561abe98f50f4e1cf4d19a271e4e5db672bd",
+  "historical_pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
+  "scope": "Same sixteen packaged generated fixtures, checked under the current acceptance policy.",
+  "summary": {
+    "total": 16,
+    "matched_expected": 16,
+    "abstentions": 2
+  },
+  "results": [
+    {
+      "id": "judge_ok_0",
+      "kind": "ok",
+      "correct": true,
+      "result": {
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.5,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.5,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 10.0,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 13.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "pass"
+    },
+    {
+      "id": "judge_ok_1",
+      "kind": "ok",
+      "correct": true,
+      "result": {
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.2,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.2,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 8.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 11.5,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "pass"
+    },
+    {
+      "id": "judge_ok_alt_0",
+      "kind": "ok_alt",
+      "correct": true,
+      "result": {
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.5,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.5,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 13.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 10.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "pass"
+    },
+    {
+      "id": "judge_ok_alt_1",
+      "kind": "ok_alt",
+      "correct": true,
+      "result": {
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.0,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.0,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 12.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 9.5,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "pass"
+    },
+    {
+      "id": "judge_loose_0",
+      "kind": "loose",
+      "correct": true,
+      "result": {
+        "passed": true,
+        "verdict": "pass_notes",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.0,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 8.5,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 5.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 11.5,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Different order",
+            "type": "order",
+            "severity": "warn",
+            "message": "Different order from the reference: \u201cPlaces the green charger in the brown box\u201d happened before \u201cStacks the red product on the blue liner\u201d",
+            "time": 5.5,
+            "critical": false,
+            "reason": "Nothing says this order matters. Mark it as required if it does.",
+            "quote": null,
+            "fix": null
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "pass_notes"
+    },
+    {
+      "id": "judge_loose_1",
+      "kind": "loose",
+      "correct": true,
+      "result": {
+        "passed": true,
+        "verdict": "pass_notes",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.5,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 9.5,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 6.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 12.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Different order",
+            "type": "order",
+            "severity": "warn",
+            "message": "Different order from the reference: \u201cPlaces the green charger in the brown box\u201d happened before \u201cStacks the red product on the blue liner\u201d",
+            "time": 6.5,
+            "critical": false,
+            "reason": "Nothing says this order matters. Mark it as required if it does.",
+            "quote": null,
+            "fix": null
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "pass_notes"
+    },
+    {
+      "id": "judge_order_0",
+      "kind": "order",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 6.5,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 9.5,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 3.0,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 12.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong order",
+            "type": "order",
+            "severity": "fail",
+            "message": "Wrong order: \u201cPlaces the green charger in the brown box\u201d happened before \u201cPlaces the blue liner in the brown box\u201d",
+            "time": 3.0,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "fix": "Place the blue liner in the brown box first."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_order_1",
+      "kind": "order",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 5.6,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 9.0,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 2.8,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 12.8,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong order",
+            "type": "order",
+            "severity": "fail",
+            "message": "Wrong order: \u201cPlaces the green charger in the brown box\u201d happened before \u201cPlaces the blue liner in the brown box\u201d",
+            "time": 2.8,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "fix": "Place the blue liner in the brown box first."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_skip_liner_0",
+      "kind": "skip_liner",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": false,
+            "time": null,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": false,
+            "time": null,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 6.0,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 9.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the red product in the brown box instead of on the blue liner",
+            "time": 3.0,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "fix": "Move the red product onto the blue liner."
+          },
+          {
+            "kind": "Skipped step",
+            "type": "skipped",
+            "severity": "fail",
+            "message": "Skipped: Places the blue liner in the brown box",
+            "time": null,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "fix": "Place the blue liner in the brown box."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_skip_liner_1",
+      "kind": "skip_liner",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": false,
+            "time": null,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": false,
+            "time": null,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 5.0,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 8.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the red product in the brown box instead of on the blue liner",
+            "time": 3.0,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "fix": "Move the red product onto the blue liner."
+          },
+          {
+            "kind": "Skipped step",
+            "type": "skipped",
+            "severity": "fail",
+            "message": "Skipped: Places the blue liner in the brown box",
+            "time": null,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "fix": "Place the blue liner in the brown box."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_skip_card_0",
+      "kind": "skip_card",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.2,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.0,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 8.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": false,
+            "time": null,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Skipped step",
+            "type": "skipped",
+            "severity": "fail",
+            "message": "Skipped: Stacks the yellow card on the red product (expected after 0:08)",
+            "time": 8.5,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "fix": "Stack the yellow card on the red product."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_skip_card_1",
+      "kind": "skip_card",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.0,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 5.4,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 7.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": false,
+            "time": null,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Skipped step",
+            "type": "skipped",
+            "severity": "fail",
+            "message": "Skipped: Stacks the yellow card on the red product (expected after 0:07)",
+            "time": 7.5,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "fix": "Stack the yellow card on the red product."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_wrong_place_0",
+      "kind": "wrong_place",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.2,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.2,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": false,
+            "time": null,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 12.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the green charger on the gray block instead of in the brown box",
+            "time": 8.8,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "fix": "Move the green charger into the brown box."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_wrong_place_1",
+      "kind": "wrong_place",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": false,
+        "evidence_status": "model_only",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": null,
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "yellow_card",
+              "red_product"
+            ],
+            "evidence": null,
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": null,
+          "seconds": null,
+          "objects_tracked": 0,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.0,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.0,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": null
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": false,
+            "time": null,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": null
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": true,
+            "time": 12.0,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the green charger on the gray block instead of in the brown box",
+            "time": 9.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "fix": "Move the green charger into the brown box."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "model_only",
+            "first_seen": null,
+            "last_seen": null
+          }
+        ]
+      },
+      "original_verdict": "fail"
+    },
+    {
+      "id": "judge_hidden_0",
+      "kind": "hidden",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "unsure",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 74.63,
+          "objects_tracked": 7,
+          "objects_total": 7,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.2,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 6.2,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 8.8,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": false,
+            "time": null,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the blue liner.",
+            "time": 3.2,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the red product.",
+            "time": 6.2,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the green charger.",
+            "time": 8.8,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Extra step",
+            "type": "extra",
+            "severity": "warn",
+            "message": "Extra step not in the reference: peach lid in the brown box",
+            "time": 10.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": null
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify: Stacks the yellow card on the red product \u2014 the video model reported the yellow card in the brown box, which does not establish whether it is on the red product.",
+            "time": 11.2,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "fix": "Review the supporting object and this placement in the recording."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block",
+          "peach lid"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.9
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.867
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.767
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 13.967
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 11.133
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 13.967
+          },
+          {
+            "id": "peach_lid",
+            "name": "peach lid",
+            "description": "peach box",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 9.467,
+            "last_seen": 13.967
+          }
+        ]
+      },
+      "original_verdict": "unsure"
+    },
+    {
+      "id": "judge_hidden_1",
+      "kind": "hidden",
+      "correct": true,
+      "result": {
+        "passed": false,
+        "verdict": "unsure",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 55.61,
+          "objects_tracked": 6,
+          "objects_total": 6,
+          "errors": {}
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.0,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 5.5,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 8.5,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": false,
+            "time": null,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the blue liner.",
+            "time": 3.0,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the red product.",
+            "time": 5.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the green charger.",
+            "time": 8.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify: Stacks the yellow card on the red product \u2014 the video model reported the yellow card in the brown box, which does not establish whether it is on the red product.",
+            "time": 10.5,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "fix": "Review the supporting object and this placement in the recording."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ],
+        "detections": [
+          {
+            "id": "blue_liner",
+            "name": "blue liner",
+            "description": "blue sheet",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.367
+          },
+          {
+            "id": "red_product",
+            "name": "red product",
+            "description": "red block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.333
+          },
+          {
+            "id": "green_charger",
+            "name": "green charger",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.233
+          },
+          {
+            "id": "brown_box",
+            "name": "brown box",
+            "description": "brown box",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.4
+          },
+          {
+            "id": "yellow_card",
+            "name": "yellow card",
+            "description": "yellow card",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 4.1,
+            "last_seen": 10.733
+          },
+          {
+            "id": "gray_block",
+            "name": "gray block",
+            "description": "gray block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 13.567
+          }
+        ]
+      },
+      "original_verdict": "unsure"
+    }
+  ]
+}

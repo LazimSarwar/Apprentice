@@ -68,7 +68,7 @@ def main():
             assert result['tracking']['errors'] == {}, result['tracking']
             assert result['tracking']['objects_tracked'] > 0
             assert result['tracking_used'] and job.get('seen')
-            response = client.head(base + '/static/' + job['seen'])
+            response = client.get(base + (job['seen'] if job['seen'].startswith('/') else '/static/' + job['seen']))
             response.raise_for_status()
             print('PASS', case, row['seconds'], result['verdict'], result['tracking'], flush=True)
     print('LIVE_SMOKE_COMPLETE', len(rows), 'of', len(args.cases), flush=True)

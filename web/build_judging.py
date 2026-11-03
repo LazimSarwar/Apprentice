@@ -21,6 +21,7 @@ import imageio.v3 as iio
 from oneshot.check import compare
 from oneshot.procedure import Procedure, learn
 from oneshot.schema import TaskGraph
+from oneshot.media import MEDIA_TIMEOUT_SECONDS
 from web.build_media import overlay_frames, write_mp4
 from web.views import procedure_view, report_view
 
@@ -48,15 +49,22 @@ def digest(path: Path) -> str:
 
 def checker_digest() -> str:
     h = hashlib.sha256()
-    for name in ("check", "procedure", "schema", "words"):
-        h.update((APP / f"oneshot/{name}.py").read_bytes())
+    for name in ("check", "procedure", "schema", "words", "semantics", "tracking_identity"):
+        h.update((APP / f"oneshot/{name}.py").read_text(encoding="utf-8").replace('\r\n', '\n').encode())
     return h.hexdigest()
 
 
 def pipeline_digest() -> str:
     sha = hashlib.sha256()
-    for name in ('box_parser', 'evidence', 'graph', 'check', 'procedure', 'schema', 'extract', 'clients'):
-        sha.update((APP / f'oneshot/{name}.py').read_text(encoding='utf-8').replace('\r\n', '\n').encode())
+    for folder in ('oneshot', 'web'):
+        for path in sorted((APP / folder).glob('*.py')):
+            sha.update(path.name.encode())
+            sha.update(path.read_text(encoding='utf-8').replace('\r\n', '\n').encode())
+    for page in sorted((APP / 'web/static').glob('*.html')):
+        sha.update(page.name.encode())
+        sha.update(page.read_text(encoding='utf-8').replace('\r\n', '\n').encode())
+    for name in ('web/pilot_protocol.json', 'requirements.lock'):
+        sha.update((APP / name).read_text(encoding='utf-8').replace('\r\n', '\n').encode())
     return sha.hexdigest()
 
 
@@ -80,14 +88,14 @@ def encode(stem: str, graph: TaskGraph, reports_only: bool) -> dict:
     target = MEDIA / f"{stem}_demo.mp4"
     if not target.exists():
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(clip), "-an", "-c:v", "libx264",
-                        "-pix_fmt", "yuv420p", "-crf", "26", "-movflags", "+faststart", str(target)], check=True)
+                        "-pix_fmt", "yuv420p", "-crf", "26", "-movflags", "+faststart", str(target)], check=True, timeout=MEDIA_TIMEOUT_SECONDS)
     overlay = MEDIA / f"{stem}_seen.mp4"
     if not overlay.exists():
         write_mp4(overlay, overlay_frames(clip, graph), float(iio.immeta(clip).get("fps", 30)))
     poster = MEDIA / f"{stem}.jpg"
     if not poster.exists():
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{graph.video.duration_s * 0.65:.3f}", "-i", str(target),
-                        "-frames:v", "1", "-update", "1", str(poster)], check=True)
+                        "-frames:v", "1", "-update", "1", str(poster)], check=True, timeout=MEDIA_TIMEOUT_SECONDS)
     out["poster"] = f"media/{stem}.jpg"
     return out
 
@@ -168,6 +176,8 @@ def refresh(reports_only: bool = False) -> None:
         validation = json.loads(live_proof.read_text(encoding='utf-8'))
         if validation['pipeline_sha256'] == pipeline_digest():
             data['live_validation'] = validation
+    from web.replay_validation import refresh as replay
+    data['current_validation'] = replay()
     manifest.write_text(json.dumps(data, indent=2), encoding="utf-8")
     (MEDIA / "real_results.json").write_text(json.dumps(real, indent=2), encoding="utf-8")
     print("Real footage:", json.dumps(real["summary"]))

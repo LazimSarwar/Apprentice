@@ -175,7 +175,11 @@ class RepairEvidenceTests(unittest.TestCase):
     def test_published_repair_fingerprint_and_counts(self):
         from web.build_judging import APP, pipeline_digest
         report = json.loads((APP / 'web/static/media/tracking_validation.json').read_text(encoding='utf-8'))
-        self.assertEqual(report['pipeline_sha256'], pipeline_digest())
+        # Preserve the historical repair artifact; a distinct replay certifies new code.
+        current = json.loads((APP / 'web/static/media/current_validation.json').read_text(encoding='utf-8'))
+        self.assertEqual(current['pipeline_sha256'], pipeline_digest())
+        self.assertEqual(current['historical_pipeline_sha256'], report['pipeline_sha256'])
+        self.assertFalse(current['fresh_model_inference'])
         self.assertEqual(report['summary']['completed'], 16)
         self.assertEqual(report['summary']['matched_expected'], 16)
         self.assertEqual(report['summary']['pipeline_errors'], 0)

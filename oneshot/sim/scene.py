@@ -17,6 +17,7 @@ import mujoco
 import numpy as np
 
 from ..schema import Object
+from ..semantics import is_container as _is_container
 
 # Scene geometry (metres).
 TABLE_CENTER = (0.5, 0.0)
@@ -45,11 +46,6 @@ _BLOCK_COLORS = {
     "gray": (0.6, 0.6, 0.6, 1.0),
     "grey": (0.6, 0.6, 0.6, 1.0),
 }
-
-
-def _is_container(obj: Object) -> bool:
-    text = f"{obj.id} {obj.shape or ''}".lower()
-    return any(word in text for word in _CONTAINER_WORDS)
 
 
 def _rgba(color: str | None, default=(0.5, 0.5, 0.5, 1.0)) -> tuple:

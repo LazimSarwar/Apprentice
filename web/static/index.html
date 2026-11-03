@@ -171,6 +171,14 @@
   @media(max-width:900px){.real-videos{grid-template-columns:1fr}}
   .evidence-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:14px}
   .evidence-table th,.evidence-table td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  #jobactions{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 4px 16px #17284b08}
+  #jobactions button,#addstep{font:inherit;font-size:14px;border:1px solid #d4dce8;border-radius:10px;padding:9px 13px;background:#f7f9fd;color:#243655;cursor:pointer}
+  #jobactions button:hover,#addstep:hover{background:#edf2ff}
+  #jobdelete{color:#a53039!important;border-color:#edcdd1!important}
+  #jobactions select,#jobactions input:not([type=file]),#liveproc select,#liveproc input:not([type=checkbox]){font:inherit;font-size:14px;padding:9px;border:1px solid #ccd6e6;border-radius:9px;background:white;max-width:100%;box-sizing:border-box}
+  #reviewnote{display:block;width:100%;margin:10px 0}
+  #historyview{font:13px/1.65 system-ui,sans-serif;background:#f5f7fc;border-radius:12px;padding:14px;color:#42516c;overflow-wrap:anywhere}
+  #objectkinds{padding:10px 14px;background:#f5f7fc;border-radius:12px;margin-bottom:14px}
   details.judge-method{margin-top:16px} details.judge-method summary{cursor:pointer;font-weight:600}
   details.judge-method p{font-size:14px;color:var(--dim)}
   @media(max-width:650px){.real-cases{grid-template-columns:repeat(2,minmax(0,1fr))}.proof-strip{gap:6px}.evidence-table{font-size:12px}.bar{flex-wrap:wrap}}
@@ -182,7 +190,7 @@
   <h1>Show it once. Say why.<br>Check every attempt.</h1>
   <p class="lede">Record a short tabletop procedure once. Add narration to explain what matters. OneShot learns the steps and rules, checks another attempt, and points to what went wrong, when, and how to fix it. When evidence is missing or conflicting, it asks for review.</p>
   <div class="uses"><span class="use">Procedure verification</span><span class="use">Pack-out &amp; kitting QA</span><span class="use">Training new staff</span></div>
-  <div class="judge-nav"><a href="#real">See the phone-footage results</a><a class="secondary" href="#try">Try your own attempt</a><a class="secondary" href="#packing">Explore the narrated packing example</a></div>
+  <div class="judge-nav"><a href="/judge">Three-minute walkthrough</a><a class="secondary" href="#try">Teach or check a procedure</a><a class="secondary" href="/pilot">Packing trial</a></div>
 </div></div>
 
 <div class="wrap">
@@ -250,7 +258,7 @@
 
   <section class="step" id="watch">
     <div class="step-head"><div class="num">4</div><div><h2>Catch it while it happens</h2>
-      <p>While someone works, it re-reads the video so far every two seconds. Warnings arrived a median 10.5 seconds after mistakes in the six generated sample attempts. Skipped steps wait for the final check.</p></div></div>
+      <p>While someone works, it re-reads the video so far at an interval adapted to provider latency. Warnings arrived a median 10.5 seconds after mistakes in the six generated sample attempts. Skipped steps wait for the final check.</p></div></div>
     <div class="srcs" id="wsrc">
       <span class="lbl">Play a sample as if live:</span>
       <button class="src" data-demo="pack_order">Liner too late</button>
@@ -259,6 +267,7 @@
       <button class="src" data-demo="pack_ok">Done correctly</button>
       <span class="lbl" style="margin-left:8px">or</span>
       <button class="src cam" id="wcam">● Use my camera</button>
+      <label>Camera procedure <select id="wreference"><option value="pack">Packing</option><option value="real">Two-block stacking</option></select></label>
       <label class="radio" id="wownref" hidden><input type="checkbox" id="wuseown"> against my own reference</label>
     </div>
     <div class="two">
@@ -277,7 +286,7 @@
         <div class="err" id="werr" hidden></div>
       </div>
     </div>
-    <div class="fine" style="text-align:left">Every 2 seconds, Muse Spark reads only the video up to that moment (about 8 s and $0.007 per read; up to four run at once). The delay shown on each warning is measured, not estimated.</div>
+    <div class="fine" style="text-align:left">Muse Spark reads only the video up to that moment. The interval adapts to processing delay (about 8 s per read in the earlier generated-example test; up to four run at once). The delay shown on each warning is measured, not estimated.</div>
   </section>
 
   <section class="step" id="try">
@@ -289,9 +298,12 @@
         <label class="radio"><input type="radio" name="refmode" value="real" checked> The two-block phone reference above</label>
         <label class="radio"><input type="radio" name="refmode" value="pack"> The narrated packing reference</label>
         <label class="radio"><input type="radio" name="refmode" value="own"> My own reference video — talk while you record it</label>
+        <label class="radio" id="savedrefoption" hidden><input type="radio" name="refmode" value="saved"> Reuse a confirmed procedure <select id="savedreference" aria-label="Confirmed procedure"></select></label>
         <div id="ownrefs" hidden>
           <label class="drop" id="refdrop"><input type="file" id="reffile" accept="video/*"><span id="reflabel">Choose or drop your reference video</span></label>
           <label class="drop" id="ref2drop"><input type="file" id="ref2file" accept="video/*"><span id="ref2label">Optional: a second correct way to do it</span></label>
+          <label>Procedure name <input id="procedurename" value="Everyday packing" maxlength="100"></label>
+          <button class="soundbtn" id="learnreference" disabled>Learn this reference first</button>
         </div>
         <h3>2 · Attempt</h3>
         <label class="drop" id="attdrop"><input type="file" id="attfile" accept="video/*"><span id="attlabel">Choose or drop a video of someone doing it</span></label>
@@ -305,7 +317,9 @@
           <a download href="/static/media/pack_skip_card_demo.mp4">no card</a> ·
           <a download href="/static/media/pack_wrong_place_demo.mp4">wrong place</a></div>
         <button class="go" id="go" disabled>Check this video</button>
-        <div class="fine">Each check runs the real models (a few cents). Videos up to 2 minutes and 80 MB.</div>
+        <div id="uploadstatus" role="status" aria-live="polite" hidden><p id="uploadmessage"></p><progress id="uploadprogress" max="100" value="0" style="width:100%"></progress></div>
+        <details style="margin-top:16px"><summary>Your recent checks</summary><p class="fine">Available in this browser for 24 hours. Open a check to resume it or download its report.</p><div id="recentchecks">Loading saved checks…</div></details>
+        <div class="fine">Live checks use Meta models. Videos up to 2 minutes and 80 MB are sent to model services, kept private to this browser session, and expire after 24 hours. You can delete a completed recording below.</div>
         <ol class="stages" id="stages" hidden></ol>
         <div class="err" id="liveerr" hidden></div>
       </div>
@@ -316,7 +330,9 @@
             <span class="hint" id="livehint">Checking with the tracker…</span></div>
         </div>
         <div class="card" id="liveproc" style="margin-top:16px" hidden></div>
+        <div class="card" id="procedureready" style="margin-top:16px" hidden><h3>Ready to check new attempts</h3><p>Your confirmed reference can be reused without learning it again.</p><button id="editprocedure">Edit saved procedure</button> <a id="startpilot" href="/pilot">Start the independent packing trial →</a><p>Select an attempt on the left, or use this reference in the camera section.</p></div>
         <div class="card" id="livereport" style="margin-top:16px" hidden></div>
+        <div id="jobactions" hidden style="margin-top:12px"><button id="jobhistory">Decision history</button> <button id="jobdelete">Delete recording</button><label class="assessment-action" style="display:block;margin-top:12px">Check a clearer recording with this procedure <input id="followupfile" type="file" accept="video/*"></label><details class="assessment-action" style="margin-top:12px"><summary>Record a human review</summary><p>This is saved separately from the machine assessment.</p><select id="reviewdecision"><option value="needs_evidence">Needs more evidence</option><option value="accept">Accept after human inspection</option><option value="reject">Reject after human inspection</option></select><input id="reviewnote" aria-label="Reason for human decision" placeholder="Explain your decision"><button id="savereview">Save human review</button><span id="reviewstatus"></span></details><pre id="historyview" style="white-space:pre-wrap" hidden></pre></div>
         <div class="card placeholder" id="liveempty"><div>Your verdict will appear here.</div></div>
       </div>
     </div>
@@ -330,6 +346,7 @@
     <div class="card" id="fresh-eval" style="margin-top:18px" hidden></div>
     <div class="card" id="tracking-repair" style="margin-top:18px" hidden></div>
     <div class="card" id="live-validation" style="margin-top:18px" hidden></div>
+    <div class="card" id="current-validation" style="margin-top:18px" hidden></div>
   </section>
 
   <section class="step">
@@ -359,6 +376,7 @@
 
 <script>
 const BASE='/static/';
+const mediaUrl=src=>src&&src.startsWith('/')?src:BASE+src;
 const COLORS={red:'#d93333',blue:'#3359d9',green:'#33b24d',yellow:'#e6cc33',purple:'#8033a0',orange:'#e68326',brown:'#80592e',beige:'#d1b885',pink:'#e680a6',maroon:'#801f33',gray:'#9aa0a6',grey:'#9aa0a6'};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -368,7 +386,7 @@ const overrides={};
 
 function setVideo(el,src,keep){
   const t=keep?el.currentTime:0, paused=keep&&el.paused;
-  el.src=BASE+src;
+  el.src=mediaUrl(src);
   el.addEventListener('loadedmetadata',()=>{ if(keep) el.currentTime=Math.min(t,el.duration||t); if(!paused) el.play().catch(()=>{}); },{once:true});
 }
 function seek(el,t){ el.currentTime=Math.max(0,t-0.4); el.pause(); }
@@ -458,6 +476,10 @@ function renderReport(a, el, video, sub){
   let h=`<div class="verdict ${V[0]}"><span class="mark">${V[1]}</span>${V[2]}</div><div class="sub">${esc(V[3])}${sub&&a.verdict!=='fail'?' '+esc(sub):''}</div>`;
   const assurance=ASSURANCE[a.evidence_status||'model_only'];
   h+=`<div class="assurance ${a.evidence_status==='inconclusive'?'review':''}"><b>${assurance[0]}</b><br>${assurance[1]}</div>`;
+  if(a.detections?.length){
+    const labels={tracked:'Tracked in video',ambiguous:'Identity needs review',unavailable:'Tracking unavailable',model_only:'Model detection · not yet tracked',unseen:'Not found by tracker'};
+    h+=`<details style="margin:16px 0" open><summary><b>Objects detected in this video · ${a.detections.length}</b></summary><p class="fine">Discovered from this recording. Tracking an object does not by itself verify its final placement.</p>${a.detections.map(o=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(o.description||o.name)}</b><br><span class="fine">${esc(labels[o.status]||'Needs review')}${o.first_seen!=null?` · ${clock(o.first_seen)}–${clock(o.last_seen)}`:''}</span></div>`).join('')}</details>`;
+  }
   if(a.issues.length){
     h+=`<h3>${fails.length?'Problems':a.verdict==='unsure'?'Needs review':'Notes'}</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':x.severity==='unknown'?'unknown':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div>
       <span class="k">${esc(x.kind)}${x.critical?'<span class="badge b-crit">Critical</span>':''}</span><span class="m">${esc(x.message)}</span>
@@ -512,7 +534,51 @@ function wireDrop(drop,input,label,key,prompt){
   drop.ondrop=e=>{e.preventDefault();drop.classList.remove('over');set(e.dataTransfer.files[0]);};
 }
 const ownRef=()=>document.querySelector('input[name=refmode]:checked').value==='own';
-function ready(){ $('go').disabled=!L.att||(ownRef()&&!L.ref)||!!L.timer; }
+function ready(){ $('go').disabled=!L.att||(ownRef()&&!L.ref)||!!L.timer||!!L.uploading||(document.querySelector('input[name=refmode]:checked').value==='saved'&&!$('savedreference').value); $('learnreference').disabled=!L.ref||!!L.timer||!!L.uploading; $('followupfile').disabled=!!L.timer||!!L.uploading; }
+
+async function refreshChecks(){
+  const r=await fetch('/api/jobs');if(!r.ok)return;const d=await r.json();
+  const labels={pass:'Follows procedure',pass_notes:'Follows with a note',fail:'Required step failed',unsure:'Review required',done:'Complete',running:'Checking…',queued:'Waiting',checked:'Tracking…',error:'Stopped',awaiting_confirmation:'Confirm procedure'};
+  $('recentchecks').innerHTML=d.checks.length?d.checks.map(j=>`<p><a href="?job=${esc(j.id)}#try">${esc(new Date(j.created*1000).toLocaleString())} · ${esc(labels[j.verdict]||labels[j.status]||j.status)}</a>${j.human_decision?' · human review saved':''}</p>`).join(''):'No saved checks yet.';
+}
+function resetLiveView(){
+  clearInterval(L.timer);L.timer=null;L.ov={};L.shownRules=false;L.last=null;L.awaiting=false;L.restored=null;
+  for(const id of ['liveerr','livereport','liveproc','livemedia','jobactions','historyview','procedureready','stages'])$(id).hidden=true;
+  $('liveempty').hidden=false;$('liveempty').textContent='Your new assessment will appear here.';
+  $('reviewstatus').textContent='';$('reviewnote').value='';$('livevision').checked=false;$('livevision').disabled=true;
+}
+function uploadVideo(endpoint,body){
+  L.uploading=true;ready();$('uploadstatus').hidden=false;$('uploadprogress').value=0;
+  $('uploadmessage').textContent='Uploading your video. Keep this page open until the upload finishes.';
+  return new Promise((resolve,reject)=>{
+    const xhr=new XMLHttpRequest();xhr.open('POST',endpoint);xhr.timeout=600000;
+    xhr.upload.onprogress=e=>{if(e.lengthComputable){const pct=Math.round(e.loaded/e.total*100);$('uploadprogress').value=pct;$('uploadmessage').textContent=pct===100?'Upload sent. Waiting for the server to accept it…':`Uploading ${pct}% · keep this page open.`;}};
+    xhr.onload=()=>{try{const data=JSON.parse(xhr.responseText);if(xhr.status<200||xhr.status>=300)throw new Error(data.detail||'Upload failed.');resolve(data);}catch(e){reject(e);}};
+    xhr.onerror=()=>reject(new Error('The upload connection was interrupted. Select your video and try again.'));
+    xhr.ontimeout=()=>reject(new Error('The upload timed out. Check Your recent checks before trying again.'));
+    xhr.send(body);
+  }).finally(()=>{L.uploading=false;$('uploadstatus').hidden=true;ready();});
+}
+function beginCheck(job){
+  L.job=job;history.replaceState(null,'',`?job=${job}#try`);$('go').textContent='Checking…';
+  L.timer=setInterval(poll,1500);ready();poll();refreshChecks().catch(()=>{});
+}
+window.addEventListener('beforeunload',e=>{if(L.uploading){e.preventDefault();e.returnValue='';}});
+
+async function refreshProcedures(){
+  const r=await fetch('/api/procedures');if(!r.ok)return;const d=await r.json();
+  $('savedreference').innerHTML=d.procedures.map(p=>`<option value="${esc(p.id)}">${esc(p.title)} · ${p.steps} steps</option>`).join('');
+  if(L.reuseJob&&!d.procedures.some(p=>p.id===L.reuseJob))$('savedreference').add(new Option('Procedure used for this check',L.reuseJob));
+  $('savedrefoption').hidden=!$('savedreference').options.length;
+  if(L.savedReference)$('savedreference').value=L.savedReference;
+}
+async function teachReference(){
+  resetLiveView();
+  const fd=new FormData();fd.append('reference',L.ref);fd.append('title',$('procedurename').value);if(L.ref2)fd.append('reference2',L.ref2);
+  $('learnreference').disabled=true;$('procedureready').hidden=true;
+  try{const d=await uploadVideo('/api/procedures',fd);beginCheck(d.job);}
+  catch(e){liveError(e.message);}
+}
 
 function showStages(stage,own,two,doneAll){
   const list=STAGES(own,two), at=doneAll?list.length:Math.max(0,list.indexOf(stage));
@@ -520,20 +586,15 @@ function showStages(stage,own,two,doneAll){
   $('stages').innerHTML=list.map((s,i)=>`<li class="${i<at?'ok':i===at?'now':''}"><span class="s">${i<at?'✓':''}</span>${s}</li>`).join('');
 }
 async function startLive(){
-  $('liveerr').hidden=true; $('livereport').hidden=true; $('liveproc').hidden=true; $('livemedia').hidden=true; $('liveempty').hidden=false;
-  L.ov={}; L.shownRules=false; L.last=null;
+  resetLiveView();
   const fd=new FormData(); fd.append('attempt',L.att);
-  if(!ownRef()) fd.append('reference_demo',document.querySelector('input[name=refmode]:checked').value);
+  const refmode=document.querySelector('input[name=refmode]:checked').value;
+  const endpoint=refmode==='saved'?`/api/jobs/${$('savedreference').value}/followup`:'/api/check';
+  if(!ownRef()&&refmode!=='saved') fd.append('reference_demo',refmode);
   if(ownRef()&&L.ref){ fd.append('reference',L.ref); if(L.ref2) fd.append('reference2',L.ref2); }
   $('go').disabled=true; $('go').textContent='Uploading…';
-  let r;
-  try{ r=await fetch('/api/check',{method:'POST',body:fd}); }
-  catch(e){ return liveError('Could not reach the server.'); }
-  const body=await r.json();
-  if(!r.ok) return liveError(body.detail||'Upload failed.');
-  L.job=body.job; $('go').textContent='Checking…';
-  showStages(null,ownRef(),ownRef()&&!!L.ref2,false);
-  L.timer=setInterval(poll,1500); poll();
+  try{const body=await uploadVideo(endpoint,fd);beginCheck(body.job);}
+  catch(e){liveError(e.message);}
 }
 function liveError(msg){
   clearInterval(L.timer); L.timer=null; $('go').textContent='Check this video'; ready();
@@ -546,6 +607,62 @@ function renderLiveProc(ref){
     <h3>Order rules</h3><div class="rules" id="liverules"></div>`;
   renderRules(L.rules,$('liverules'),L.ov,recheckLive);
 }
+function renderProcedureEditor(j){
+  if(L.awaiting) return; L.awaiting=true; L.proc=j.editable_procedure; L.objects=j.reference_objects;
+  $('liveempty').hidden=true; $('liveproc').hidden=false;
+  $('liveproc').innerHTML='<h3>Confirm the complete procedure</h3><p>Check every step and object. Add anything the model missed. Mark the placements that must remain true at the end.</p><div id="objectkinds"></div><div id="proceduresteps"></div><button id="addstep">Add a step</button><h3>Order rules</h3><div id="liverules"></div><button id="confirmsteps" class="go">Confirm and check attempt</button><div class="err" id="confirmerror" hidden></div>';
+  $('proceduresteps').insertAdjacentHTML('afterend','<div id="extragoals" class="card" style="padding:12px" hidden></div>');
+  L.proc.object_kinds=L.proc.object_kinds||{};
+  $('objectkinds').innerHTML=L.objects.map(id=>`<label style="display:block;margin:8px 0">${esc(id.replaceAll('_',' '))} <select data-object-kind="${esc(id)}"><option value="">Automatic interpretation</option><option value="solid">Solid object</option><option value="container">Container</option><option value="surface">Work surface</option></select></label>`).join('');
+  $('objectkinds').querySelectorAll('select').forEach(el=>{el.value=L.proc.object_kinds[el.dataset.objectKind]||'';el.onchange=()=>{if(el.value)L.proc.object_kinds[el.dataset.objectKind]=el.value;else delete L.proc.object_kinds[el.dataset.objectKind];};});
+  renderStepEditor(); renderEditorRules();
+  $('addstep').onclick=()=>{const added={key:['on',L.objects[0],'surface'],text:'Place '+L.objects[0].replaceAll('_',' '),start:0,ref_time:0,critical:false};L.proc.steps.forEach(s=>L.proc.pairs.push({before:[...s.key],after:[...added.key],strength:'as_shown',source:'you',why:'Added step: choose whether this order is required.'}));L.proc.steps.push(added);renderStepEditor();renderEditorRules();};
+  if(j.procedure_only)$('confirmsteps').textContent='Confirm and save procedure';
+  $('confirmsteps').onclick=async()=>{
+    const b=$('confirmsteps'); b.disabled=true; $('confirmerror').hidden=true;
+    try{
+      const keys=new Set(L.proc.steps.map(s=>JSON.stringify(s.key)));
+      if((L.proc.final_goals||[]).some(k=>!keys.has(JSON.stringify(k))))throw new Error('Review the additional final placements below the steps before saving.');
+      if(L.proc.final_goals&&L.proc.final_goals.length===0)throw new Error('Mark at least one step as Required at the end.');
+      L.proc.pairs=L.proc.pairs.filter(r=>keys.has(JSON.stringify(r.before))&&keys.has(JSON.stringify(r.after)));
+      const r=await fetch(`/api/jobs/${L.job}/procedure`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({procedure:L.proc,overrides:L.ov})});
+      const d=await r.json(); if(!r.ok)throw new Error(d.detail||'Could not confirm the procedure');
+      L.awaiting=false;L.shownRules=false;$('liveproc').innerHTML='<p>Procedure confirmed.</p>';
+    }catch(e){$('confirmerror').hidden=false;$('confirmerror').textContent=e.message;b.disabled=false;}
+  };
+}
+function renderStepEditor(){
+  const options=(values,current)=>values.map(v=>`<option value="${esc(v)}" ${v===current?'selected':''}>${esc(v.replaceAll('_',' '))}</option>`).join('');
+  const goals=new Set((L.proc.final_goals||[]).map(k=>JSON.stringify(k)));
+  $('proceduresteps').innerHTML=L.proc.steps.map((s,i)=>`<div class="card" data-edit="${i}" style="margin:8px 0;padding:12px"><label>Step ${i+1} <input data-field="text" value="${esc(s.text)}" style="width:100%"></label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><select aria-label="Object" data-key="1">${options(L.objects,s.key[1])}</select><select aria-label="Relation" data-key="0">${options(['on','inside','near'],s.key[0])}</select><select aria-label="Target" data-key="2">${options([...L.objects,'surface'],s.key[2])}</select><label><input type="checkbox" data-field="critical" ${s.critical?'checked':''}> Critical</label><label><input type="checkbox" data-final ${goals.has(JSON.stringify(s.key))?'checked':''}> Required at the end</label><button data-remove>Remove</button></div></div>`).join('');
+  $('proceduresteps').querySelectorAll('[data-edit]').forEach(row=>{
+    const i=+row.dataset.edit,s=L.proc.steps[i];
+    row.querySelector('[data-field=text]').oninput=e=>{s.text=e.target.value;renderEditorRules();};
+    row.querySelector('[data-field=critical]').onchange=e=>s.critical=e.target.checked;
+    row.querySelectorAll('[data-key]').forEach(el=>el.onchange=e=>{
+      const old=JSON.stringify(s.key);s.key=[...s.key];s.key[+el.dataset.key]=e.target.value;
+      L.proc.pairs.forEach(r=>{const prior=r.before.join('/')+' -> '+r.after.join('/');if(JSON.stringify(r.before)===old)r.before=[...s.key];if(JSON.stringify(r.after)===old)r.after=[...s.key];const next=r.before.join('/')+' -> '+r.after.join('/');if(prior!==next&&L.ov[prior]){L.ov[next]=L.ov[prior];delete L.ov[prior];}});
+      L.proc.final_goals=(L.proc.final_goals||[]).map(k=>JSON.stringify(k)===old?[...s.key]:k);
+      renderEditorRules();renderExtraGoals();
+    });
+    row.querySelector('[data-final]').onchange=e=>{L.proc.final_goals=(L.proc.final_goals||[]).filter(k=>JSON.stringify(k)!==JSON.stringify(s.key));if(e.target.checked)L.proc.final_goals.push([...s.key]);};
+    row.querySelector('[data-remove]').onclick=()=>{L.proc.steps.splice(i,1);L.proc.final_goals=(L.proc.final_goals||[]).filter(k=>JSON.stringify(k)!==JSON.stringify(s.key));renderStepEditor();renderEditorRules();};
+  });
+  renderExtraGoals();
+}
+function renderExtraGoals(){
+  const keys=new Set(L.proc.steps.map(s=>JSON.stringify(s.key)));
+  const extra=(L.proc.final_goals||[]).filter(k=>!keys.has(JSON.stringify(k)));
+  const box=$('extragoals');box.hidden=!extra.length;
+  box.innerHTML='<h3>Review additional final placements</h3><p>The model also reported these final placements. They are not listed as steps above. Keep each one as a step, or remove the requirement if it is incorrect or redundant.</p>'+extra.map((k,i)=>`<div style="margin:12px 0"><p>${esc(k[1].replaceAll('_',' '))} ${esc(k[0])} ${esc(k[2].replaceAll('_',' '))}</p><button data-keep="${i}">Keep as a required final step</button> <button data-dismiss="${i}">Remove requirement</button></div>`).join('');
+  box.querySelectorAll('[data-keep]').forEach(b=>b.onclick=()=>{const k=extra[+b.dataset.keep];L.proc.steps.push({key:[...k],text:`Place ${k[1].replaceAll('_',' ')} ${k[0]} ${k[2].replaceAll('_',' ')}`,start:0,ref_time:0,critical:false});renderStepEditor();renderEditorRules();});
+  box.querySelectorAll('[data-dismiss]').forEach(b=>b.onclick=()=>{const k=JSON.stringify(extra[+b.dataset.dismiss]);L.proc.final_goals=L.proc.final_goals.filter(g=>JSON.stringify(g)!==k);renderExtraGoals();});
+}
+function renderEditorRules(){
+  const find=k=>L.proc.steps.find(s=>JSON.stringify(s.key)===JSON.stringify(k));
+  const rules=L.proc.pairs.filter(r=>find(r.before)&&find(r.after)).map(r=>({...r,id:r.before.join('/')+' -> '+r.after.join('/'),before:find(r.before).text,after:find(r.after).text}));
+  renderRules(rules,$('liverules'),L.ov,renderEditorRules);
+}
 async function recheckLive(){
   const r=await fetch('/api/recheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job:L.job,overrides:L.ov})});
   if(!r.ok) return;
@@ -555,16 +672,29 @@ async function recheckLive(){
   renderReport(res[L.job],$('livereport'),$('livevid'),'Re-checked with your rule changes.');
 }
 async function poll(){
+  const requestedJob=L.job;
+  if(L.polling===requestedJob)return;L.polling=requestedJob;
   let j;
   try {
-    const r=await fetch(`/api/jobs/${L.job}`);
-    if(r.status===404) return liveError('This check expired after a server restart. Please upload it again.');
+    const r=await fetch(`/api/jobs/${requestedJob}`);
+    if(requestedJob!==L.job)return;
+    if(r.status===404) return liveError('This check is unavailable. It may have expired after 24 hours, been deleted, or belong to another browser.');
     if(!r.ok) throw new Error('poll failed');
-    j=await r.json(); L.pollFailures=0;
-  } catch(e) { L.pollFailures=(L.pollFailures||0)+1; if(L.pollFailures>=3)liveError('Connection lost. Please try this check again.'); return; }
-  if(j.status==='error') { $('stages').hidden=true; return liveError(j.error); }
+    j=await r.json();if(requestedJob!==L.job)return;L.pollFailures=0;$('liveerr').hidden=true;
+  } catch(e) { if(requestedJob!==L.job)return;L.pollFailures=(L.pollFailures||0)+1;if(L.pollFailures>=3){$('liveerr').hidden=false;$('liveerr').textContent='Reconnecting to your saved check… No need to upload again.';}return; }
+  finally{if(L.polling===requestedJob)L.polling=null;}
+  if(j.status==='error') { $('stages').hidden=true; $('jobactions').hidden=false; return liveError(j.error); }
   showStages(j.stage,j.custom_reference,j.second_reference,j.status==='done');
+  if(j.status==='awaiting_confirmation') { renderProcedureEditor(j); $('go').textContent='Confirm the learned steps'; return; }
   if(j.reference) renderLiveProc(j.reference);
+  if(j.status==='ready'){
+    clearInterval(L.timer);L.timer=null;L.savedReference=L.job;L.referenceOnly=true;
+    $('stages').hidden=true;$('liveempty').hidden=true;$('procedureready').hidden=false;$('jobactions').hidden=false;document.querySelectorAll('.assessment-action').forEach(el=>el.hidden=true);
+    $('startpilot').href=`/pilot?procedure=${L.job}`;$('wownref').hidden=false;$('wuseown').checked=true;
+    $('liveproc').querySelectorAll('button').forEach(b=>b.disabled=true);
+    await refreshProcedures();document.querySelector('input[name=refmode][value=saved]').checked=true;
+    $('ownrefs').hidden=true;$('go').textContent='Check this video';ready();return;
+  }
   if(j.custom_reference&&j.result) $('wownref').hidden=false;     // the camera can now check against it
   const snap=JSON.stringify(j.result||null);
   if((j.status==='checked'||j.status==='done') && j.result && snap!==L.last){
@@ -575,20 +705,41 @@ async function poll(){
     renderReport(j.result,$('livereport'),$('livevid'),sub);
   }
   if(j.status==='done'){
-    clearInterval(L.timer); L.timer=null; $('go').textContent='Check another video'; ready();
+    $('jobactions').hidden=false;document.querySelectorAll('.assessment-action').forEach(el=>el.hidden=false);
+    clearInterval(L.timer); L.timer=null; $('go').textContent='Check another video';
+    if(L.restored!==L.job){
+      L.restored=L.job;
+      if(j.custom_reference){L.reuseJob=L.job;L.savedReference=L.job;if(!$('savedreference').querySelector(`option[value="${L.job}"]`))$('savedreference').add(new Option('Procedure used for this check',L.job));$('savedreference').value=L.job;$('savedrefoption').hidden=false;document.querySelector('input[name=refmode][value=saved]').checked=true;}
+      else{const mode=j.reference_demo==='real'?'real':'pack';document.querySelector(`input[name=refmode][value=${mode}]`).checked=true;}
+      $('ownrefs').hidden=true;$('realsamples').hidden=j.custom_reference||j.reference_demo!=='real';$('packsamples').hidden=j.custom_reference||j.reference_demo!=='pack';
+      refreshChecks().catch(()=>{});
+    }
+    if(j.human_review)$('reviewstatus').textContent=`Saved human review: ${{accept:'accepted',reject:'rejected',needs_evidence:'needs more evidence'}[j.human_review.decision]}. ${j.human_review.note}`;
+    ready();
     if(j.seen){ L.seen=j.seen; $('livevision').disabled=false; $('livevision').checked=true;
       setVideo($('livevid'),j.seen,true); $('livehint').textContent='Steps checked against the tracker’s boxes'; }
     else { $('livehint').textContent=j.note||'No tracking view for this video.'; }
   }
 }
 function initLive(){
+  $('jobhistory').insertAdjacentHTML('afterend',' <button id="downloadreport" class="assessment-action">Download report</button>');
+  $('downloadreport').onclick=async()=>{try{const r=await fetch(`/api/jobs/${L.job}/report`);const d=await r.json();if(!r.ok)throw new Error(d.detail||'Report unavailable');const url=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`oneshot-${L.job}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){$('liveerr').hidden=false;$('liveerr').textContent=e.message;}};
+  refreshProcedures().catch(()=>{});refreshChecks().catch(()=>{$('recentchecks').textContent='Saved checks are temporarily unavailable.';});$('editprocedure').onclick=async()=>{const r=await fetch(`/api/procedures/${L.job}/edit`,{method:'POST'});const d=await r.json();if(!r.ok)return liveError(d.detail);L.awaiting=false;L.shownRules=false;L.ov={};$('procedureready').hidden=true;L.timer=setInterval(poll,1500);poll();};$('learnreference').onclick=teachReference;$('savedreference').onchange=()=>{L.savedReference=$('savedreference').value;ready();};
+  const resumeJob=new URLSearchParams(location.search).get('job');
+  if(resumeJob&&/^[a-f0-9]{32}$/.test(resumeJob)){L.job=resumeJob;L.ov={};L.shownRules=false;L.last=null;L.timer=setInterval(poll,1500);poll();}
+  $('followupfile').onchange=async e=>{const file=e.target.files[0];if(!file)return;const parent=L.job;const fd=new FormData();fd.append('attempt',file);resetLiveView();try{const d=await uploadVideo(`/api/jobs/${parent}/followup`,fd);beginCheck(d.job);}catch(error){liveError(error.message);$('jobactions').hidden=false;}e.target.value='';};
+  $('savereview').onclick=async()=>{const r=await fetch(`/api/jobs/${L.job}/review`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:$('reviewdecision').value,note:$('reviewnote').value})});const d=await r.json();$('reviewstatus').textContent=r.ok?'Human review saved separately.':d.detail;};
+  $('jobhistory').onclick=async()=>{const r=await fetch(`/api/jobs/${L.job}/history`);const d=await r.json();const names={procedure_proposed:'Procedure learned',procedure_confirmed:'Procedure confirmed',rules_rechecked:'Rules changed and assessment updated',evidence_assessed:'Tracking evidence assessed',followup_created:'Follow-up assessment started',followup_requested:'Clearer recording requested',human_review_recorded:'Human review saved',session_started:'Live check started',session_cancelled:'Live check cancelled'};const states={done:'Assessment complete',error:'Assessment stopped',queued:'Waiting to start',awaiting_confirmation:'Waiting for procedure confirmation'};$('historyview').hidden=false;$('historyview').textContent=r.ok?d.history.map(h=>new Date(h.at*1000).toLocaleTimeString()+' · '+(h.event==='job_updated'?(h.job?.stage||states[h.job?.status]||'Assessment updated'):(names[h.event]||'Decision updated'))).join('\n'):d.detail;};
+  $('jobdelete').onclick=async()=>{const r=await fetch(`/api/jobs/${L.job}`,{method:'DELETE'});if(r.ok){$('jobactions').hidden=true;$('livemedia').hidden=true;$('liveproc').hidden=true;$('procedureready').hidden=true;$('livereport').hidden=false;$('livereport').textContent='Recording and decision history deleted.';if(L.savedReference===L.job)L.savedReference=null;await refreshProcedures();ready();}else{const d=await r.json();liveError(d.detail);}};
   wireDrop($('refdrop'),$('reffile'),$('reflabel'),'ref','Choose or drop your reference video');
   wireDrop($('ref2drop'),$('ref2file'),$('ref2label'),'ref2','Optional: a second correct way to do it');
   wireDrop($('attdrop'),$('attfile'),$('attlabel'),'att','Choose or drop a video of someone doing it');
   document.querySelectorAll('input[name=refmode]').forEach(r=>r.onchange=()=>{ $('ownrefs').hidden=!ownRef();
+    if(r.value==='saved'){L.savedReference=$('savedreference').value;$('wownref').hidden=false;$('wuseown').checked=true;}
     $('realsamples').hidden=r.value!=='real'; $('packsamples').hidden=r.value!=='pack'; ready(); });
   $('livevision').onchange=()=>setVideo($('livevid'),$('livevision').checked?L.seen:L.demo,true);
   $('go').onclick=startLive;
+  if(new URLSearchParams(location.search).get('teach')==='1'){document.querySelector('input[name=refmode][value=own]').checked=true;$('ownrefs').hidden=false;$('realsamples').hidden=true;$('packsamples').hidden=true;ready();}
 }
 
 // --- near-live: catch it while it happens -------------------------------------------
@@ -603,6 +754,7 @@ async function wPost(path,body){
   return r.json();
 }
 function wReset(){
+  if(W.events) W.events.close();
   if(W.sid&&!W.done) fetch(`/api/watch/${W.sid}/cancel`,{method:'POST'}).catch(()=>{});
   clearInterval(W.poll); clearInterval(W.tick); clearTimeout(W.bt);
   if(W.rec&&W.rec.state!=='inactive'){ W.rec.onstop=null; W.rec.stop(); }
@@ -617,6 +769,13 @@ function wReset(){
   wRenderProg([]);
 }
 function wError(msg){ clearInterval(W.tick); $('werr').textContent=msg; $('werr').hidden=false; }
+function wListen(){
+  if(!window.EventSource){W.poll=setInterval(wPoll,1000);return;}
+  const sid=W.sid;W.events=new EventSource(`/api/watch/${sid}/events`);
+  W.events.onmessage=e=>{if(W.sid===sid)wApply(JSON.parse(e.data));};
+  W.events.addEventListener('expired',()=>{W.events.close();wError('This check expired. Start a new recording.');});
+  W.events.onerror=()=>{if(W.events)W.events.close();if(!W.done)W.poll=setInterval(wPoll,1500);};
+}
 function wTag(text,live){ $('wtag').hidden=false; $('wtag').innerHTML=(live?'<span class="rec"></span>':'')+text; }
 
 async function wStartDemo(btn){
@@ -624,12 +783,12 @@ async function wStartDemo(btn){
   const fd=new FormData(); fd.append('mode','replay'); fd.append('demo',btn.dataset.demo);
   let s; try{ s=await wPost('/api/watch',fd); }catch(e){ return wError(e.message); }
   Object.assign(W,{sid:s.session,mode:'replay',dur:s.duration,steps:s.steps}); wRenderProg([]);
-  const v=$('wvid'); v.loop=false; v.src=BASE+s.video;
+  const v=$('wvid'); v.loop=false; v.src=mediaUrl(s.video);
   v.onplaying=()=>{ if(W.t0==null){ W.t0=performance.now(); W.tick=setInterval(wTick,250); } };
   v.onended=()=>{ if(W.mode!=='replay'||W.done) return; clearInterval(W.tick); wTag('Attempt over');
     wPost(`/api/watch/${W.sid}/finish`,{}).catch(e=>wError(e.message)); };
   v.play().catch(()=>{});
-  W.poll=setInterval(wPoll,1000);
+  wListen();
 }
 function wTick(){
   if(W.mode==='replay'){
@@ -637,7 +796,7 @@ function wTick(){
     while(vt>=W.next&&W.next<W.dur){ wPost(`/api/watch/${W.sid}/read`,{upto:W.next}).catch(()=>{}); W.next+=READ_EVERY; }
   } else {
     const t=wElapsed(); wTag(`REC ${clock(t)}`,true);
-    if(t>=CAM_LIMIT) wStopCam();
+    if(t>=Math.min(CAM_LIMIT,(W.maxSeconds||120)-5)) wStopCam();
   }
 }
 async function wStartCam(){
@@ -646,23 +805,24 @@ async function wStartCam(){
   try{ W.stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}},audio:false}); }
   catch(e){ $('wcam').classList.remove('on'); return wError(`Couldn’t open the camera (${e.name}). Allow camera access, or play a sample instead.`); }
   const fd=new FormData(); fd.append('mode','camera');
-  if(!$('wownref').hidden&&$('wuseown').checked&&L.job) fd.append('reference_job',L.job);
+  fd.append('reference_demo',$('wreference').value);
+  if(!$('wownref').hidden&&$('wuseown').checked&&(L.savedReference||L.job)) fd.append('reference_job',L.savedReference||L.job);
   let s; try{ s=await wPost('/api/watch',fd); }catch(e){ W.stream.getTracks().forEach(t=>t.stop()); return wError(e.message); }
   const sid=s.session;
-  Object.assign(W,{sid,mode:'camera',steps:s.steps}); wRenderProg([]);
+  Object.assign(W,{sid,mode:'camera',steps:s.steps,readEvery:s.read_every_seconds||2,maxSeconds:s.max_seconds||CAM_LIMIT}); wRenderProg([]);
   const v=$('wvid'); v.srcObject=W.stream; v.play().catch(()=>{});
   const mime=['video/webm;codecs=vp8','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
   W.rec=new MediaRecorder(W.stream,{mimeType:mime,videoBitsPerSecond:1500000});
   W.rec.ondataavailable=e=>{
     if(!e.data.size) return;
     const n=++W.chunks, rec=W.rec;
-    W.chain=W.chain.then(()=>fetch(`/api/watch/${sid}/chunk`,{method:'POST',body:e.data}))
-      .then(()=>{ if(n%READ_EVERY===0&&rec.state==='recording') return wPost(`/api/watch/${sid}/read`,{}); }).catch(()=>{});
+    W.chain=W.chain.then(async()=>{const r=await fetch(`/api/watch/${sid}/chunk`,{method:'POST',body:e.data});if(!r.ok){const d=await r.json();throw new Error(d.detail||'Camera upload failed');}})
+      .then(()=>{ if(n%(W.readEvery||READ_EVERY)===0&&rec.state==='recording') return wPost(`/api/watch/${sid}/read`,{}); }).catch(e=>{wError(e.message);if(rec.state==='recording')wStopCam();});
   };
   W.rec.onstop=()=>{ W.chain.then(()=>wPost(`/api/watch/${sid}/finish`,{})).catch(e=>wError(e.message)); };
   W.rec.start(1000); W.t0=performance.now(); W.tick=setInterval(wTick,250);
   $('wcam').textContent='■ Stop'; $('wstop').hidden=false;
-  W.poll=setInterval(wPoll,1000);
+  wListen();
 }
 function wStopCam(){
   if(!W.rec||W.rec.state==='inactive') return;
@@ -677,16 +837,22 @@ async function wPoll(){
   if(!r.ok){ clearInterval(W.poll); clearInterval(W.tick); W.done=true;
     if(W.rec&&W.rec.state!=='inactive'){ W.rec.onstop=null; W.rec.stop(); W.stream.getTracks().forEach(t=>t.stop()); }
     return wError('This live check was lost — the server restarted. Start it again.'); }
+  wApply(s);
+}
+function wApply(s){
+  W.readEvery=s.read_every_seconds||READ_EVERY;
   wRenderProg(s.progress); wRenderAlerts(s.alerts);
   const n=`${s.reads} read${s.reads===1?'':'s'}`;
   $('wstatus').textContent={watching:`Read up to ${clock(s.upto)} · ${n}${s.reading?` (${s.reading} running)`:''}${s.read_seconds?` · ~${s.read_seconds} s each`:''} · $${s.cost.toFixed(3)}`,
     finishing:'Attempt over — checking the whole video…', done:`Done · ${n} while it happened + 1 full check · $${s.cost.toFixed(3)}`}[s.status]||'';
-  if(s.status==='error'){ clearInterval(W.poll); W.done=true; return wError(s.error); }
+  if(s.status==='error'){ clearInterval(W.poll);if(W.events)W.events.close();W.done=true;if(W.rec&&W.rec.state==='recording'){W.rec.onstop=null;W.rec.stop();W.stream.getTracks().forEach(t=>t.stop());}return wError(s.error); }
   if(s.status!=='done') return;
   clearInterval(W.poll); W.done=true;
-  if(W.mode==='camera'&&s.video){ const v=$('wvid'); v.srcObject=null; v.src=BASE+s.video; v.loop=true; v.play().catch(()=>{}); $('wtag').hidden=true; }
+  if(W.events)W.events.close();
+  if(W.mode==='camera'&&s.video){ const v=$('wvid'); v.srcObject=null; v.src=mediaUrl(s.seen||s.video); v.loop=true; v.play().catch(()=>{}); $('wtag').hidden=true; }
   const box=$('wfinal'); box.innerHTML='<h3>Final check · whole video</h3><div></div>';
   renderReport(s.final,box.lastElementChild,$('wvid'),'The full check, run once the attempt ended — skipped steps show up here.');
+  box.insertAdjacentHTML('beforeend',`<p><a href="?job=${W.sid}#try">Open saved decision and recording controls</a></p>`);
 }
 function wRenderProg(p){
   const rows=p&&p.length?p:W.steps.map(s=>({text:s.text,critical:s.critical,done:false}));
@@ -718,6 +884,7 @@ function initWatch(){
 }
 
 function renderAcc(){
+  if(D.current_validation){const S=D.current_validation.summary;$('current-validation').hidden=false;$('current-validation').innerHTML=`<h3>Current acceptance policy · offline replay</h3><p>${S.matched_expected}/${S.total} expected outcomes matched; ${S.abstentions} require review. The checker now separately checks final placements and ambiguous identities.</p><p>These are the same generated development fixtures, evaluated again without model calls. Historical service reports do not certify this changed build.</p><a href="/static/media/current_validation.json" download>Download the current replay</a>`;}
   const P=D.accuracy.pack||{}, T=D.accuracy.trays||{};
   const rows=[['ok','correct attempts passed'],['ok_alt','free-order attempts passed'],['loose','unusual orders noted, not failed'],['order','required orders caught'],
     ['skip_liner','skipped critical step caught'],['skip_card','skipped steps caught'],['wrong_place','wrong places caught'],['hidden','hidden steps not wrongly failed']].filter(([k])=>P[k]);

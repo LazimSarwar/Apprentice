@@ -23,6 +23,7 @@ import imageio.v3 as iio
 
 from oneshot.check import compare
 from oneshot.graph import add_evidence
+from oneshot.media import small_mp4
 from oneshot.procedure import Procedure
 from oneshot.schema import TaskGraph
 from oneshot.sim.executor import execute
@@ -56,6 +57,9 @@ def _graph(stem: str) -> TaskGraph:
 
 
 def _clip(stem: str) -> Path:
+    source = Path(_graph(stem).source)
+    if not source.is_absolute(): source = APP / source
+    if source.exists(): return small_mp4(source, RUNS / "clips")
     return RUNS / "clips" / f"{stem}.720p.mp4"
 
 

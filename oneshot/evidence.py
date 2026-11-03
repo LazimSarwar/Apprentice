@@ -22,7 +22,7 @@ from meta_sam_parser import parse_responses_stream, ResponsesStreamSourceError
 from httpx2 import TransportError
 from openai import AsyncOpenAI, APIConnectionError, APITimeoutError, RateLimitError, InternalServerError
 
-from .clients import META_BASE_URL, require_env
+from .clients import META_BASE_URL, require_env, record_usage
 from .media import frame_to_seconds
 from .schema import Box, Track
 from .box_parser import BoxVideoFormat
@@ -81,6 +81,8 @@ async def _track_one(
     api: AsyncOpenAI, file_id: str, concept: str, fps: float | None
 ) -> Track | None:
     """Track a single concept; return the longest trajectory as its Track, or None."""
+    # Track usage is an estimate per attempted stream, including retry attempts.
+    record_usage(float(os.environ.get("TRACK_EST_USD", "0.10")), estimated=True)
     stream = await api.responses.create(
         model=MODEL,
         stream=True,

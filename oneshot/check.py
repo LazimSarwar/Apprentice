@@ -26,11 +26,13 @@ import json
 import sys
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from types import SimpleNamespace
 
 from .narration import Narration, Turn, listen, narrate, spoken_text
 from .procedure import (Key, Milestone, Procedure, Rule, events, final_keys, learn,  # noqa: F401
                         map_objects, milestones, pair_id)
 from .schema import TaskGraph
+from .tracking_identity import ambiguous_tracks
 from .sim import monitor
 from .words import clock, imperative, into, nice, where
 
@@ -62,6 +64,7 @@ class Report:
     verified: bool = False         # all reached milestones corroborated by tracking
     tracking_used: bool = False
     evidence_status: str = "model_only"  # model_only | partial | corroborated | inconclusive
+    final_states: list[dict] = field(default_factory=list)
 
     def summary(self) -> str:
         fails = [i for i in self.issues if i.severity == "fail"]
@@ -88,7 +91,7 @@ class Report:
         return {"passed": self.passed, "verdict": self.verdict, "milestones": self.milestones,
                 "issues": [asdict(i) for i in self.issues], "mapping": self.mapping,
                 "rules": self.rules, "verified": self.verified, "tracking_used": self.tracking_used,
-                "evidence_status": self.evidence_status}
+                "evidence_status": self.evidence_status, "final_states": self.final_states}
 
 
 # --- tracking evidence -------------------------------------------------------------
@@ -134,6 +137,8 @@ def _gap(a: list[float], b: list[float]) -> float:
 def _evidence(key: Key, step, att: TaskGraph, back: dict[str, str]) -> str:
     """What the tracker says about a reached milestone."""
     rel, a, b = key
+    if any(back.get(oid, oid) in att.meta.tracking_errors for oid in (a, b)):
+        return "unseen"
     objs = {o.id: o for o in att.objects}
     oa, ob = objs.get(back.get(a, a)), objs.get(back.get(b, b))
     if oa is None or not oa.track:
@@ -141,11 +146,18 @@ def _evidence(key: Key, step, att: TaskGraph, back: dict[str, str]) -> str:
     box_a = _box_near(oa.track, step.end_s)
     if box_a is None:
         return "unseen"
+    # A query can switch identities only after an occlusion. Check the current
+    # evidence window as well as the whole trajectory before trusting its box.
+    local_duplicates = ambiguous_tracks(att.objects, box_a.t_s - 1.0, box_a.t_s)
+    if any(oid in local_duplicates for oid in (oa.id, ob.id if ob else b)):
+        return "unseen"
     rest = step.end_s + SETTLE
     if box_a.t_s < rest and any(b.t_s >= rest for o in att.objects if o.track for b in o.track.boxes):
         return "unseen"                      # lost as the move ended (covered?): its resting place wasn't seen
     if ob is None or not ob.track:
         return "seen"
+    if oa.id != ob.id and (oa.track is ob.track or oa.track.boxes == ob.track.boxes):
+        return "unseen"  # One trajectory is not independent evidence for two objects.
     t = box_a.t_s
     box_b = _box_near(ob.track, t, before=1.0, after=1.0)
     if box_b is None and rel == "inside":    # a container stays put: use where it was last seen
@@ -176,14 +188,49 @@ def rule_view(r: Rule, proc: Procedure) -> dict:
             "quote": r.quote, "before": sa.text if sa else str(r.before), "after": sb.text if sb else str(r.after)}
 
 
+def _inside_container(placement: Key, container: str, locations: dict[str, Key]) -> bool:
+    """Follow observed supports to an enclosing container, with cycle protection.
+
+    Locations must describe the attempt at the relevant time. A placement on the
+    container itself does not establish containment.
+    """
+    relation, _, target = placement
+    visited = set()
+    while target not in visited:
+        if relation not in ("on", "inside"):
+            return False
+        if target == container:
+            return relation == "inside"
+        if target not in locations:
+            return False
+        visited.add(target)
+        relation, _, target = locations[target]
+    return False
+
+
 def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | None = None,
-            procedure: Procedure | None = None) -> Report:
+            procedure: Procedure | None = None, *, final: bool = True) -> Report:
     """Check `att` against the procedure (learned from `ref` alone when not given).
     Explicit `rules` replace the learned ordering with required rules (e.g. a confirmed spec)."""
     proc = procedure or learn([ref])
+    duplicates = ambiguous_tracks(att.objects)
+    if duplicates:
+        # Preserve raw tracks in the stored graph, but never use a shared identity
+        # as evidence for presence, absence, wrong placement or final acceptance.
+        att = att.model_copy(update={
+            "objects": [o.model_copy(update={"track": None, "tracked": False})
+                        if o.id in duplicates else o for o in att.objects],
+            "meta": att.meta.model_copy(update={"tracking_errors": {
+                **att.meta.tracking_errors,
+                **{oid: "Ambiguous tracking identity" for oid in duplicates}},
+                "track_seconds": att.meta.track_seconds if att.meta.track_seconds is not None else 0.0})})
+    if proc.object_kinds:
+        def typed(g):
+            return g.model_copy(update={"objects": [o.model_copy(update={"kind": proc.object_kinds.get(o.id, o.kind)}) for o in g.objects]})
+        ref, att = typed(ref), typed(att)
     if rules is not None:
         proc = Procedure(proc.steps, [Rule(r.before, r.after, "required", "you", r.note) for r in rules],
-                         proc.references, proc.narration)
+                         proc.references, proc.narration, proc.final_goals, proc.object_kinds)
     ms = proc.steps
     if not ms:
         return Report(False, "unsure", [], [Issue(
@@ -197,14 +244,31 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     evs = events(att, mapping)
     first: dict[Key, float] = {}
     step_of: dict[Key, object] = {}
+    locations: dict[str, Key] = {}
+    entailed: set[Key] = set()
     for t, k, s in evs:
+        locations[k[1]] = k
         if k not in first:
             first[k], step_of[k] = t, s
+        for expected in ms_keys:
+            if (expected[0] == "inside" and expected[1] == k[1] and expected != k
+                    and _inside_container(k, expected[2], locations)):
+                if expected not in first:
+                    first[expected], step_of[expected] = t, s
+                entailed.add(k)
     finals = final_keys(att, mapping)
     tracked = att.meta.track_seconds is not None or any(o.track for o in att.objects)
     objs = {o.id: o for o in att.objects}
 
     issues: list[Issue] = []
+    for obj in att.objects:
+        if obj.id not in mapping and any((candidate.color or "").lower() == (obj.color or "").lower()
+                                        for candidate in ref.objects):
+            candidates = [candidate for candidate in ref.objects if candidate.id not in mapping.values()
+                          and (candidate.color or "").lower() == (obj.color or "").lower()]
+            if len(candidates) > 1:
+                issues.append(Issue("unknown", "unknown", f"Object identity is ambiguous for {nice(obj.id)}.",
+                                    None, [obj.id], fix="Use distinct objects or confirm their identities in the reference."))
     explained: set[Key] = set()             # attempt events accounted for by a wrong_place
     prev_time: float | None = None
     for m in ms:
@@ -220,6 +284,14 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
             t, k = moved_elsewhere[0]
             explained.add(k)
             step = next(s for tt, kk, s in evs if kk == k)
+            locations = {key[1]: key for time, key, _ in evs if time <= t}
+            if k[0] == "inside" and _inside_container(m.key, k[2], locations):
+                issues.append(Issue("unknown", "unknown",
+                                    f"Couldn't verify: {m.text} — the video model reported the {nice(a)} "
+                                    f"{where(k[0], k[2])}, which does not establish whether it is {where(rel, b)}.",
+                                    t, [a, b, k[2]], m.critical, m.reason, m.quote,
+                                    "Review the supporting object and this placement in the recording."))
+                continue
             if tracked and _evidence(k, step, att, back) in ("unseen", "contradicted"):
                 issues.append(Issue("unknown", "unknown",
                                     f"Couldn't verify where the {nice(a)} went — the tracker could not support "
@@ -254,7 +326,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     issues += _order_issues(broken, first, info)
 
     for t, k, s in evs:
-        if k not in ms_keys and k not in explained:
+        if k not in ms_keys and k not in explained and k not in entailed:
             issues.append(Issue("extra", "warn", f"Extra step not in the reference: {k[1].replace('_', ' ')} "
                                 f"{where(k[0], k[2])}", t, [k[1]]))
 
@@ -267,9 +339,12 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
             failed = [k for k in m.key[1:] if back.get(k, k) in att.meta.tracking_errors]
             if failed:
                 ev = "unseen"
+                shared = [k for k in failed if back.get(k, k) in duplicates]
                 issues.append(Issue("unknown", "unknown",
-                                    f"Couldn't verify: {m.text} — tracking was unavailable for "
-                                    + ", ".join(nice(k) for k in failed) + ".", first.get(m.key),
+                                    (f"Couldn't verify: {m.text} — the tracker confused "
+                                     + ", ".join(nice(k) for k in shared) + " with another object."
+                                     if shared else f"Couldn't verify: {m.text} — tracking was unavailable for "
+                                     + ", ".join(nice(k) for k in failed) + "."), first.get(m.key),
                                     list(m.key[1:]), m.critical,
                                     fix="Review this step by hand or retry the check."))
             elif ev == "contradicted":
@@ -285,6 +360,42 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
         status.append({"text": m.text, "done": done, "time": first.get(m.key), "ref_time": m.ref_time,
                        "critical": m.critical, "reason": m.reason, "quote": m.quote, "evidence": ev})
 
+    # Keep intermediate milestones, but independently enforce the terminal state.
+    # A reached milestone is not permanent: later placements can invalidate it.
+    final_states = []
+    if final:
+        required = set(proc.final_goals) if proc.final_goals is not None else final_keys(ref, {})
+        ref_last = {k[1]: k for _, k, _ in events(ref, {})}
+        if proc.final_goals is None:
+            required |= {k for a, k in ref_last.items() if not any(r[1] == a for r in required)}
+        latest = {k[1]: (t, k, s) for t, k, s in evs}
+        locations = {a: item[1] for a, item in latest.items()}
+        for key in sorted(required):
+            if key not in first and key not in finals:
+                continue  # The missing milestone already explains this result.
+            last = latest.get(key[1])
+            conflicting = (last is not None and last[1] != key
+                           and not (key[0] == "inside" and _inside_container(last[1], key[2], locations)))
+            explicit_conflict = any(k[1] == key[1] and k[0] == key[0] and k != key for k in finals)
+            ev = None
+            if tracked:
+                end = SimpleNamespace(end_s=max(0.0, att.video.duration_s - 1.5))
+                ev = _evidence(key, end, att, back)
+                if any(back.get(a, a) in att.meta.tracking_errors for a in key[1:]):
+                    ev = "unseen"
+            final_states.append({"key": list(key), "evidence": ev, "holds": not (conflicting or explicit_conflict)})
+            if conflicting or explicit_conflict:
+                coarse = last is not None and last[1][0] == "inside" and _inside_container(key, last[1][2], locations)
+                severity = "unknown" if coarse or (tracked and ev != "contradicted") else "fail"
+                issues.append(Issue("unknown" if severity == "unknown" else "wrong_place", severity,
+                    (f"Couldn't verify the final placement of the {nice(key[1])} {where(key[0], key[2])}."
+                     if coarse else f"Final placement changed: the {nice(key[1])} must finish {where(key[0], key[2])}."),
+                    last[0] if last else None, list(key[1:]),
+                    fix=f"Move the {nice(key[1])} {into(key[0], key[2])} and show the final result."))
+            elif tracked and ev in ("contradicted", "unseen"):
+                issues.append(Issue("unknown", "unknown", f"Couldn't verify the final placement of the {nice(key[1])}.",
+                    last[0] if last else None, list(key[1:]), fix="Keep the final arrangement visible for review."))
+
     # A final picture cannot establish the order of an untimed placement.
     untimed = {k for k in ms_keys if k in finals and k not in first}
     for k in untimed:
@@ -296,12 +407,14 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     issues.sort(key=lambda i: (i.time is None, i.time or 0.0))
     sev = {i.severity for i in issues}
     verdict = "fail" if "fail" in sev else "unsure" if "unknown" in sev else "pass_notes" if sev else "pass"
-    corroborated = bool(status) and all(m["done"] and m["evidence"] == "confirmed" for m in status)
+    corroborated = verdict in ("pass", "pass_notes") and bool(status) and all(
+        m["done"] and m["evidence"] == "confirmed" for m in status) and all(
+        s["holds"] and s["evidence"] == "confirmed" for s in final_states)
     evidence_status = ("inconclusive" if "unknown" in sev else "corroborated" if corroborated
                        else "partial" if tracked else "model_only")
     return Report(passed=verdict in ("pass", "pass_notes"), verdict=verdict, milestones=status, issues=issues,
                   mapping=mapping, rules=[rule_view(r, proc) for r in proc.shown()], verified=corroborated,
-                  tracking_used=tracked, evidence_status=evidence_status)
+                  tracking_used=tracked, evidence_status=evidence_status, final_states=final_states)
 
 
 def _order_issues(broken: list[Rule], first: dict[Key, float], info: dict) -> list[Issue]:
@@ -358,7 +471,7 @@ def _load_or_build(path: Path, provider: str, track: bool, guide: TaskGraph | No
         return TaskGraph.model_validate_json(path.read_text(encoding="utf-8"))
     from .clients import ROOT
     from .graph import build_task_graph
-    known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in guide.objects] if guide else None
+    known = [o.reference_hint() for o in guide.objects] if guide else None
     g = build_task_graph(path, provider=provider, known_objects=known, track=track, spoken=spoken)
     out = ROOT / "runs" / f"{path.stem}.graph.json"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -370,7 +483,9 @@ def _load_or_build(path: Path, provider: str, track: bool, guide: TaskGraph | No
 def load_turns(reference: Path) -> list[Turn] | None:
     """What was said in the reference, cached as runs/<stem>.turns.json."""
     from .clients import ROOT
-    cache = ROOT / "runs" / f"{_stem(reference)}.turns.json"
+    from .media import source_digest
+    cache = ROOT / "runs" / f"{_stem(reference)}.{source_digest(reference)[:20]}.turns.json"
+    cache.parent.mkdir(parents=True, exist_ok=True)
     if cache.exists():
         return [Turn(**t) for t in json.loads(cache.read_text(encoding="utf-8"))] or None
     if reference.suffix.lower() == ".json":
@@ -385,7 +500,11 @@ def load_turns(reference: Path) -> list[Turn] | None:
 def load_narration(reference: Path, ref: TaskGraph, turns: list[Turn] | None) -> Narration | None:
     """The narration read against the reference's steps, cached as runs/<stem>.narration.json."""
     from .clients import ROOT
-    cache = ROOT / "runs" / f"{_stem(reference)}.narration.json"
+    import hashlib
+    identity = json.dumps({"graph": ref.model_dump(), "turns": [asdict(t) for t in turns or []], "version": 2}, sort_keys=True)
+    key = hashlib.sha256(identity.encode()).hexdigest()[:20]
+    cache = ROOT / "runs" / f"{_stem(reference)}.{key}.narration.json"
+    cache.parent.mkdir(parents=True, exist_ok=True)
     if cache.exists():
         return Narration.from_dict(json.loads(cache.read_text(encoding="utf-8")))
     n = narrate(turns, [(m.text, m.start, m.ref_time) for m in milestones(ref)])

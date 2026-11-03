@@ -7,12 +7,13 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt .
+COPY requirements.txt requirements.lock ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY oneshot ./oneshot
 COPY web ./web
 
 ENV BUDGET_FILE=/data/budget.json
+ENV PRIVATE_DATA_DIR=/data/private
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "web.server:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,21 +1,7 @@
-"""Near-live sessions: check an attempt while it is happening (`oneshot.watch`).
-
-Two sources feed the same session:
-  camera â€” the page records with the browser's camera and streams it here in one-second
-           WebM chunks, appended to one file;
-  replay â€” a finished video (a sample attempt, or an upload) played back in real time.
-
-Every few seconds the page asks for a read: the video so far is cut into a small clip and
-read by the video model, guided by the reference's object names. Reads overlap (up to
-PER_SESSION at once) so a slow one doesn't hold up the next; a request that arrives while
-all slots are busy replaces any older waiting one, because a longer read covers it. When the
-attempt ends, the whole video gets the full check, which is the verdict.
-
-Every read calls the hosted model (~$0.007), so sessions are capped in reads and length.
-"""
-
+"""Bounded camera sessions with adaptive reads and shared final verification."""
 from __future__ import annotations
 
+import math
 import shutil
 import threading
 import time
@@ -24,44 +10,43 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from oneshot.graph import build_task_graph
-from oneshot.media import cut, video_info
+from oneshot.media import cut, video_info, small_mp4
 from oneshot.procedure import Procedure
 from oneshot.schema import TaskGraph
 from oneshot.watch import Watch
-from web import budget, live
-from web.views import procedure_view, report_view
+from web import budget, live, storage
+from web.views import procedure_view
 
-WORK = live.WORK.parent / "watch"
+WORK = storage.ROOT
 MEDIA = live.WEB / "static" / "media"
 DEMOS = ("pack_order", "pack_wrong_place", "pack_skip_liner", "pack_ok", "pack_skip_card", "pack_loose")
-PER_SESSION = 4            # reads of one attempt running at once (~8 s each, one every 2 s)
-MAX_READS = 60             # ~2 minutes at one read every 2 s
-MAX_ACTIVE = 2             # sessions watching at once (each read costs money)
-IDLE = 30.0                # a session the page stopped asking about for this long doesn't count
-READ_FPS = 5               # live reads: the model samples frames itself, so this only shrinks the upload
-READ_EFFORT = "minimal"    # about halves a read; the final check on the whole video keeps "low"
-
+PER_SESSION = 4
+MAX_READS = 60
+MAX_ACTIVE = 2
+IDLE = 30.0
+MAX_CHUNK_BYTES = 2 * 1024 * 1024
+READ_FPS = 5
+READ_EFFORT = "minimal"
 _pool = ThreadPoolExecutor(max_workers=2 * PER_SESSION)
 _sessions: dict[str, "Session"] = {}
-_lock = threading.Lock()
+_lock = threading.RLock()
 
 
 @dataclass
 class Session:
     id: str
-    mode: str                          # camera | replay
+    mode: str
     ref: TaskGraph
     proc: Procedure
-    src: Path                          # replay: the whole video; camera: the growing recording
-    duration: float | None = None      # replay only
-    video: str | None = None           # what the page plays (replay sample / camera recording)
-    status: str = "watching"           # watching | finishing | done | error | cancelled
-    touched: float = field(default_factory=time.monotonic)    # last time the page asked anything
+    src: Path
+    duration: float | None = None
+    video: str | None = None
+    status: str = "watching"
+    touched: float = field(default_factory=time.monotonic)
     started: float = field(default_factory=time.monotonic)
     watch: Watch = None
     seq: int = 0
-    asked: float = 0.0                 # longest read requested so far (replay)
+    asked: float = 0.0
     pending: tuple | None = None
     in_flight: int = 0
     reads: int = 0
@@ -71,183 +56,226 @@ class Session:
     received: int = 0
     final: dict | None = None
     error: str | None = None
-    lock: threading.Lock = field(default_factory=threading.Lock)
+    revision: int = 0
+    seen: str | None = None
+    lock: threading.RLock = field(default_factory=threading.RLock)
+    idle: threading.Event = field(default_factory=threading.Event)
 
     def __post_init__(self):
         self.watch = Watch(self.ref, self.proc)
-        self.known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in self.ref.objects]
+        self.known = live._known(self.ref)
+        self.idle.set()
 
 
-def _reference(job: str | None) -> tuple[TaskGraph, Procedure, bool]:
+def _reference(job, dataset="pack"):
     if job:
-        with live._lock:
-            found = live._graphs.get(job)
-        if found is None:
-            raise KeyError(job)
-        return found[0], found[2], True
-    ref, proc = live.builtin()
+        saved = live.get(job)
+        if not saved or not saved.get("procedure_confirmed"):
+            raise live.UploadError("Confirm the learned procedure before using it with the camera.")
+        ref, proc = live.load_reference(job)
+        return ref, proc, True
+    ref, proc = live.builtin(dataset)
     return ref, proc, False
 
 
-def start(mode: str, demo: str | None = None, upload: Path | None = None,
-          reference_job: str | None = None) -> dict:
+def start(mode, demo=None, upload=None, reference_job=None, reference_demo="pack"):
+    if mode not in ("camera", "replay"):
+        raise live.UploadError("Choose camera or replay.")
     budget.ensure()
-    with _lock:
-        active = sum(s.status in ("watching", "finishing") and time.monotonic() - s.touched < IDLE
-                     for s in _sessions.values())
-    if active >= MAX_ACTIVE:
-        raise live.UploadError("Two live checks are already running â€” try again in a minute.")
-    ref, proc, own = _reference(reference_job)
+    cleanup()
+    ref, proc, own = _reference(reference_job, reference_demo)
     sid = live.new_job_id()
-    WORK.mkdir(parents=True, exist_ok=True)
-    if mode == "camera":
-        s = Session(sid, mode, ref, proc, WORK / f"{sid}_camera.webm")
-    elif demo is not None:
-        if demo not in DEMOS:
-            raise KeyError(demo)
-        src = MEDIA / f"{demo}_demo.mp4"
-        s = Session(sid, "replay", ref, proc, src, video_info(src).duration_s, f"media/{demo}_demo.mp4")
-    elif upload is not None:
-        seconds = video_info(upload).duration_s
-        if seconds > live.MAX_SECONDS:
-            raise live.UploadError(f"The video is {seconds:.0f} s long; please keep it under {live.MAX_SECONDS} s.")
-        s = Session(sid, "replay", ref, proc, upload, seconds)
-    else:
-        raise live.UploadError("Pick a sample attempt, upload a video, or use the camera.")
+    src = None
+    seconds = None
+    video = None
+    if mode == "replay":
+        if demo is not None:
+            if demo not in DEMOS: raise KeyError(demo)
+            src = MEDIA / f"{demo}_demo.mp4"
+            video = f"media/{demo}_demo.mp4"
+        elif upload is not None:
+            src = upload
+        else: raise live.UploadError("Select a sample or upload a replay.")
+        seconds = live._check_length(src, "replay")
     with _lock:
+        # Count and reserve in the same critical section.
+        active = sum(s.status in ("watching", "finishing") for s in _sessions.values())
+        if active >= MAX_ACTIVE:
+            raise live.UploadError("Two live checks are already running. Try again in a minute.")
+        folder = storage.create(sid)
+        if upload is not None and src == upload:
+            target = folder / "raw" / ("replay" + upload.suffix)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(upload, target)
+            src = target
+        s = Session(sid, mode, ref, proc, src or folder / "camera.webm", seconds, video)
         _sessions[sid] = s
-    return {"session": sid, "duration": s.duration, "video": s.video, "own_reference": own,
-            "steps": procedure_view(proc)["steps"]}
+        storage.update(sid, event="session_started", reference_graph=ref.model_dump(), procedure=proc.to_dict())
+        live._set(sid, status="watching", stage="Watching the live attempt", procedure_confirmed=True,
+                  custom_reference=own, reference_demo=reference_demo, second_reference=False)
+    return {"session": sid, "duration": seconds, "video": video, "own_reference": own,
+        "steps": procedure_view(proc)["steps"], "max_seconds": live.MAX_SECONDS,
+        "read_every_seconds": 2, "retention_seconds": storage.RETENTION_SECONDS}
 
 
-def _get(sid: str) -> Session:
-    with _lock:
-        s = _sessions.get(sid)
-    if s is None:
-        raise KeyError(sid)
+def _get(sid):
+    with _lock: s = _sessions.get(sid)
+    if s is None: raise KeyError(sid)
     s.touched = time.monotonic()
     return s
 
 
-def cancel(sid: str) -> None:
-    """The page moved on: no more reads, no final check."""
+def cancel(sid):
     s = _get(sid)
     with s.lock:
-        if s.status == "watching":
+        if s.status in ("watching", "finishing"):
             s.status, s.pending = "cancelled", None
+            s.revision += 1
+            storage.update(s.id, event="session_cancelled")
 
 
-def append(sid: str, data: bytes) -> None:
-    """One more chunk of the camera recording."""
+def _camera_limit(s):
+    if time.monotonic() - s.started > live.MAX_SECONDS:
+        raise live.UploadError("The recording time limit was reached. Finish this check to verify the recording.")
+
+
+def append(sid, data):
     s = _get(sid)
     with s.lock:
         if s.mode != "camera" or s.status != "watching":
-            return
+            raise live.UploadError("This session is not accepting camera chunks.")
+        _camera_limit(s)
+        if len(data) > MAX_CHUNK_BYTES or s.received + len(data) > live.MAX_BYTES:
+            raise live.UploadError("The recording or chunk exceeds its size limit.")
+        with storage._lock:
+            storage.ensure_space(len(data))
+            with s.src.open("ab") as out: out.write(data)
         s.received += len(data)
-        if s.received > live.MAX_BYTES:
-            raise live.UploadError("The recording is too large.")
-        with s.src.open("ab") as out:
-            out.write(data)
 
 
-def read(sid: str, upto: float | None = None) -> None:
-    """Ask for a read of the attempt so far (replay: the first `upto` seconds)."""
+def read(sid, upto=None):
     s = _get(sid)
     with s.lock:
-        if s.status != "watching":
-            return
+        if s.status != "watching" or s.reads >= MAX_READS: return
         if s.mode == "camera":
-            if not s.src.exists():
-                return
+            _camera_limit(s)
+            if not s.src.exists(): return
             s.seq += 1
-            snap = WORK / f"{sid}_snap{s.seq:03d}.webm"
-            shutil.copyfile(s.src, snap)          # chunks are appended under the same lock
-            s.pending = (s.seq, snap, None)
+            s.pending = (s.seq, None)  # Snapshot only when a worker slot is admitted.
         else:
-            upto = min(float(upto or 0.0), s.duration)
-            if upto <= s.asked or upto < 1.0:
-                return
-            s.seq += 1
-            s.asked = upto
-            s.pending = (s.seq, s.src, upto)
+            if not isinstance(upto, (int, float)) or not math.isfinite(upto):
+                raise live.UploadError("Replay time must be a finite number.")
+            upto = min(float(upto), s.duration)
+            if upto <= s.asked or upto < 1: return
+            s.seq += 1; s.asked = upto; s.pending = (s.seq, upto)
     _launch(s)
 
 
-def _launch(s: Session) -> None:
+def _launch(s):
     with s.lock:
-        if s.pending is None or s.in_flight >= PER_SESSION or s.reads >= MAX_READS or s.status != "watching":
-            return
-        job, s.pending = s.pending, None
-        s.in_flight += 1
-        s.reads += 1
-    _pool.submit(_read, s, *job)
+        if s.pending is None or s.in_flight >= PER_SESSION or s.reads >= MAX_READS or s.status != "watching": return
+        seq, upto = s.pending
+        src = s.src
+        if s.mode == "camera":
+            src = live._work(s.id) / f"snapshot_{seq:03d}.webm"
+            try:
+                with storage._lock:
+                    storage.ensure_space(s.src.stat().st_size)
+                    shutil.copyfile(s.src, src)
+            except (OSError, ValueError) as exc:
+                src.unlink(missing_ok=True)
+                s.status, s.pending, s.error = "error", None, str(exc)
+                return
+        s.pending = None; s.in_flight += 1; s.reads += 1
+        s.idle.clear()
+        _pool.submit(_read, s, seq, src, upto)
 
 
-def _read(s: Session, seq: int, src: Path, upto: float | None) -> None:
+def _read(s, seq, src, upto):
+    work = live._work(s.id) / f"read_{seq:03d}"
     try:
-        budget.ensure()
-        begun, t = time.monotonic(), time.perf_counter()
-        clip = cut(src, upto, WORK / f"{s.id}_{seq:03d}.mp4", fps=READ_FPS)
-        seconds = upto if upto is not None else video_info(clip).duration_s
-        t1 = time.perf_counter()
-        att = build_task_graph(clip, work_dir=WORK, known_objects=s.known, track=False, effort=READ_EFFORT)
-        budget.charge(att.meta.extract_cost_usd, "live read")
+        begun = time.monotonic()
+        clip = cut(src, upto, work / "prefix.mp4", fps=READ_FPS)
+        seconds = video_info(clip).duration_s
+        if seconds > live.MAX_SECONDS: raise live.UploadError("The recording exceeds its duration limit.")
+        att = live._extract(clip, work, known_objects=s.known, effort=READ_EFFORT)
         with s.lock:
-            s.cost += att.meta.extract_cost_usd or 0.0
-            s.read_seconds.append(round(time.perf_counter() - t, 1))
-            used = s.watch.update(att, seconds)
-        print(f"[watch {s.id}] read {seq} @{seconds:.1f}s: start +{begun - s.started:.1f}s"
-              f" cut {t1 - t:.1f}s, graph {time.perf_counter() - t1:.1f}s (model {att.meta.extract_seconds}s), "
-              f"done +{time.monotonic() - s.started:.1f}s, {'used' if used else 'stale'}, "
-              f"{sum(a.status == 'open' for a in s.watch.alerts.values())} open", flush=True)
+            if s.status != "watching": return
+            s.cost += att.meta.extract_cost_usd or 0
+            s.read_seconds.append(time.monotonic() - begun)
+            s.watch.update(att, upto or seconds)
+            s.revision += 1
     except budget.BudgetError as exc:
-        with s.lock:
-            s.status, s.pending, s.error = "error", None, str(exc)
-    except Exception:  # noqa: BLE001 - one failed read must not end the session
+        with s.lock: s.status, s.pending, s.error = "error", None, str(exc)
+    except Exception:
         traceback.print_exc()
-        with s.lock:
-            s.failed += 1
+        with s.lock: s.failed += 1
     finally:
+        if s.mode == "camera": src.unlink(missing_ok=True)
+        # Only remove this admitted read's dedicated folder.
+        if work.exists() and work.resolve().parent == live._work(s.id).resolve():
+            shutil.rmtree(work)
         with s.lock:
             s.in_flight -= 1
+            if not s.in_flight: s.idle.set()
         _launch(s)
 
 
-def finish(sid: str) -> None:
-    """The attempt is over: run the full check on the whole video."""
+def finish(sid):
     s = _get(sid)
     with s.lock:
-        if s.status != "watching":
-            return
+        if s.status != "watching": return
         s.status, s.pending = "finishing", None
     _pool.submit(_finish, s)
 
 
-def _finish(s: Session) -> None:
+def _finish(s):
     try:
-        budget.ensure()
-        clip = cut(s.src, None, WORK / f"{s.id}_whole.mp4")
-        att = build_task_graph(clip, work_dir=WORK, known_objects=s.known, track=False)
-        budget.charge(att.meta.extract_cost_usd, "live final check")
-        report = s.watch.finish(att)
+        if not s.idle.wait(timeout=180):
+            raise live.UploadError("Earlier live reads did not finish in time. Review this recording or retry the check.")
+        work = live._work(s.id)
+        clip = cut(s.src, None, work / "whole.mp4")
+        live._check_length(clip, "recording")
+        att = live._extract(clip, work, known_objects=s.known)
+        with s.lock:
+            if s.status == "cancelled": return
+        with live._lock: live._graphs[s.id] = (s.ref, att, s.proc)
+        live._set(s.id, status="checked", stage="Checking with the tracker", procedure_confirmed=True)
+        tracked, result, seen, note = live.finalize(s.id, s.ref, att, s.proc, small_mp4(clip, work / "clips"))
         video = s.video or live._web_video(clip, f"{s.id}_attempt.mp4")
-        with live._lock:                          # lets the page re-check it with changed rules
-            live._graphs[s.id] = (s.ref, att, s.proc)
         with s.lock:
-            s.cost += att.meta.extract_cost_usd or 0.0
-            s.final, s.video, s.status = report_view(report, att), video, "done"
-    except Exception as exc:  # noqa: BLE001
+            if s.status == "cancelled": return
+            s.cost += att.meta.extract_cost_usd or 0
+            s.cost += result.get("tracking", {}).get("accounted_usd", 0)
+            s.final, s.video, s.seen, s.status = result, video, seen, "done"
+            s.revision += 1
+        live._set(s.id, status="done", stage=None, result=result, demo=video, seen=seen, note=note)
+    except Exception as exc:
         traceback.print_exc()
-        with s.lock:
-            s.status, s.error = "error", f"Couldn't check the whole video ({type(exc).__name__}: {exc})."
+        with s.lock: s.status, s.error = "error", f"Couldn't verify the recording ({type(exc).__name__}: {exc})."
+        live._set(s.id, status="error", stage=None, error=s.error)
 
 
-def get(sid: str) -> dict:
+def get(sid):
     s = _get(sid)
     with s.lock:
-        avg = sum(s.read_seconds) / len(s.read_seconds) if s.read_seconds else None
-        return {"session": s.id, "mode": s.mode, "status": s.status, **s.watch.view(),
-                "clock": round(time.monotonic() - s.started, 1),
-                "reads": s.reads, "reading": s.in_flight, "failed": s.failed, "limit": MAX_READS,
-                "read_seconds": round(avg, 1) if avg else None, "cost": round(s.cost, 4),
-                "final": s.final, "video": s.video, "error": s.error}
+        avg = sum(s.read_seconds) / len(s.read_seconds) if s.read_seconds else 0
+        return {"session": sid, "mode": s.mode, "status": s.status, **s.watch.view(),
+            "clock": round(time.monotonic()-s.started, 1), "reads": s.reads, "reading": s.in_flight,
+            "failed": s.failed, "limit": MAX_READS, "read_seconds": round(avg, 1) if avg else None,
+            "read_every_seconds": min(6, max(2, math.ceil(avg/PER_SESSION))) if avg else 2,
+            "cost": round(s.cost, 4), "final": s.final, "video": s.video, "seen": s.seen,
+            "error": s.error, "revision": s.revision}
+
+
+def cleanup():
+    now = time.monotonic()
+    with _lock:
+        for sid, s in list(_sessions.items()):
+            with s.lock:
+                if s.status == "watching" and (now-s.touched > IDLE or now-s.started > live.MAX_SECONDS+IDLE) and not s.in_flight:
+                    s.status, s.pending = "cancelled", None
+                try: storage.record(sid)
+                except storage.AccessError:
+                    if not s.in_flight: _sessions.pop(sid, None)
+    live.cleanup()

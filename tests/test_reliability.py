@@ -6,6 +6,7 @@ No model calls or personal video files are required.
 import json
 import unittest
 import asyncio
+import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -14,7 +15,7 @@ from pydantic import ValidationError
 from oneshot.check import compare
 from oneshot.procedure import learn, pair_id
 from oneshot.schema import RawGraph, TaskGraph
-from web import live
+from web import live, storage
 from web.views import report_view
 from oneshot import evidence
 
@@ -38,6 +39,13 @@ def graph(*, tracked=False, position=None, missing=False):
 
 
 class ReliabilityTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        for target, name, value in [(live.budget, "FILE", Path(self.temp.name)/"budget.json"),
+                                     (storage, "ROOT", Path(self.temp.name)/"private")]:
+            mocked = patch.object(target, name, value)
+            mocked.start(); self.addCleanup(mocked.stop)
     def test_empty_reference_never_passes(self):
         ref = graph().model_copy(update={"steps": [], "final_relations": []})
         result = compare(ref, graph())
@@ -117,7 +125,7 @@ class ReliabilityTests(unittest.TestCase):
     def test_queued_job_rechecks_budget_before_model_calls(self):
         with patch.object(live, "_jobs", {"test": {"status": "queued"}}), \
              patch.object(live.budget, "ensure", side_effect=live.budget.BudgetError("Budget exhausted")), \
-             patch.object(live, "build_task_graph") as build:
+             patch.object(live, "build_task_graph") as build, patch.object(live.traceback,"print_exc"):
             live._run("test", Path("unused.mp4"), None, None)
             self.assertEqual(live.get("test")["status"], "error")
             build.assert_not_called()
@@ -136,6 +144,8 @@ class ReliabilityTests(unittest.TestCase):
              patch.object(live.budget, "charge"), patch.object(live, "_check_length", return_value=3), \
              patch.object(live, "builtin", return_value=(graph(), learn([graph()]))), \
              patch.object(live, "build_task_graph", return_value=graph()), \
+             patch.object(live, "_work", return_value=Path(self.temp.name)), \
+             patch.object(live, "small_mp4", return_value=Path("unused.mp4")), \
              patch.object(live, "_web_video", return_value="fixture.mp4"), \
              patch.object(live, "add_evidence", side_effect=TimeoutError("tracking deadline")), \
              patch.object(live.traceback, "print_exc"):

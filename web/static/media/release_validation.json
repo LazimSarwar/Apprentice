@@ -1,0 +1,495 @@
+{
+  "type": "public release integration verification",
+  "pipeline_sha256": "71a867904763c23a816bac826a34f69237411e5f0c0dd11b5b83802d8ba60abd",
+  "base_url": "https://tanjilsarwar30--oneshot-web-web.us-east.modal.run",
+  "scope": "Three existing development examples uploaded for new model inference; one existing phone clip streamed through camera transport. No new participant or accuracy benchmark.",
+  "linux": {
+    "python": "3.12.10 (main, May 21 2025, 23:34:56) [GCC 12.2.0]",
+    "pipeline_sha256": "71a867904763c23a816bac826a34f69237411e5f0c0dd11b5b83802d8ba60abd",
+    "offline_tests": "passed"
+  },
+  "offline_tests_passed": 97,
+  "uploads": [
+    {
+      "case": "correct",
+      "seconds": 32.99,
+      "result": {
+        "passed": true,
+        "verdict": "pass",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "green_block",
+              "pink_block"
+            ],
+            "evidence": "seen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 16.29,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {},
+          "accounted_usd": 0.2
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 2.9,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": true,
+            "time": 6.3,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          }
+        ],
+        "issues": [],
+        "objects": [
+          "pink block",
+          "green block"
+        ]
+      },
+      "status": "done",
+      "history": [
+        {
+          "seconds": 3.94,
+          "state": [
+            "running",
+            "Opening the video",
+            null
+          ]
+        },
+        {
+          "seconds": 5.36,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 13.67,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "pass"
+          ]
+        },
+        {
+          "seconds": 32.99,
+          "state": [
+            "done",
+            null,
+            "pass"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "wrong-place",
+      "seconds": 36.66,
+      "result": {
+        "passed": false,
+        "verdict": "fail",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 17.6,
+          "objects_tracked": 2,
+          "objects_total": 2,
+          "errors": {},
+          "accounted_usd": 0.2
+        },
+        "milestones": [
+          {
+            "text": "Puts down the pink block",
+            "done": true,
+            "time": 6.0,
+            "ref_time": 2.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          },
+          {
+            "text": "Stacks the green block on the pink block",
+            "done": false,
+            "time": null,
+            "ref_time": 5.6,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Wrong place",
+            "type": "wrong_place",
+            "severity": "fail",
+            "message": "Put the green block next to the pink block instead of on the pink block",
+            "time": 9.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Move the green block onto the pink block."
+          }
+        ],
+        "objects": [
+          "pink block",
+          "green block"
+        ]
+      },
+      "status": "done",
+      "history": [
+        {
+          "seconds": 3.49,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 15.95,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "fail"
+          ]
+        },
+        {
+          "seconds": 36.66,
+          "state": [
+            "done",
+            null,
+            "fail"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "hidden",
+      "seconds": 66.23,
+      "result": {
+        "passed": false,
+        "verdict": "unsure",
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          }
+        ],
+        "tracking": {
+          "parser": "sam_boxes_v1",
+          "seconds": 45.9,
+          "objects_tracked": 6,
+          "objects_total": 6,
+          "errors": {},
+          "accounted_usd": 0.8999999999999999
+        },
+        "milestones": [
+          {
+            "text": "Places the blue liner in the brown box",
+            "done": true,
+            "time": 3.2,
+            "ref_time": 3.5,
+            "critical": true,
+            "reason": "so the product doesn't get scratched",
+            "quote": "liner first",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Stacks the red product on the blue liner",
+            "done": true,
+            "time": 5.5,
+            "ref_time": 6.5,
+            "critical": false,
+            "reason": null,
+            "quote": "product goes on the liner",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the green charger in the brown box",
+            "done": true,
+            "time": 8.0,
+            "ref_time": 10.0,
+            "critical": false,
+            "reason": null,
+            "quote": "charger in the box",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Stacks the yellow card on the red product",
+            "done": false,
+            "time": null,
+            "ref_time": 13.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "evidence": null
+          }
+        ],
+        "issues": [
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the blue liner.",
+            "time": 3.2,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the red product.",
+            "time": 5.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the green charger.",
+            "time": 8.0,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          },
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify where the yellow card went \u2014 the tracker could not support the reported placement (in the brown box)",
+            "time": 11.0,
+            "critical": false,
+            "reason": null,
+            "quote": "thank you card on top of the product",
+            "fix": "Re-record with the whole workspace in view, or check this step by hand."
+          }
+        ],
+        "objects": [
+          "blue liner",
+          "red product",
+          "green charger",
+          "brown box",
+          "yellow card",
+          "gray block"
+        ]
+      },
+      "status": "done",
+      "history": [
+        {
+          "seconds": 0.85,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 16.0,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "fail"
+          ]
+        },
+        {
+          "seconds": 61.91,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "unsure"
+          ]
+        },
+        {
+          "seconds": 66.23,
+          "state": [
+            "done",
+            null,
+            "unsure"
+          ]
+        }
+      ]
+    }
+  ],
+  "camera_transport": {
+    "type": "live Meta integration with recorded camera transport",
+    "fresh_model_inference": true,
+    "scope": "One existing public phone clip streamed as WebM; not a real-person webcam or accuracy benchmark.",
+    "pipeline_sha256": "71a867904763c23a816bac826a34f69237411e5f0c0dd11b5b83802d8ba60abd",
+    "seconds": 50.5,
+    "history": [
+      {
+        "seconds": 15.16,
+        "state": [
+          "finishing",
+          2,
+          1,
+          0
+        ]
+      },
+      {
+        "seconds": 23.46,
+        "state": [
+          "finishing",
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "seconds": 48.47,
+        "state": [
+          "done",
+          2,
+          0,
+          0
+        ]
+      }
+    ],
+    "reads": 2,
+    "failed_reads": 0,
+    "result": {
+      "passed": true,
+      "verdict": "pass",
+      "verified": false,
+      "tracking_used": true,
+      "evidence_status": "partial",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "green_block",
+            "pink_block"
+          ],
+          "evidence": "seen",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
+      "tracking": {
+        "parser": "sam_boxes_v1",
+        "seconds": 12.4,
+        "objects_tracked": 2,
+        "objects_total": 2,
+        "errors": {},
+        "accounted_usd": 0.2
+      },
+      "milestones": [
+        {
+          "text": "Puts down the pink block",
+          "done": true,
+          "time": 3.0,
+          "ref_time": 2.5,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "evidence": "seen"
+        },
+        {
+          "text": "Stacks the green block on the pink block",
+          "done": true,
+          "time": 6.2,
+          "ref_time": 5.6,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "evidence": "seen"
+        }
+      ],
+      "issues": [],
+      "objects": [
+        "pink block",
+        "green block"
+      ]
+    },
+    "overlay_bytes": 171172,
+    "unauthorized_overlay_status": 404,
+    "status": "done"
+  },
+  "independent_packing_trial": "pending recordings",
+  "measured_workplace_impact": null
+}

@@ -1,0 +1,114 @@
+{
+  "type": "live Meta integration with recorded camera transport",
+  "fresh_model_inference": true,
+  "scope": "One existing public phone clip streamed as WebM; not a real-person webcam or accuracy benchmark.",
+  "pipeline_sha256": "3dd72ea4d9650cc440679a1894ff90b686d76868df512169fe6b84f710854437",
+  "seconds": 50.07,
+  "history": [
+    {
+      "seconds": 7.25,
+      "state": [
+        "finishing",
+        2,
+        2,
+        0
+      ]
+    },
+    {
+      "seconds": 13.46,
+      "state": [
+        "finishing",
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "seconds": 14.47,
+      "state": [
+        "finishing",
+        2,
+        0,
+        0
+      ]
+    },
+    {
+      "seconds": 50.0,
+      "state": [
+        "done",
+        2,
+        0,
+        0
+      ]
+    }
+  ],
+  "reads": 2,
+  "failed_reads": 0,
+  "result": {
+    "passed": true,
+    "verdict": "pass",
+    "verified": false,
+    "tracking_used": true,
+    "evidence_status": "partial",
+    "final_states": [
+      {
+        "key": [
+          "on",
+          "green_block",
+          "pink_block"
+        ],
+        "evidence": "seen",
+        "holds": true
+      },
+      {
+        "key": [
+          "on",
+          "pink_block",
+          "surface"
+        ],
+        "evidence": "seen",
+        "holds": true
+      }
+    ],
+    "tracking": {
+      "parser": "sam_boxes_v1",
+      "seconds": 18.59,
+      "objects_tracked": 3,
+      "objects_total": 3,
+      "errors": {},
+      "accounted_usd": 0.30000000000000004
+    },
+    "milestones": [
+      {
+        "text": "Puts down the pink block",
+        "done": true,
+        "time": 3.0,
+        "ref_time": 2.5,
+        "critical": false,
+        "reason": null,
+        "quote": null,
+        "evidence": "seen"
+      },
+      {
+        "text": "Stacks the green block on the pink block",
+        "done": true,
+        "time": 6.3,
+        "ref_time": 5.6,
+        "critical": false,
+        "reason": null,
+        "quote": null,
+        "evidence": "seen"
+      }
+    ],
+    "issues": [],
+    "objects": [
+      "pink block",
+      "green block",
+      "brown table"
+    ]
+  },
+  "overlay_bytes": 179853,
+  "unauthorized_overlay_status": 404,
+  "session": "63de9abd7d814d10b4e05e605a5ff2ad",
+  "status": "done"
+}

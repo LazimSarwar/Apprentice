@@ -18,6 +18,8 @@ import argparse
 import json
 import random
 import subprocess
+import threading
+import uuid
 from pathlib import Path
 
 import imageio.v3 as iio
@@ -67,19 +69,39 @@ def write_mp4(path: Path, frames, fps: float, crf: int = 27) -> None:
     frames = iter(frames)
     first = np.ascontiguousarray(next(frames))
     h, w = first.shape[:2]
+    from oneshot.media import MEDIA_TIMEOUT_SECONDS
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f"{path.stem}.{uuid.uuid4().hex}.tmp.mp4")
     proc = subprocess.Popen(
         ["ffmpeg", "-y", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
          "-s", f"{w}x{h}", "-r", f"{fps:.3f}", "-i", "-",
          "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", "-c:v", "libx264", "-pix_fmt", "yuv420p",
-         "-crf", str(crf), "-preset", "medium", "-movflags", "+faststart", str(path)],
+         "-crf", str(crf), "-preset", "medium", "-movflags", "+faststart", str(temporary)],
         stdin=subprocess.PIPE,
     )
-    proc.stdin.write(first.tobytes())
-    for f in frames:
-        proc.stdin.write(np.ascontiguousarray(f).tobytes())
-    proc.stdin.close()
-    if proc.wait() != 0:
-        raise RuntimeError(f"ffmpeg failed writing {path}")
+    errors = []
+    def feed():
+        try:
+            proc.stdin.write(first.tobytes())
+            for frame in frames: proc.stdin.write(np.ascontiguousarray(frame).tobytes())
+        except Exception as exc:
+            errors.append(exc)
+        finally:
+            try: proc.stdin.close()
+            except OSError: pass
+    writer = threading.Thread(target=feed, daemon=True)
+    writer.start()
+    try:
+        proc.wait(timeout=MEDIA_TIMEOUT_SECONDS)
+        writer.join(timeout=1)
+        if writer.is_alive() or errors or proc.returncode != 0:
+            raise RuntimeError(f"Video rendering failed for {path.name}")
+        temporary.replace(path)
+    finally:
+        if proc.poll() is None:
+            proc.kill(); proc.wait(timeout=5)
+        writer.join(timeout=1)
+        temporary.unlink(missing_ok=True)
 
 
 def _font(size: int):
@@ -140,7 +162,10 @@ def _render(name: str, task: str, r) -> str:
 def build_videos(task: str, spec: dict) -> tuple[TaskGraph, int, int]:
     """The demonstration clip and its tracking-overlay version."""
     g = TaskGraph.model_validate_json((APP / spec["graph"]).read_text(encoding="utf-8"))
-    clip = APP / spec["clip"]
+    from oneshot.media import small_mp4
+    source = Path(g.source)
+    if not source.is_absolute(): source = APP / source
+    clip = small_mp4(source, APP / 'runs/clips') if source.exists() else APP / spec["clip"]
     fps = float(iio.immeta(clip).get("fps", 25))
     _, h, w, _ = iio.improps(clip).shape
     print(f"[{task}] demo + tracking overlay")

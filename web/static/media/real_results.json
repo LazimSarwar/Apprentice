@@ -43,16 +43,36 @@
       "what": "The green block finishes on top of the red block.",
       "original_label": "pass",
       "expected_outcome": "pass",
-      "resolved_correctly": true,
+      "resolved_correctly": false,
       "clip_sha256": "396cd502c7c5765963980453a286e9db417c9830b82f905c4c423f3b1d27f2f0",
       "demo": "media/real_ok_2_demo.mp4",
       "seen": "media/real_ok_2_seen.mp4",
       "poster": "media/real_ok_2.jpg",
-      "passed": true,
-      "verdict": "pass",
+      "passed": false,
+      "verdict": "unsure",
       "verified": false,
       "tracking_used": true,
-      "evidence_status": "partial",
+      "evidence_status": "inconclusive",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "green_block",
+            "pink_block"
+          ],
+          "evidence": "contradicted",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 113.7,
@@ -82,11 +102,52 @@
           "evidence": "seen"
         }
       ],
-      "issues": [],
+      "issues": [
+        {
+          "kind": "Couldn't verify",
+          "type": "unknown",
+          "severity": "unknown",
+          "message": "Couldn't verify the final placement of the green block.",
+          "time": 7.0,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Keep the final arrangement visible for review."
+        }
+      ],
       "objects": [
         "pink block",
         "green block",
         "brown table"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 1.267,
+          "last_seen": 9.033
+        },
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.533,
+          "last_seen": 9.8
+        },
+        {
+          "id": "brown_table",
+          "name": "brown table",
+          "description": "brown table",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.8
+        }
       ]
     },
     {
@@ -105,6 +166,26 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "partial",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "green_block",
+            "pink_block"
+          ],
+          "evidence": "seen",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 21.9,
@@ -138,6 +219,26 @@
       "objects": [
         "pink block",
         "green block"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 1.133,
+          "last_seen": 8.233
+        },
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.5,
+          "last_seen": 8.167
+        }
       ]
     },
     {
@@ -156,6 +257,7 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "partial",
+      "final_states": [],
       "tracking": {
         "parser": null,
         "seconds": 38.99,
@@ -212,6 +314,26 @@
       "objects": [
         "green block",
         "pink block"
+      ],
+      "detections": [
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 1.5,
+          "last_seen": 8.967
+        },
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.167,
+          "last_seen": 8.933
+        }
       ]
     },
     {
@@ -230,6 +352,7 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "partial",
+      "final_states": [],
       "tracking": {
         "parser": null,
         "seconds": 81.76,
@@ -287,6 +410,35 @@
         "green block",
         "pink block",
         "brown table"
+      ],
+      "detections": [
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.567,
+          "last_seen": 7.2
+        },
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 3.667,
+          "last_seen": 8.333
+        },
+        {
+          "id": "brown_table",
+          "name": "brown table",
+          "description": "brown table",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 8.333
+        }
       ]
     },
     {
@@ -305,6 +457,17 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "partial",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 133.66,
@@ -351,6 +514,35 @@
         "pink block",
         "green block",
         "brown table"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 2.867,
+          "last_seen": 12.267
+        },
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 6.9,
+          "last_seen": 12.267
+        },
+        {
+          "id": "brown_table",
+          "name": "brown table",
+          "description": "brown table",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.267
+        }
       ]
     },
     {
@@ -369,6 +561,17 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "partial",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 101.49,
@@ -415,6 +618,35 @@
         "pink block",
         "green block",
         "brown table"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 1.4,
+          "last_seen": 8.867
+        },
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.167,
+          "last_seen": 8.9
+        },
+        {
+          "id": "brown_table",
+          "name": "brown table",
+          "description": "brown table",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.7
+        }
       ]
     },
     {
@@ -433,6 +665,17 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "inconclusive",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 95.15,
@@ -478,6 +721,26 @@
       "objects": [
         "pink block",
         "brown table"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.167,
+          "last_seen": 8.367
+        },
+        {
+          "id": "brown_table",
+          "name": "brown table",
+          "description": "brown table",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 8.367
+        }
       ]
     },
     {
@@ -496,6 +759,17 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "inconclusive",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 97.77,
@@ -541,6 +815,26 @@
       "objects": [
         "pink block",
         "brown table"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.033,
+          "last_seen": 8.133
+        },
+        {
+          "id": "brown_table",
+          "name": "brown table",
+          "description": "brown table",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 8.133
+        }
       ]
     },
     {
@@ -559,6 +853,26 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "partial",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "green_block",
+            "pink_block"
+          ],
+          "evidence": "seen",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 42.92,
@@ -592,6 +906,26 @@
       "objects": [
         "pink block",
         "green block"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.2,
+          "last_seen": 11.633
+        },
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 5.067,
+          "last_seen": 11.633
+        }
       ]
     }
   ],
@@ -603,6 +937,26 @@
     "verified": false,
     "tracking_used": true,
     "evidence_status": "inconclusive",
+    "final_states": [
+      {
+        "key": [
+          "on",
+          "green_block",
+          "pink_block"
+        ],
+        "evidence": "contradicted",
+        "holds": true
+      },
+      {
+        "key": [
+          "on",
+          "pink_block",
+          "surface"
+        ],
+        "evidence": "seen",
+        "holds": true
+      }
+    ],
     "tracking": {
       "parser": null,
       "seconds": 49.64,
@@ -643,17 +997,48 @@
         "reason": null,
         "quote": null,
         "fix": "Review this moment or re-record with both objects in view."
+      },
+      {
+        "kind": "Couldn't verify",
+        "type": "unknown",
+        "severity": "unknown",
+        "message": "Couldn't verify the final placement of the green block.",
+        "time": 5.5,
+        "critical": false,
+        "reason": null,
+        "quote": null,
+        "fix": "Keep the final arrangement visible for review."
       }
     ],
     "objects": [
       "pink block",
       "green block"
+    ],
+    "detections": [
+      {
+        "id": "pink_block",
+        "name": "pink block",
+        "description": "pink block",
+        "kind": null,
+        "status": "tracked",
+        "first_seen": 0.967,
+        "last_seen": 7.0
+      },
+      {
+        "id": "green_block",
+        "name": "green block",
+        "description": "green block",
+        "kind": null,
+        "status": "tracked",
+        "first_seen": 3.767,
+        "last_seen": 6.967
+      }
     ]
   },
   "summary": {
     "independent_attempts": 9,
-    "resolved_correctly": 7,
-    "abstentions": 2,
+    "resolved_correctly": 6,
+    "abstentions": 3,
     "false_accepts": 0,
     "false_rejects": 0,
     "incorrect_attempts": 6
@@ -661,7 +1046,7 @@
   "method": {
     "type": "development replay",
     "fresh_model_inference": false,
-    "checker_sha256": "6541b645849b2041a0b8a55e5aaf350b47b6fa29e70bb4d51aab520e8e39f907",
+    "checker_sha256": "05f33cc62e95963033356c47250be8b8c83cc80e4c77293b60a0492f09f297bb",
     "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
     "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
     "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",

@@ -209,7 +209,101 @@
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "blue_liner",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "inside",
+            "green_charger",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "red_product",
+            "blue_liner"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "yellow_card",
+            "red_product"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.6,
+          "last_seen": 12.667
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        }
+      ]
     },
     {
       "id": "pack_ok_alt",
@@ -279,7 +373,101 @@
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "blue_liner",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "inside",
+            "green_charger",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "red_product",
+            "blue_liner"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "yellow_card",
+            "red_product"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.6,
+          "last_seen": 12.667
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        }
+      ]
     },
     {
       "id": "pack_loose",
@@ -361,7 +549,101 @@
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "blue_liner",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "inside",
+            "green_charger",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "red_product",
+            "blue_liner"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "yellow_card",
+            "red_product"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 6.767,
+          "last_seen": 12.667
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        }
+      ]
     },
     {
       "id": "pack_order",
@@ -371,7 +653,7 @@
       "seen": "media/pack_order_seen.mp4",
       "passed": false,
       "verdict": "fail",
-      "verified": true,
+      "verified": false,
       "milestones": [
         {
           "text": "Places the blue liner in the brown box",
@@ -436,14 +718,108 @@
         "gray block"
       ],
       "tracking_used": true,
-      "evidence_status": "corroborated",
+      "evidence_status": "partial",
       "tracking": {
         "parser": null,
         "seconds": 436.79,
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "blue_liner",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "inside",
+            "green_charger",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "red_product",
+            "blue_liner"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "yellow_card",
+            "red_product"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 6.767,
+          "last_seen": 12.667
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        }
+      ]
     },
     {
       "id": "pack_skip_liner",
@@ -536,7 +912,83 @@
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "green_charger",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "yellow_card",
+            "red_product"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 1.4,
+          "last_seen": 9.967
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        }
+      ]
     },
     {
       "id": "pack_skip_card",
@@ -618,7 +1070,92 @@
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "blue_liner",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "inside",
+            "green_charger",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "red_product",
+            "blue_liner"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 6.8,
+          "last_seen": 9.967
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.967
+        }
+      ]
     },
     {
       "id": "pack_wrong_place",
@@ -700,7 +1237,92 @@
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "blue_liner",
+            "brown_box"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "red_product",
+            "blue_liner"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "yellow_card",
+            "red_product"
+          ],
+          "evidence": "confirmed",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.6,
+          "last_seen": 12.667
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        }
+      ]
     },
     {
       "id": "pack_hidden",
@@ -758,12 +1380,45 @@
           "kind": "Couldn't verify",
           "type": "unknown",
           "severity": "unknown",
-          "message": "Couldn't verify where the yellow card went \u2014 the tracker could not support the reported placement (in the brown box)",
+          "message": "Couldn't verify the final placement of the blue liner.",
+          "time": 3.0,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Keep the final arrangement visible for review."
+        },
+        {
+          "kind": "Couldn't verify",
+          "type": "unknown",
+          "severity": "unknown",
+          "message": "Couldn't verify the final placement of the red product.",
+          "time": 5.5,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Keep the final arrangement visible for review."
+        },
+        {
+          "kind": "Couldn't verify",
+          "type": "unknown",
+          "severity": "unknown",
+          "message": "Couldn't verify the final placement of the green charger.",
+          "time": 8.2,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Keep the final arrangement visible for review."
+        },
+        {
+          "kind": "Couldn't verify",
+          "type": "unknown",
+          "severity": "unknown",
+          "message": "Couldn't verify: Stacks the yellow card on the red product \u2014 the video model reported the yellow card in the brown box, which does not establish whether it is on the red product.",
           "time": 10.5,
           "critical": false,
           "reason": null,
           "quote": "thank you card on top of the product",
-          "fix": "Re-record with the whole workspace in view, or check this step by hand."
+          "fix": "Review the supporting object and this placement in the recording."
         }
       ],
       "objects": [
@@ -782,7 +1437,92 @@
         "objects_tracked": 6,
         "objects_total": 6,
         "errors": {}
-      }
+      },
+      "final_states": [
+        {
+          "key": [
+            "inside",
+            "blue_liner",
+            "brown_box"
+          ],
+          "evidence": "unseen",
+          "holds": true
+        },
+        {
+          "key": [
+            "inside",
+            "green_charger",
+            "brown_box"
+          ],
+          "evidence": "unseen",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "red_product",
+            "blue_liner"
+          ],
+          "evidence": "unseen",
+          "holds": true
+        }
+      ],
+      "detections": [
+        {
+          "id": "blue_liner",
+          "name": "blue liner",
+          "description": "blue sheet",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.1
+        },
+        {
+          "id": "red_product",
+          "name": "red product",
+          "description": "red block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.067
+        },
+        {
+          "id": "green_charger",
+          "name": "green charger",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 8.967
+        },
+        {
+          "id": "brown_box",
+          "name": "brown box",
+          "description": "brown box",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 9.133
+        },
+        {
+          "id": "yellow_card",
+          "name": "yellow card",
+          "description": "yellow card",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 4.6,
+          "last_seen": 10.167
+        },
+        {
+          "id": "gray_block",
+          "name": "gray block",
+          "description": "gray block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.0,
+          "last_seen": 12.667
+        }
+      ]
     }
   ],
   "robot": {
@@ -902,16 +1642,36 @@
         "what": "The green block finishes on top of the red block.",
         "original_label": "pass",
         "expected_outcome": "pass",
-        "resolved_correctly": true,
+        "resolved_correctly": false,
         "clip_sha256": "396cd502c7c5765963980453a286e9db417c9830b82f905c4c423f3b1d27f2f0",
         "demo": "media/real_ok_2_demo.mp4",
         "seen": "media/real_ok_2_seen.mp4",
         "poster": "media/real_ok_2.jpg",
-        "passed": true,
-        "verdict": "pass",
+        "passed": false,
+        "verdict": "unsure",
         "verified": false,
         "tracking_used": true,
-        "evidence_status": "partial",
+        "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "green_block",
+              "pink_block"
+            ],
+            "evidence": "contradicted",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
         "tracking": {
           "parser": null,
           "seconds": 113.7,
@@ -941,11 +1701,52 @@
             "evidence": "seen"
           }
         ],
-        "issues": [],
+        "issues": [
+          {
+            "kind": "Couldn't verify",
+            "type": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the green block.",
+            "time": 7.0,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          }
+        ],
         "objects": [
           "pink block",
           "green block",
           "brown table"
+        ],
+        "detections": [
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 1.267,
+            "last_seen": 9.033
+          },
+          {
+            "id": "green_block",
+            "name": "green block",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 4.533,
+            "last_seen": 9.8
+          },
+          {
+            "id": "brown_table",
+            "name": "brown table",
+            "description": "brown table",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.8
+          }
         ]
       },
       {
@@ -964,6 +1765,26 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "green_block",
+              "pink_block"
+            ],
+            "evidence": "seen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
         "tracking": {
           "parser": null,
           "seconds": 21.9,
@@ -997,6 +1818,26 @@
         "objects": [
           "pink block",
           "green block"
+        ],
+        "detections": [
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 1.133,
+            "last_seen": 8.233
+          },
+          {
+            "id": "green_block",
+            "name": "green block",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 4.5,
+            "last_seen": 8.167
+          }
         ]
       },
       {
@@ -1015,6 +1856,7 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "partial",
+        "final_states": [],
         "tracking": {
           "parser": null,
           "seconds": 38.99,
@@ -1071,6 +1913,26 @@
         "objects": [
           "green block",
           "pink block"
+        ],
+        "detections": [
+          {
+            "id": "green_block",
+            "name": "green block",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 1.5,
+            "last_seen": 8.967
+          },
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 4.167,
+            "last_seen": 8.933
+          }
         ]
       },
       {
@@ -1089,6 +1951,7 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "partial",
+        "final_states": [],
         "tracking": {
           "parser": null,
           "seconds": 81.76,
@@ -1146,6 +2009,35 @@
           "green block",
           "pink block",
           "brown table"
+        ],
+        "detections": [
+          {
+            "id": "green_block",
+            "name": "green block",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.567,
+            "last_seen": 7.2
+          },
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 3.667,
+            "last_seen": 8.333
+          },
+          {
+            "id": "brown_table",
+            "name": "brown table",
+            "description": "brown table",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 8.333
+          }
         ]
       },
       {
@@ -1164,6 +2056,17 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
         "tracking": {
           "parser": null,
           "seconds": 133.66,
@@ -1210,6 +2113,35 @@
           "pink block",
           "green block",
           "brown table"
+        ],
+        "detections": [
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 2.867,
+            "last_seen": 12.267
+          },
+          {
+            "id": "green_block",
+            "name": "green block",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 6.9,
+            "last_seen": 12.267
+          },
+          {
+            "id": "brown_table",
+            "name": "brown table",
+            "description": "brown table",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 12.267
+          }
         ]
       },
       {
@@ -1228,6 +2160,17 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
         "tracking": {
           "parser": null,
           "seconds": 101.49,
@@ -1274,6 +2217,35 @@
           "pink block",
           "green block",
           "brown table"
+        ],
+        "detections": [
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 1.4,
+            "last_seen": 8.867
+          },
+          {
+            "id": "green_block",
+            "name": "green block",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 4.167,
+            "last_seen": 8.9
+          },
+          {
+            "id": "brown_table",
+            "name": "brown table",
+            "description": "brown table",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 9.7
+          }
         ]
       },
       {
@@ -1292,6 +2264,17 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
         "tracking": {
           "parser": null,
           "seconds": 95.15,
@@ -1337,6 +2320,26 @@
         "objects": [
           "pink block",
           "brown table"
+        ],
+        "detections": [
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.167,
+            "last_seen": 8.367
+          },
+          {
+            "id": "brown_table",
+            "name": "brown table",
+            "description": "brown table",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 8.367
+          }
         ]
       },
       {
@@ -1355,6 +2358,17 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
         "tracking": {
           "parser": null,
           "seconds": 97.77,
@@ -1400,6 +2414,26 @@
         "objects": [
           "pink block",
           "brown table"
+        ],
+        "detections": [
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.033,
+            "last_seen": 8.133
+          },
+          {
+            "id": "brown_table",
+            "name": "brown table",
+            "description": "brown table",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.0,
+            "last_seen": 8.133
+          }
         ]
       },
       {
@@ -1418,6 +2452,26 @@
         "verified": false,
         "tracking_used": true,
         "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "on",
+              "green_block",
+              "pink_block"
+            ],
+            "evidence": "seen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "pink_block",
+              "surface"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
         "tracking": {
           "parser": null,
           "seconds": 42.92,
@@ -1451,6 +2505,26 @@
         "objects": [
           "pink block",
           "green block"
+        ],
+        "detections": [
+          {
+            "id": "pink_block",
+            "name": "pink block",
+            "description": "pink block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 0.2,
+            "last_seen": 11.633
+          },
+          {
+            "id": "green_block",
+            "name": "green block",
+            "description": "green block",
+            "kind": null,
+            "status": "tracked",
+            "first_seen": 5.067,
+            "last_seen": 11.633
+          }
         ]
       }
     ],
@@ -1462,6 +2536,26 @@
       "verified": false,
       "tracking_used": true,
       "evidence_status": "inconclusive",
+      "final_states": [
+        {
+          "key": [
+            "on",
+            "green_block",
+            "pink_block"
+          ],
+          "evidence": "contradicted",
+          "holds": true
+        },
+        {
+          "key": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "evidence": "seen",
+          "holds": true
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 49.64,
@@ -1502,17 +2596,48 @@
           "reason": null,
           "quote": null,
           "fix": "Review this moment or re-record with both objects in view."
+        },
+        {
+          "kind": "Couldn't verify",
+          "type": "unknown",
+          "severity": "unknown",
+          "message": "Couldn't verify the final placement of the green block.",
+          "time": 5.5,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Keep the final arrangement visible for review."
         }
       ],
       "objects": [
         "pink block",
         "green block"
+      ],
+      "detections": [
+        {
+          "id": "pink_block",
+          "name": "pink block",
+          "description": "pink block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 0.967,
+          "last_seen": 7.0
+        },
+        {
+          "id": "green_block",
+          "name": "green block",
+          "description": "green block",
+          "kind": null,
+          "status": "tracked",
+          "first_seen": 3.767,
+          "last_seen": 6.967
+        }
       ]
     },
     "summary": {
       "independent_attempts": 9,
-      "resolved_correctly": 7,
-      "abstentions": 2,
+      "resolved_correctly": 6,
+      "abstentions": 3,
       "false_accepts": 0,
       "false_rejects": 0,
       "incorrect_attempts": 6
@@ -1520,7 +2645,7 @@
     "method": {
       "type": "development replay",
       "fresh_model_inference": false,
-      "checker_sha256": "6541b645849b2041a0b8a55e5aaf350b47b6fa29e70bb4d51aab520e8e39f907",
+      "checker_sha256": "05f33cc62e95963033356c47250be8b8c83cc80e4c77293b60a0492f09f297bb",
       "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
       "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
       "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",
@@ -2724,127 +3849,21 @@
     }
   },
   "fresh_evaluation_current": false,
-  "tracking_validation": {
-    "type": "development repair replay",
-    "pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
-    "previous_summary": {
+  "current_validation": {
+    "type": "offline development replay",
+    "fresh_model_inference": false,
+    "pipeline_sha256": "a0cbf5e579c85a4a29801f4682c2561abe98f50f4e1cf4d19a271e4e5db672bd",
+    "historical_pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
+    "scope": "Same sixteen packaged generated fixtures, checked under the current acceptance policy.",
+    "summary": {
       "total": 16,
-      "completed": 16,
-      "matched_expected": 14,
-      "errors": 2,
-      "abstentions": 0
+      "matched_expected": 16,
+      "abstentions": 2
     },
-    "original_plan": {
-      "checker_sha256": "ed9e950f4731c5a1bcf1ee872772ea72fb17e38ab210fe023d1b7795bfd6d4f9",
-      "seed": 73129,
-      "scope": "New generated clips from the existing renderer; not new real-world tasks.",
-      "cases": [
-        {
-          "id": "judge_ok_0",
-          "kind": "ok",
-          "seed": 73129,
-          "expected": "pass"
-        },
-        {
-          "id": "judge_ok_1",
-          "kind": "ok",
-          "seed": 73130,
-          "expected": "pass"
-        },
-        {
-          "id": "judge_ok_alt_0",
-          "kind": "ok_alt",
-          "seed": 73160,
-          "expected": "pass"
-        },
-        {
-          "id": "judge_ok_alt_1",
-          "kind": "ok_alt",
-          "seed": 73161,
-          "expected": "pass"
-        },
-        {
-          "id": "judge_loose_0",
-          "kind": "loose",
-          "seed": 73191,
-          "expected": "pass_notes"
-        },
-        {
-          "id": "judge_loose_1",
-          "kind": "loose",
-          "seed": 73192,
-          "expected": "pass_notes"
-        },
-        {
-          "id": "judge_order_0",
-          "kind": "order",
-          "seed": 73222,
-          "expected": "order"
-        },
-        {
-          "id": "judge_order_1",
-          "kind": "order",
-          "seed": 73223,
-          "expected": "order"
-        },
-        {
-          "id": "judge_skip_liner_0",
-          "kind": "skip_liner",
-          "seed": 73253,
-          "expected": "skipped"
-        },
-        {
-          "id": "judge_skip_liner_1",
-          "kind": "skip_liner",
-          "seed": 73254,
-          "expected": "skipped"
-        },
-        {
-          "id": "judge_skip_card_0",
-          "kind": "skip_card",
-          "seed": 73284,
-          "expected": "skipped"
-        },
-        {
-          "id": "judge_skip_card_1",
-          "kind": "skip_card",
-          "seed": 73285,
-          "expected": "skipped"
-        },
-        {
-          "id": "judge_wrong_place_0",
-          "kind": "wrong_place",
-          "seed": 73315,
-          "expected": "wrong_place"
-        },
-        {
-          "id": "judge_wrong_place_1",
-          "kind": "wrong_place",
-          "seed": 73316,
-          "expected": "wrong_place"
-        },
-        {
-          "id": "judge_hidden_0",
-          "kind": "hidden",
-          "seed": 73346,
-          "expected": "no_false_fail"
-        },
-        {
-          "id": "judge_hidden_1",
-          "kind": "hidden",
-          "seed": 73347,
-          "expected": "no_false_fail"
-        }
-      ]
-    },
-    "scope": "Same sixteen generated clips: fourteen extraction caches replayed, two former timeout cases extracted and tracked again.",
     "results": [
       {
         "id": "judge_ok_0",
         "kind": "ok",
-        "seed": 73129,
-        "expected": "pass",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": true,
@@ -2852,6 +3871,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -2909,18 +3966,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "pass"
       },
       {
         "id": "judge_ok_1",
         "kind": "ok",
-        "seed": 73130,
-        "expected": "pass",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": true,
@@ -2928,6 +4036,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -2985,18 +4131,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "pass"
       },
       {
         "id": "judge_ok_alt_0",
         "kind": "ok_alt",
-        "seed": 73160,
-        "expected": "pass",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": true,
@@ -3004,6 +4201,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3061,18 +4296,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "pass"
       },
       {
         "id": "judge_ok_alt_1",
         "kind": "ok_alt",
-        "seed": 73161,
-        "expected": "pass",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": true,
@@ -3080,6 +4366,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3137,18 +4461,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "pass"
       },
       {
         "id": "judge_loose_0",
         "kind": "loose",
-        "seed": 73191,
-        "expected": "pass_notes",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": true,
@@ -3156,6 +4531,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3225,18 +4638,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "pass_notes"
       },
       {
         "id": "judge_loose_1",
         "kind": "loose",
-        "seed": 73192,
-        "expected": "pass_notes",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": true,
@@ -3244,6 +4708,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3313,18 +4815,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "pass_notes"
       },
       {
         "id": "judge_order_0",
         "kind": "order",
-        "seed": 73222,
-        "expected": "order",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3332,6 +4885,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3401,18 +4992,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_order_1",
         "kind": "order",
-        "seed": 73223,
-        "expected": "order",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3420,6 +5062,44 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3489,18 +5169,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_skip_liner_0",
         "kind": "skip_liner",
-        "seed": 73253,
-        "expected": "skipped",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3508,6 +5239,26 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3588,18 +5339,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_skip_liner_1",
         "kind": "skip_liner",
-        "seed": 73254,
-        "expected": "skipped",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3607,6 +5409,26 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3687,18 +5509,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_skip_card_0",
         "kind": "skip_card",
-        "seed": 73284,
-        "expected": "skipped",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3706,6 +5579,35 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3775,18 +5677,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_skip_card_1",
         "kind": "skip_card",
-        "seed": 73285,
-        "expected": "skipped",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3794,6 +5747,35 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3863,18 +5845,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_wrong_place_0",
         "kind": "wrong_place",
-        "seed": 73315,
-        "expected": "wrong_place",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3882,6 +5915,35 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -3951,18 +6013,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_wrong_place_1",
         "kind": "wrong_place",
-        "seed": 73316,
-        "expected": "wrong_place",
-        "extraction": "replayed original cache",
         "correct": true,
         "result": {
           "passed": false,
@@ -3970,6 +6083,35 @@
           "verified": false,
           "tracking_used": false,
           "evidence_status": "model_only",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": null,
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "yellow_card",
+                "red_product"
+              ],
+              "evidence": null,
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -4039,19 +6181,69 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "model_only",
+              "first_seen": null,
+              "last_seen": null
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": null,
-        "seconds": 0.0
+        "original_verdict": "fail"
       },
       {
         "id": "judge_hidden_0",
         "kind": "hidden",
-        "seed": 73346,
-        "expected": "no_false_fail",
-        "tracking_request": "replayed completed repair tracking",
-        "extraction": "new extraction of former timeout case",
         "correct": true,
         "result": {
           "passed": false,
@@ -4059,6 +6251,35 @@
           "verified": false,
           "tracking_used": true,
           "evidence_status": "inconclusive",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": "unseen",
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": "unseen",
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": "unseen",
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": "sam_boxes_v1",
             "seconds": 74.63,
@@ -4110,6 +6331,39 @@
           ],
           "issues": [
             {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify the final placement of the blue liner.",
+              "time": 3.2,
+              "critical": false,
+              "reason": null,
+              "quote": null,
+              "fix": "Keep the final arrangement visible for review."
+            },
+            {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify the final placement of the red product.",
+              "time": 6.2,
+              "critical": false,
+              "reason": null,
+              "quote": null,
+              "fix": "Keep the final arrangement visible for review."
+            },
+            {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify the final placement of the green charger.",
+              "time": 8.8,
+              "critical": false,
+              "reason": null,
+              "quote": null,
+              "fix": "Keep the final arrangement visible for review."
+            },
+            {
               "kind": "Extra step",
               "type": "extra",
               "severity": "warn",
@@ -4124,12 +6378,12 @@
               "kind": "Couldn't verify",
               "type": "unknown",
               "severity": "unknown",
-              "message": "Couldn't verify where the yellow card went \u2014 the tracker could not support the reported placement (in the brown box)",
+              "message": "Couldn't verify: Stacks the yellow card on the red product \u2014 the video model reported the yellow card in the brown box, which does not establish whether it is on the red product.",
               "time": 11.2,
               "critical": false,
               "reason": null,
               "quote": "thank you card on top of the product",
-              "fix": "Re-record with the whole workspace in view, or check this step by hand."
+              "fix": "Review the supporting object and this placement in the recording."
             }
           ],
           "objects": [
@@ -4140,19 +6394,78 @@
             "yellow card",
             "gray block",
             "peach lid"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 9.9
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 9.867
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 9.767
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 13.967
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 11.133
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 13.967
+            },
+            {
+              "id": "peach_lid",
+              "name": "peach lid",
+              "description": "peach box",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 9.467,
+              "last_seen": 13.967
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": 74.63,
-        "seconds": 0.02
+        "original_verdict": "unsure"
       },
       {
         "id": "judge_hidden_1",
         "kind": "hidden",
-        "seed": 73347,
-        "expected": "no_false_fail",
-        "tracking_request": "replayed completed repair tracking",
-        "extraction": "new extraction of former timeout case",
         "correct": true,
         "result": {
           "passed": false,
@@ -4160,6 +6473,35 @@
           "verified": false,
           "tracking_used": true,
           "evidence_status": "inconclusive",
+          "final_states": [
+            {
+              "key": [
+                "inside",
+                "blue_liner",
+                "brown_box"
+              ],
+              "evidence": "unseen",
+              "holds": true
+            },
+            {
+              "key": [
+                "inside",
+                "green_charger",
+                "brown_box"
+              ],
+              "evidence": "unseen",
+              "holds": true
+            },
+            {
+              "key": [
+                "on",
+                "red_product",
+                "blue_liner"
+              ],
+              "evidence": "unseen",
+              "holds": true
+            }
+          ],
           "tracking": {
             "parser": "sam_boxes_v1",
             "seconds": 55.61,
@@ -4214,12 +6556,45 @@
               "kind": "Couldn't verify",
               "type": "unknown",
               "severity": "unknown",
-              "message": "Couldn't verify where the yellow card went \u2014 the tracker could not support the reported placement (in the brown box)",
+              "message": "Couldn't verify the final placement of the blue liner.",
+              "time": 3.0,
+              "critical": false,
+              "reason": null,
+              "quote": null,
+              "fix": "Keep the final arrangement visible for review."
+            },
+            {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify the final placement of the red product.",
+              "time": 5.5,
+              "critical": false,
+              "reason": null,
+              "quote": null,
+              "fix": "Keep the final arrangement visible for review."
+            },
+            {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify the final placement of the green charger.",
+              "time": 8.5,
+              "critical": false,
+              "reason": null,
+              "quote": null,
+              "fix": "Keep the final arrangement visible for review."
+            },
+            {
+              "kind": "Couldn't verify",
+              "type": "unknown",
+              "severity": "unknown",
+              "message": "Couldn't verify: Stacks the yellow card on the red product \u2014 the video model reported the yellow card in the brown box, which does not establish whether it is on the red product.",
               "time": 10.5,
               "critical": false,
               "reason": null,
               "quote": "thank you card on top of the product",
-              "fix": "Re-record with the whole workspace in view, or check this step by hand."
+              "fix": "Review the supporting object and this placement in the recording."
             }
           ],
           "objects": [
@@ -4229,202 +6604,66 @@
             "brown box",
             "yellow card",
             "gray block"
+          ],
+          "detections": [
+            {
+              "id": "blue_liner",
+              "name": "blue liner",
+              "description": "blue sheet",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 9.367
+            },
+            {
+              "id": "red_product",
+              "name": "red product",
+              "description": "red block",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 9.333
+            },
+            {
+              "id": "green_charger",
+              "name": "green charger",
+              "description": "green block",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 9.233
+            },
+            {
+              "id": "brown_box",
+              "name": "brown box",
+              "description": "brown box",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 9.4
+            },
+            {
+              "id": "yellow_card",
+              "name": "yellow card",
+              "description": "yellow card",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 4.1,
+              "last_seen": 10.733
+            },
+            {
+              "id": "gray_block",
+              "name": "gray block",
+              "description": "gray block",
+              "kind": null,
+              "status": "tracked",
+              "first_seen": 0.0,
+              "last_seen": 13.567
+            }
           ]
         },
-        "tracking_errors": {},
-        "tracking_seconds": 55.61,
-        "seconds": 0.04
+        "original_verdict": "unsure"
       }
-    ],
-    "summary": {
-      "total": 16,
-      "completed": 16,
-      "matched_expected": 16,
-      "pipeline_errors": 0,
-      "object_tracking_errors": 0,
-      "abstentions": 2
-    }
-  },
-  "live_validation": {
-    "type": "public upload verification",
-    "verified_on": "2026-10-30",
-    "pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
-    "scope": "Four real service runs over three provided examples; the correct clip was deliberately repeated. This is an availability and integration check, not an accuracy benchmark.",
-    "results": [
-      {
-        "case": "correct",
-        "seconds": 46.7,
-        "verdict": "pass",
-        "evidence_status": "partial",
-        "tracking": {
-          "parser": "sam_boxes_v1",
-          "seconds": 15.07,
-          "objects_tracked": 3,
-          "objects_total": 3,
-          "errors": {}
-        },
-        "overlay_verified": true,
-        "history": [
-          {
-            "seconds": 10.68,
-            "state": [
-              "running",
-              "Reading the steps in your attempt",
-              null
-            ]
-          },
-          {
-            "seconds": 28.98,
-            "state": [
-              "checked",
-              "Checking with the tracker",
-              "pass"
-            ]
-          },
-          {
-            "seconds": 46.7,
-            "state": [
-              "done",
-              null,
-              "pass"
-            ]
-          }
-        ]
-      },
-      {
-        "case": "correct",
-        "seconds": 34.91,
-        "verdict": "pass",
-        "evidence_status": "partial",
-        "tracking": {
-          "parser": "sam_boxes_v1",
-          "seconds": 18.88,
-          "objects_tracked": 3,
-          "objects_total": 3,
-          "errors": {}
-        },
-        "overlay_verified": true,
-        "history": [
-          {
-            "seconds": 1.74,
-            "state": [
-              "running",
-              "Reading the steps in your attempt",
-              null
-            ]
-          },
-          {
-            "seconds": 14.21,
-            "state": [
-              "checked",
-              "Checking with the tracker",
-              "pass"
-            ]
-          },
-          {
-            "seconds": 34.91,
-            "state": [
-              "done",
-              null,
-              "pass"
-            ]
-          }
-        ]
-      },
-      {
-        "case": "wrong-place",
-        "seconds": 36.12,
-        "verdict": "fail",
-        "evidence_status": "partial",
-        "tracking": {
-          "parser": "sam_boxes_v1",
-          "seconds": 19.8,
-          "objects_tracked": 2,
-          "objects_total": 2,
-          "errors": {}
-        },
-        "overlay_verified": true,
-        "history": [
-          {
-            "seconds": 1.76,
-            "state": [
-              "running",
-              "Reading the steps in your attempt",
-              null
-            ]
-          },
-          {
-            "seconds": 13.88,
-            "state": [
-              "checked",
-              "Checking with the tracker",
-              "fail"
-            ]
-          },
-          {
-            "seconds": 36.12,
-            "state": [
-              "done",
-              null,
-              "fail"
-            ]
-          }
-        ]
-      },
-      {
-        "case": "hidden",
-        "seconds": 70.1,
-        "verdict": "unsure",
-        "evidence_status": "inconclusive",
-        "tracking": {
-          "parser": "sam_boxes_v1",
-          "seconds": 48.99,
-          "objects_tracked": 6,
-          "objects_total": 6,
-          "errors": {}
-        },
-        "overlay_verified": true,
-        "history": [
-          {
-            "seconds": 1.37,
-            "state": [
-              "running",
-              "Reading the steps in your attempt",
-              null
-            ]
-          },
-          {
-            "seconds": 17.44,
-            "state": [
-              "checked",
-              "Checking with the tracker",
-              "fail"
-            ]
-          },
-          {
-            "seconds": 66.74,
-            "state": [
-              "checked",
-              "Checking with the tracker",
-              "unsure"
-            ]
-          },
-          {
-            "seconds": 70.1,
-            "state": [
-              "done",
-              null,
-              "unsure"
-            ]
-          }
-        ]
-      }
-    ],
-    "summary": {
-      "runs": 4,
-      "passed_checks": 4,
-      "tracking_errors": 0,
-      "all_overlays_verified": true
-    }
+    ]
   }
 }

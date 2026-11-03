@@ -1,0 +1,27 @@
+{
+  "id": "everyday-packing-v1",
+  "title": "Pack an order with everyday objects",
+  "scope": "Prospective, self-reported second-person validation. No completed results are implied.",
+  "materials": ["one open box", "one paper or cloth liner", "one product", "one accessory", "one card"],
+  "reference": "Put the liner in the box first. Put the product on the liner. Put the accessory in the box. Put the card on the product. Say that the liner must come before everything else, and that the accessory and card may be placed in either order. Keep the final arrangement visible for two seconds.",
+  "reference_participant": "A",
+  "cases": [
+    {"id": "P01", "participant": "B", "expected": "pass", "title": "Correct first attempt", "instruction": "Use the confirmed procedure normally. Change the initial object positions."},
+    {"id": "P02", "participant": "B", "expected": "order", "title": "Order-only violation", "instruction": "Put the accessory in the box before the liner. Then finish all other placements correctly. The final arrangement should look right."},
+    {"id": "P03", "participant": "B", "expected": "skipped", "title": "Card omitted", "instruction": "Complete the task without placing the card. Keep the whole workspace visible."},
+    {"id": "P04", "participant": "B", "expected": "wrong_place", "title": "Accessory in wrong place", "instruction": "Put the accessory beside the box instead of inside it. Complete the other steps."},
+    {"id": "P05", "participant": "B", "expected": "wrong_place", "title": "Correct placement undone", "instruction": "Place the accessory correctly, then take it out and leave it beside the box before the recording ends."},
+    {"id": "P06", "participant": "B", "expected": "review", "title": "Placement hidden", "instruction": "Cover the card placement and the final card position with your hand or an opaque cover. Do not reveal whether the card was placed."},
+    {"id": "P07", "participant": "B", "expected": "pass", "title": "Correct at another angle", "instruction": "Record a correct attempt with a different camera angle and starting positions. Keep all placements visible."},
+    {"id": "P08", "participant": "B", "expected": "pass", "title": "Mistake corrected", "instruction": "Put the accessory beside the box, then correct it by placing it inside. Finish the full procedure and show the final state."},
+    {"id": "P09", "participant": "B", "expected": "review", "title": "Ambiguous identical parts", "instruction": "Use two accessories with the same color and shape. Keep both visible and make it ambiguous which instance was placed. This is a challenge case for identity uncertainty."}
+  ],
+  "recording_notes": [
+    "Ask a second person to perform the attempts. Use anonymous participant codes, not names.",
+    "Record one continuous, unedited clip per case, ideally 10–25 seconds and never over two minutes.",
+    "Use distinct object appearances except for P09. Keep the camera fixed during each recording.",
+    "Record each case once before inspecting any model output. Retakes and any coaching must be disclosed.",
+    "Labels describe intended outcomes and must be confirmed against the actual recordings by a human before inference.",
+    "Store raw footage privately. The app sends submitted clips to model services and deletes retained app copies after the configured retention period."
+  ]
+}

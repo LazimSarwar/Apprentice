@@ -25,7 +25,7 @@ from pydantic import ValidationError
 
 from .clients import (
     BASETEN_BASE_URL, BASETEN_DEFAULT_MODEL, FIREWORKS_BASE_URL, META_BASE_URL, MODEL_TIMEOUT_SECONDS, ROOT, require_env,
-    spark_cost_usd,
+    spark_cost_usd, record_usage,
 )
 from .media import data_url, keyframes
 from .schema import ACTIONS, RELATIONS, RawGraph
@@ -35,25 +35,51 @@ KEYFRAMES = 12
 
 PROMPT = f"""You are watching a single demonstration of a tabletop task.
 Return ONLY JSON (no prose, no markdown fences) with this exact shape:
-{{"objects": [{{"id": "red_block", "color": "red", "shape": "block"}}],
+{{"objects": [{{"id": "red_block", "color": "red", "shape": "block", "kind": "solid", "tracking_description": "red block"}}],
   "steps": [{{"order": 1, "start_s": 0.0, "end_s": 1.5, "action": "push",
              "object": "red_block", "target": "gray_tray", "relation": "inside"}}],
   "final_relations": [{{"relation": "inside", "a": "red_block", "b": "gray_tray"}}]}}
 
 Rules:
+- Discover the actual task-relevant objects visible in this video. The names in the
+  JSON example are examples, not a fixed object list. Include manipulated items and
+  their supports/containers; do not invent an item because the task normally needs it.
 - Use only these actions: {", ".join(ACTIONS)}.
 - Use only these relations (or null): {", ".join(RELATIONS)}.
 - `order` is a 1-based integer in the order the actions happen.
 - Times are seconds from the start of the video; start_s < end_s.
 - Every `object` and `target` must be an id that appears in `objects` (target may be null).
 - Give each object a stable snake_case id built from its colour and what it is.
-- `shape` is what the object visually looks like (block, sheet, mug, box, card...)."""
+- `shape` is what the object visually looks like (block, sheet, mug, box, card...).
+- `kind` is solid, container, or surface, based on visible physical structure.
+  A cup or jar can be a container; a closed solid object is not a container merely
+  because its name resembles one. Use null if the structure is unclear.
+- `tracking_description` is a short visual noun phrase for locating that particular
+  object: use its recognizable physical type and visible distinguishing features,
+  e.g. "white charger", "white paper sheet", "white card with a blue logo".
+  Avoid reducing recognizable objects to generic geometry such as "white block".
+  Do not include actions, expected locations, order, or invisible properties. Do not
+  invent distinguishing features when two objects look identical.
+- Distinguish solid cubes/blocks from hollow containers. Use on for stacking a solid block,
+  and inside only when an object actually goes into a container. Do not call a solid block a box.
+- For each placement, name the immediate supporting object when it is visible. An item
+  resting on a sheet within a container has the step relation on the sheet. Describe the
+  enclosing container separately in final_relations when that relation is also visible.
+  Being inside a container alone does not establish which object supports the item.
+  If the support is hidden or unclear, report only the placement you can actually see.
+- At most 16 objects and 128 steps. Include the final placements even when an earlier correct
+  placement was undone later."""
 
 REPAIR = "That was not valid for the schema ({error}). Return corrected JSON only, same shape."
 
 GUIDE = """
 These objects were seen in a reference video of the same task. When one of them appears,
-use exactly its id: {objects}. Only invent a new id for an object that is not in this list."""
+reuse its id only when its visible appearance supports the identity: {objects}.
+This is an identity guide, not a list of objects that must be present. Omit absent objects.
+Give genuinely new or uncertain objects their own ids instead of forcing a reference match.
+Do not substitute a different item just because it has the same colour. Observe the current
+video afresh: describe what is visible now, including new objects and changed placements.
+Never copy a reference appearance feature that is not visible in the current video."""
 
 
 SPOKEN = """
@@ -69,8 +95,9 @@ def build_prompt(known_objects: list[dict] | None = None, spoken: str | None = N
     prompt = PROMPT + (SPOKEN.format(said=spoken.replace('"', "'")) if spoken else "")
     if not known_objects:
         return prompt
-    listed = ", ".join(f"{o['id']} ({o.get('color') or ''} {o.get('shape') or ''}".rstrip() + ")"
-                       for o in known_objects)
+    fields = {"id", "color", "shape", "kind", "tracking_description"}
+    listed = json.dumps([{k: v for k, v in o.items() if k in fields and v is not None}
+                         for o in known_objects], ensure_ascii=False)
     return prompt + GUIDE.format(objects=listed)
 
 _JSON = re.compile(r"\{.*\}", re.DOTALL)
@@ -112,7 +139,7 @@ def _hosted_caller(clip: Path, model: str, prompt: str, effort: str = "low") -> 
     def call(extra: str | None):
         content = base + ([{"type": "input_text", "text": extra}] if extra else [])
         resp = api.responses.create(
-            model=model, reasoning={"effort": effort},
+            model=model, reasoning={"effort": effort}, max_output_tokens=8192,
             input=[{"type": "message", "role": "user", "content": content}],
         )
         return resp.output_text, resp.usage
@@ -172,7 +199,9 @@ def extract_graph(clip: Path, provider: str = "hosted", model: str | None = None
     last_error = ""
     for attempt in range(2):
         text, usage = call(REPAIR.format(error=last_error) if attempt else None)
-        cost += spark_cost_usd(usage) or 0.0
+        billed = spark_cost_usd(usage)
+        record_usage(billed)
+        cost += billed or 0.0
         try:
             graph = RawGraph.model_validate(_loads(text))
         except (ExtractionError, ValidationError, json.JSONDecodeError) as exc:

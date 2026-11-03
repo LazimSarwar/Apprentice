@@ -192,8 +192,6 @@ def execute(graph: TaskGraph, record: bool = False, layout=None,
             order: list[int] | None = None,
             rules: list[monitor.OrderingRule] | None = None,
             sanitize: bool = True) -> ExecutionResult:
-    scene = build_scene(graph.objects, layout=layout)
-    robot = Panda(scene, record=record)
     result = ExecutionResult()
     pending = list(disturbances or [])
 
@@ -201,6 +199,13 @@ def execute(graph: TaskGraph, record: bool = False, layout=None,
         steps, final_rels, notes = sanitize_plan(graph)
         graph = graph.model_copy(update={"steps": steps, "final_relations": final_rels})
         result.plan_notes = notes
+
+    if not graph.steps or not graph.final_relations:
+        result.reason = "No executable steps or verifiable goals remain; the requested task is incomplete."
+        return result
+
+    scene = build_scene(graph.objects, layout=layout)
+    robot = Panda(scene, record=record)
 
     # The confirmed procedure comes from the demonstration graph, regardless of the
     # order the robot actually runs the steps (so a reordered run can still be judged).
@@ -266,7 +271,10 @@ def execute(graph: TaskGraph, record: bool = False, layout=None,
             holds=relations.holds(r.relation, r.a, r.b, scene),
         ))
 
-    result.success = result.completed and all(r.holds for r in result.final)
+    dropped_goals = any(n.startswith("dropped goal") for n in result.plan_notes)
+    result.success = result.completed and bool(result.final) and not dropped_goals and all(r.holds for r in result.final)
+    if dropped_goals and not result.reason:
+        result.reason = "The reduced plan ran, but one or more requested goals were omitted."
     result.frames = robot.frames
     return result
 

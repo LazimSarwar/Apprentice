@@ -1,60 +1,40 @@
-# Judge walkthrough and evidence boundaries
+# OneShot judge walkthrough
 
-## Three-minute demonstration
+Open `/judge` for the guided version. It labels every recording as real development footage or generated, plays reference and attempt together, and re-runs a rule change through the actual checker. It uses cached assessments explicitly; new uploads and camera reads call Meta services.
 
-**0:00–0:15 — problem and provenance.** State that the application was built during the event and identify
-the third-party model services, simulation assets and adapted recipes disclosed in the README. Explain the
-problem: a final picture can look right while a required step was missed or performed too late.
+## Three-minute presentation
 
-**0:15–0:55 — real footage first.** Play the phone reference next to “Beside, not on.” Point to the learned
-two-step procedure, wrong-placement timestamp and corrective action. Select a separate correct attempt.
-Explain the partial tracking badge: seeing an object does not independently prove its 3D placement.
+**0:00–0:35 — the practical problem.** Play the real phone reference beside the wrong-placement attempt. Explain: “A final picture alone cannot tell whether a required procedure was followed. OneShot learns the steps, checks another recording, and points to the problem and fix.” Show the timestamp. Say that these are builder-recorded development examples.
 
-**0:55–1:15 — show an honest abstention.** Select “Green missing.” The model thinks a step was skipped;
-the tracker has no evidence of that block, so acceptance is withheld. Show the nine-attempt summary and
-the excluded reference self-check. Say “development footage,” not “unseen real-world accuracy.”
+**0:35–1:20 — the differentiator.** Switch to the narrated generated packing example. The accessory went in before the required liner, even though the final arrangement looks right. Change only “liner before accessory” to Free. The deterministic checker changes the outcome without another model call. Restore the requirement. The human owns the specification.
 
-**1:15–2:00 — demonstrate which order matters.** Use the narrated packing example. Play the “liner first”
-reason, then “Liner too late.” Change that specific rule to Free and show that its order failure changes.
-Show a permitted card/charger swap. Explain that the packing scenes are generated tests.
+**1:20–1:50 — evidence and uncertainty.** Play the hidden-card example. Show “review required.” Distinguish the video model's interpretation from independent object tracking. Two-dimensional boxes support visibility and approximate geometry; they do not establish physical contact or safety.
 
-**2:00–2:35 — working product.** Upload a downloaded phone sample with the phone reference selected, or
-show a check already running. Distinguish the provisional model assessment from the later tracking result.
-Completion time varies with provider latency; avoid promising an instant verdict.
+**1:50–2:30 — the working application.** Open the prepared saved reference, or teach a new one in advance. Show the complete step/final-goal editor and object types. Confirm it, reuse it for another recording or camera session, inspect the decision history, and download a report showing that human review is separate from machine verification. Recent checks recover accepted uploads; follow-ups keep their own URLs and confirmed procedure. Provider calls take time; never stage a cached response as live inference.
 
-**2:35–3:00 — measured scope and close.** Show the full results and test command. Explain that existing
-generated cases are development replays, and any fresh batch is only new variations from the same renderer.
-The practical next validation is new users, objects, cameras and real packing procedures with labels written
-before testing. The simulated robot is an optional extension if time remains.
+**2:30–3:00 — scope and impact plan.** Show 6/9 phone development outcomes resolved, 3 review requests, and zero observed false accepts. The same sixteen generated fixtures match 16/16 expected outcomes with two review cases. State that 132 offline tests pass locally and in the Linux/Python 3.12 deployment image. Open the packing trial: labels and the procedure are frozen before inference, every first submission stays in the denominator. The independent second-person trial and measured benefit remain pending until actual recordings and timings exist.
 
-## Claims supported by the packaged evidence
-
-- One reference produces structured steps; narration and a second reference can refine ordering rules.
-- Real phone recordings can be compared with timestamps and corrective feedback.
-- The current real development replay resolves seven of nine separate expected outcomes and abstains on two.
-- The fresh generated batch matches 14/16 expected outcomes and retains two tracking timeouts as errors.
-  Network deadlines were added after a stall; checker rules were not tuned against that batch.
-- After the box-parser repair, the same sixteen development examples match 16/16 expected outcomes with
-  zero tracking errors. Fourteen original extraction caches were replayed; the two prior failures were
-  extracted and tracked again, correctly requiring review. The earlier failure report remains available.
-- Four public upload checks completed in 35–70 seconds with zero tracking errors and working overlay videos:
-  two correct runs passed, a wrong placement failed, and an occluded attempt required review. This is a small
-  integration/availability check over three provided examples, not an unseen-accuracy benchmark.
-- No incorrect real attempt in this small set is accepted. Abstention is not counted as a successful diagnosis.
-- An identical recording used as both reference and attempt is excluded from evaluation scores.
-- Tracker disagreement, absent tracking of a reported result, empty references and untimed required steps
-  have offline regression checks.
-- Real reversed stacks test wrong structure, not an isolated temporal-order violation.
-- 2D boxes support approximate geometry and visibility. They cannot prove physical contact or safety.
-- Near-live warning latency was measured on generated examples; a real webcam workflow remains unvalidated.
-
-## Reproduce without spending model credits
+## Reproduce
 
 ```bash
 python -m unittest discover -s tests -v
 python -m web.build_judging --reports-only
+python -m modal run deploy/validate.py
 python -m uvicorn web.server:app --port 8000
 ```
 
-Inspect `web/static/media/real_results.json` for every real result, the excluded self-check, the checker
-fingerprint and source-video hashes. Raw recordings and API keys are not included.
+The current phone report is `web/static/media/real_results.json`; the older seven-of-nine report is `real_results_baseline.json`. The current generated replay is `current_validation.json`. Earlier repair and live-service artifacts retain their original source fingerprints and do not verify changed builds. `runs/release-linux-validation.json` records the image validation fingerprint.
+
+## Five real packing development recordings
+
+The final walkthrough step includes a separate P01–P05 development summary. It records the actual findings: the order, omission and placement challenges surfaced problems; correct recordings exposed containment and tracking failures. Fresh post-fix P01 and P05 inference still requests review for the covered final cube. These five recordings informed fixes and span different builds, so do not claim five automatic passes, a common-build accuracy score, or independent validation. Personal footage is not published. `packing_development.json` preserves sanitized observations, clip hashes and the two post-fix assessments with their original build fingerprint.
+
+## Field trial
+
+Record `REF.mp4` plus `P01.mp4`–`P09.mp4` using the guide in `../Real-footage/packing-pilot/`. Use a second person, distinct objects except the identity challenge, continuous unedited takes, and human-confirmed labels before model output is inspected. Disclose retakes and coaching. Freeze the study in `/pilot` against a confirmed four-placement packing reference. Do not tune the checker to the recordings and then present those recordings as held out.
+
+The report keeps expected outcomes, first results, reviews, pipeline errors, full denominators, clip hashes, source/plan hashes and model latency. Participant codes are self-reported. Optional human review times are self-timed, exclude model waiting and do not constitute a controlled impact study. Export before the retention period expires. Raw footage and owner-session credentials stay private.
+
+## Provenance and limits
+
+The application, schema, evidence checks, human confirmation, live workflow and trial protocol form the project contribution. Meta services provide transcription, video interpretation and tracking. Cookbook recipes, simulation assets, stock footage, dependencies and AI coding assistance are disclosed in README. The robot is a simulated optional extension. No physical robot, production accuracy, subsecond intervention, new second-person success, or measured time savings are claimed without evidence.

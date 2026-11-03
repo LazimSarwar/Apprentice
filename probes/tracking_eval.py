@@ -26,10 +26,8 @@ from web.views import report_view
 
 
 def pipeline_digest():
-    sha = hashlib.sha256()
-    for name in ('box_parser', 'evidence', 'graph', 'check', 'procedure', 'schema', 'extract', 'clients'):
-        sha.update((ROOT / f'oneshot/{name}.py').read_text(encoding='utf-8').replace('\r\n', '\n').encode())
-    return sha.hexdigest()
+    from web.build_judging import pipeline_digest as digest
+    return digest()
 
 
 def main():

@@ -1,19 +1,8 @@
-"""Live checking: run the real pipeline on uploaded videos, one job at a time.
-
-A job learns the procedure — the built-in demo one, or the user's own: their reference is
-listened to (what they said names the objects and gives reasons and order rules), read, and
-optionally refined by a second correct reference. It then reads the attempt (guided by the
-reference's object names), compares, and publishes the verdict as soon as it exists; finally
-it tracks the objects, re-checks the verdict against the tracker's evidence and publishes the
-AI-vision video. Graphs stay in memory so a person can change a rule and re-check instantly.
-
-Every check calls the hosted models, so uploads are size- and length-limited and jobs run
-one at a time.
-"""
-
+"""Private video jobs, confirmed procedures, shared tracking and decision history."""
 from __future__ import annotations
 
 import json
+import math
 import os
 import shutil
 import threading
@@ -26,30 +15,32 @@ from typing import BinaryIO
 
 import imageio.v3 as iio
 
-from oneshot.check import Issue, Report, compare
+from oneshot.check import compare
 from oneshot.graph import add_evidence, build_task_graph
-from oneshot.media import video_info
-from oneshot.narration import listen, narrate, spoken_text
-from oneshot.procedure import Procedure, learn, milestones
+from oneshot.media import small_mp4, video_info
+from oneshot.narration import listen, narrate, spoken_text, has_audio
+from oneshot.procedure import Procedure, StepInfo, Rule, learn, milestones, final_keys, _closure
 from oneshot.schema import TaskGraph
-from web import budget
+from oneshot.words import SURFACE
+from web import budget, storage
 from web.build_media import overlay_frames, write_mp4
 from web.views import add_audio, procedure_view, report_view
 
 WEB = Path(__file__).resolve().parent
 REFERENCE = WEB / "reference.graph.json"
 PROCEDURE = WEB / "reference.procedure.json"
-DEMO = WEB / "demo"                             # tracked demo attempt graphs, for re-checking
-UPLOADS = WEB / "static" / "uploads"            # web-encoded videos the page plays
-WORK = WEB.parent / "runs" / "uploads"          # raw uploads and intermediate clips
+DEMO = WEB / "demo"
+WORK = storage.ROOT
+UPLOADS = storage.ROOT  # Encoded user files are never under the static mount.
 ALLOWED = {".mp4", ".mov", ".webm", ".mkv", ".m4v", ".avi"}
 MAX_BYTES = 80 * 1024 * 1024
 MAX_SECONDS = int(os.environ.get("MAX_UPLOAD_SECONDS", "120"))
-MAX_WAITING = 3             # jobs queued or running; beyond that, ask people to come back
-
+MAX_WAITING = 3
+ACTIVE = {"queued", "running", "checked"}
 _jobs: dict[str, dict] = {}
-_graphs: dict[str, tuple[TaskGraph, TaskGraph, Procedure]] = {}    # job -> (reference, attempt, procedure)
-_lock = threading.Lock()
+_graphs: dict[str, tuple[TaskGraph, TaskGraph, Procedure]] = {}
+_pending: dict[str, tuple[Path | None, TaskGraph, Procedure]] = {}
+_lock = threading.RLock()
 _pool = ThreadPoolExecutor(max_workers=1)
 
 
@@ -58,202 +49,445 @@ class UploadError(ValueError):
 
 
 def save_upload(fileobj: BinaryIO, filename: str, job_id: str, role: str) -> Path:
-    """Stream an upload to disk, enforcing the type and size limits."""
     ext = Path(filename or "").suffix.lower()
     if ext not in ALLOWED:
-        raise UploadError(f"Unsupported file type '{ext or '?'}'. Use one of: {', '.join(sorted(ALLOWED))}.")
-    WORK.mkdir(parents=True, exist_ok=True)
-    path = WORK / f"{job_id}_{role}{ext}"
+        raise UploadError("Unsupported video type. Use MP4, MOV, WebM, MKV, M4V or AVI.")
+    path = storage.create(job_id) / "raw" / f"{role}{ext}"
+    path.parent.mkdir(parents=True, exist_ok=True)
     written = 0
-    with path.open("wb") as out:
-        while chunk := fileobj.read(1 << 20):
-            written += len(chunk)
-            if written > MAX_BYTES:
-                out.close()
-                path.unlink(missing_ok=True)
-                raise UploadError(f"That file is over {MAX_BYTES // (1024 * 1024)} MB.")
-            out.write(chunk)
+    try:
+        with path.open("wb") as out:
+            while chunk := fileobj.read(1 << 20):
+                written += len(chunk)
+                if written > MAX_BYTES:
+                    raise UploadError("That video exceeds the 80 MB limit.")
+                with storage._lock:
+                    storage.ensure_space(len(chunk))
+                    out.write(chunk)
+    except Exception:
+        path.unlink(missing_ok=True)
+        raise
+    if not written:
+        path.unlink(missing_ok=True)
+        raise UploadError("The video is empty.")
     return path
 
 
 def new_job_id() -> str:
-    return uuid.uuid4().hex[:12]
+    return uuid.uuid4().hex
 
 
 def ensure_capacity() -> None:
-    """Before taking an upload: the spend cap, and a short queue (checks run one at a time)."""
     budget.ensure()
     with _lock:
-        waiting = sum(j["status"] in ("queued", "running", "checked") for j in _jobs.values())
-    if waiting >= MAX_WAITING:
-        raise UploadError("A few checks are already waiting — try again in a minute.")
+        if sum(j["status"] in ACTIVE for j in _jobs.values()) >= MAX_WAITING:
+            raise UploadError("A few checks are already waiting. Try again in a minute.")
 
 
 def submit(job_id: str, attempt: Path, reference: Path | None, reference2: Path | None = None,
            reference_demo: str = "pack") -> None:
     with _lock:
-        if sum(j["status"] in ("queued", "running", "checked") for j in _jobs.values()) >= MAX_WAITING:
-            raise UploadError("A few checks are already waiting — try again in a minute.")
+        ensure_capacity()
+        storage.create(job_id)
         _jobs[job_id] = {"id": job_id, "status": "queued", "stage": "Waiting for another check to finish",
-                         "custom_reference": reference is not None, "second_reference": reference2 is not None,
-                         "reference_demo": reference_demo}
-    _pool.submit(_run, job_id, attempt, reference, reference2, reference_demo)
+            "custom_reference": reference is not None, "second_reference": reference2 is not None,
+            "reference_demo": reference_demo, "procedure_confirmed": reference is None}
+        _set(job_id, **_jobs[job_id])
+        _pool.submit(_run, job_id, attempt, reference, reference2, reference_demo)
 
 
 def get(job_id: str) -> dict | None:
     with _lock:
         job = _jobs.get(job_id)
-        return dict(job) if job else None
+        if job: return dict(job)
+    try:
+        data = storage.record(job_id)
+    except storage.AccessError:
+        return None
+    job = data.get("job")
+    if job and job["status"] in ACTIVE | {"watching", "finishing"}:
+        job = {**job, "status": "error", "stage": None,
+               "error": "The server restarted during this check. The saved history is available; upload again."}
+    return job
 
 
 def _set(job_id: str, **fields) -> None:
     with _lock:
-        _jobs[job_id].update(fields)
+        try: saved = storage.record(job_id)
+        except storage.AccessError: saved = {}
+        previous = saved.get("job", {})
+        _jobs.setdefault(job_id, previous or {"id": job_id}).update(fields)
+        state = dict(_jobs[job_id])
+        try:
+            changed = any(state.get(k) != previous.get(k) for k in ("status", "stage", "result", "procedure_version"))
+            storage.update(job_id, event="job_updated" if changed else None, job=state)
+        except storage.AccessError:
+            pass  # Isolated unit fixtures need not create private files.
+
+
+def _work(job_id: str) -> Path:
+    return storage.directory(job_id)
 
 
 def _web_video(clip: Path, name: str, audio_from: Path | None = None) -> str:
-    UPLOADS.mkdir(parents=True, exist_ok=True)
-    fps = float(iio.immeta(clip).get("fps", 30))
-    target = UPLOADS / name
-    write_mp4(target, iio.imiter(clip), fps)
+    job_id = name.split("_", 1)[0]
+    folder = _work(job_id) / "encoded"
+    folder.mkdir(parents=True, exist_ok=True)
+    target = folder / name
+    storage.ensure_space()
+    write_mp4(target, iio.imiter(clip), float(iio.immeta(clip).get("fps", 30)))
     if audio_from is not None:
         tmp = target.with_suffix(".audio.mp4")
         add_audio(target, audio_from, tmp)
         shutil.move(tmp, target)
-    return f"uploads/{name}"
+    return f"/api/assets/{job_id}/{name}"
 
 
 def _check_length(path: Path, what: str) -> float:
     seconds = video_info(path).duration_s
     if seconds > MAX_SECONDS:
-        raise UploadError(f"The {what} is {seconds:.0f} s long; please keep it under {MAX_SECONDS} s.")
+        raise UploadError(f"The {what} is {seconds:.0f} s long; keep it under {MAX_SECONDS} s.")
     return seconds
 
 
-def builtin(dataset: str = "pack") -> tuple[TaskGraph, Procedure]:
+def builtin(dataset="pack") -> tuple[TaskGraph, Procedure]:
     if dataset not in ("pack", "real"):
-        raise UploadError("Choose the phone-footage reference, packing reference, or your own reference.")
+        raise UploadError("Choose the phone or packing reference, or upload your own.")
     graph_path = DEMO / "real_ref.graph.json" if dataset == "real" else REFERENCE
     ref = TaskGraph.model_validate_json(graph_path.read_text(encoding="utf-8"))
     proc = learn([ref]) if dataset == "real" else Procedure.from_dict(json.loads(PROCEDURE.read_text(encoding="utf-8")))
     return ref, proc
 
 
-def _learn_own(job_id: str, reference: Path, reference2: Path | None) -> tuple[TaskGraph, Procedure]:
+def _extract(path, work, **kwargs):
+    with budget.call("read video") as meter:
+        result = build_task_graph(path, work_dir=work, track=False, **kwargs)
+        # Also supports alternate extractor implementations that return usage metadata.
+        if not meter.observed: meter.observe(result.meta.extract_cost_usd)
+    return result
+
+
+def _learn_own(job_id, reference, reference2):
+    work = _work(job_id)
     seconds = _check_length(reference, "reference")
     _set(job_id, stage="Listening to your reference")
-    turns = listen(reference, WORK / "audio")
-    budget.charge(seconds / 3600 * budget.TRANSCRIBE_USD_PER_HOUR, "transcribe reference")
+    turns = None
+    if has_audio(reference):
+        estimate = seconds / 3600 * budget.TRANSCRIBE_USD_PER_HOUR
+        with budget.call("transcribe reference", estimate) as meter:
+            turns = listen(reference, work / "audio")
+            meter.observe(estimate, estimated=True)
     _set(job_id, stage="Reading the steps in your reference")
-    budget.ensure()
-    ref = build_task_graph(reference, work_dir=WORK, track=False, spoken=spoken_text(turns))
-    budget.charge(ref.meta.extract_cost_usd, "read reference")
-    refs = [ref]
+    ref = _extract(reference, work, spoken=spoken_text(turns))
     if not milestones(ref):
-        raise UploadError("No checkable steps were learned from your reference. Record clear placements and try again.")
-    if reference2 is not None:
+        raise UploadError("No checkable placements were learned. Record clear placements and try again.")
+    refs = [ref]
+    if reference2:
         _check_length(reference2, "second reference")
         _set(job_id, stage="Reading your second reference")
-        known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in ref.objects]
-        budget.ensure()
-        refs.append(build_task_graph(reference2, work_dir=WORK, known_objects=known, track=False))
-        budget.charge(refs[-1].meta.extract_cost_usd, "read second reference")
+        refs.append(_extract(reference2, work, known_objects=_known(ref)))
     _set(job_id, stage="Learning which steps and orders matter")
-    budget.ensure()
-    narration = narrate(turns, [(m.text, m.start, m.ref_time) for m in milestones(ref)])
-    budget.charge(narration.cost_usd if narration else None, "interpret reference narration")
+    narration = None
+    if turns:
+        with budget.call("interpret reference narration") as meter:
+            narration = narrate(turns, [(m.text, m.start, m.ref_time) for m in milestones(ref)])
+            if not meter.observed: meter.observe(narration.cost_usd if narration else 0)
     proc = learn(refs, narration)
-    ref_clip = WORK / "clips" / f"{reference.stem}.720p.mp4"
-    _set(job_id, reference={"video": _web_video(ref_clip, f"{job_id}_reference.mp4", audio_from=reference),
-                            **procedure_view(proc)})
+    # Expose inferred terminal requirements for human confirmation in the editor.
+    proc.final_goals = sorted(final_keys(ref, {})) or None
+    ref_clip = small_mp4(reference, work / "clips")
+    _set(job_id, reference={"video": _web_video(ref_clip, f"{job_id}_reference.mp4", reference),
+        **procedure_view(proc)}, editable_procedure=proc.to_dict(), reference_objects=[o.id for o in ref.objects])
     return ref, proc
 
 
-def _run(job_id: str, attempt: Path, reference: Path | None, reference2: Path | None,
-         reference_demo: str = "pack") -> None:
+def _known(ref):
+    return [o.reference_hint() for o in ref.objects]
+
+
+def _run(job_id, attempt, reference, reference2, reference_demo="pack"):
     try:
         budget.ensure()
         _set(job_id, status="running", stage="Opening the video")
         _check_length(attempt, "attempt")
-        ref, proc = _learn_own(job_id, reference, reference2) if reference is not None else builtin(reference_demo)
+        ref, proc = _learn_own(job_id, reference, reference2) if reference else builtin(reference_demo)
+        if reference:
+            with _lock: _pending[job_id] = (attempt, ref, proc)
+            storage.update(job_id, event="procedure_proposed", reference_graph=ref.model_dump(),
+                procedure=proc.to_dict(), pending_attempt=str(attempt.relative_to(_work(job_id))))
+            _set(job_id, status="awaiting_confirmation", stage="Confirm the learned procedure", procedure_version=1)
+            return
+        _continue(job_id, attempt, ref, proc)
+    except Exception as exc:
+        _error(job_id, exc)
 
-        _set(job_id, stage="Reading the steps in your attempt")
-        known = [{"id": o.id, "color": o.color, "shape": o.shape} for o in ref.objects]
-        budget.ensure()
-        att = build_task_graph(attempt, work_dir=WORK, known_objects=known, track=False)
-        budget.charge(att.meta.extract_cost_usd, "read attempt")
-        att_clip = WORK / "clips" / f"{attempt.stem}.720p.mp4"
-        demo = _web_video(att_clip, f"{job_id}_attempt.mp4")
 
-        _set(job_id, stage="Comparing with the procedure")
+def submit_reference(job_id: str, reference: Path, title: str = "My procedure", reference2: Path | None = None):
+    """Teach once without requiring an attempt or spending credits on it yet."""
+    title = title.strip()
+    if not title or len(title) > 100:
+        raise UploadError("Give the procedure a name of at most 100 characters.")
+    with _lock:
+        ensure_capacity()
+        storage.create(job_id)
+        _jobs[job_id] = {"id": job_id, "title": title, "status": "queued", "stage": "Learning your reference",
+            "custom_reference": True, "second_reference": reference2 is not None,
+            "procedure_only": True, "procedure_confirmed": False}
+        _set(job_id, **_jobs[job_id])
+        _pool.submit(_run_reference, job_id, reference, reference2)
+
+
+def _run_reference(job_id, reference, reference2):
+    try:
+        _set(job_id, status="running", stage="Reading your reference")
+        ref, proc = _learn_own(job_id, reference, reference2)
+        with _lock: _pending[job_id] = (None, ref, proc)
+        storage.update(job_id, event="procedure_proposed", reference_graph=ref.model_dump(),
+                       procedure=proc.to_dict(), pending_attempt=None)
+        _set(job_id, status="awaiting_confirmation", stage="Confirm the learned procedure", procedure_version=1)
+    except Exception as exc:
+        _error(job_id, exc)
+
+
+def _error(job_id, exc):
+    traceback.print_exc()
+    _set(job_id, status="error", stage=None, error=f"Couldn't complete this check ({type(exc).__name__}: {exc}).")
+
+
+def _continue(job_id, attempt, ref, proc):
+    try:
+        _set(job_id, status="running", stage="Reading the steps in your attempt")
+        att = _extract(attempt, _work(job_id), known_objects=_known(ref))
+        clip = small_mp4(attempt, _work(job_id) / "clips")
+        demo = _web_video(clip, f"{job_id}_attempt.mp4")
         report = compare(ref, att, procedure=proc)
-        with _lock:
-            _graphs[job_id] = (ref, att, proc)
-        _set(job_id, status="checked", stage="Checking with the tracker", demo=demo,
-             result=report_view(report, att))
-    except (UploadError, budget.BudgetError) as exc:
-        _set(job_id, status="error", stage=None, error=str(exc))
-        return
-    except Exception as exc:  # noqa: BLE001 - report any pipeline failure to the page
-        traceback.print_exc()
-        _set(job_id, status="error", stage=None, error=f"Couldn't check this video ({type(exc).__name__}: {exc}).")
-        return
+        with _lock: _graphs[job_id] = (ref, att, proc)
+        _set(job_id, status="checked", stage="Checking with the tracker", demo=demo, result=report_view(report, att))
+        tracked, result, seen, note = finalize(job_id, ref, att, proc, clip)
+        _set(job_id, status="done", stage=None, result=result, seen=seen, note=note)
+    except Exception as exc:
+        _error(job_id, exc)
 
-    preliminary = report_view(report, att)
-    tracking_started = time.monotonic()
+
+def finalize(job_id, ref, att, proc, clip):
+    """Both camera and upload completions use this evidence gate."""
+    preliminary = report_view(compare(ref, att, procedure=proc), att)
+    started = time.monotonic()
+    note = None
+    tracking_meter = None
     try:
-        budget.ensure(budget.TRACK_EST_USD)
-        tracked = add_evidence(att, att_clip)
-        budget.charge(budget.TRACK_EST_USD, "track attempt (estimate)")
-        with _lock:
-            _graphs[job_id] = (ref, tracked, proc)
-        report = compare(ref, tracked, procedure=proc)
-    except Exception:  # noqa: BLE001 - a failed tracker cannot certify the provisional assessment
+        # Up to two requests per object plus the bounded color fallback.
+        with budget.call("track objects (estimated)", max(budget.TRACK_EST_USD, len(att.objects) * 4 * budget.TRACK_EST_USD)) as tracking_meter:
+            tracked = add_evidence(att, clip)
+    except Exception:
         traceback.print_exc()
-        attempted = att.model_copy(update={"meta": att.meta.model_copy(update={
-            "track_seconds": round(time.monotonic() - tracking_started, 3),
-            "warnings": [*att.meta.warnings, "Tracking evidence unavailable; acceptance withheld."],
+        tracked = att.model_copy(update={"meta": att.meta.model_copy(update={
+            "track_seconds": time.monotonic() - started,
+            "tracking_errors": {o.id: "Tracking unavailable" for o in att.objects},
+            "warnings": [*att.meta.warnings, "Acceptance withheld: tracking unavailable."],
         })})
-        with _lock:
-            _graphs[job_id] = (ref, attempted, proc)
-        review = Report(False, "unsure", report.milestones, [Issue(
-            "unknown", "unknown", "Tracking evidence is unavailable; the initial model assessment remains unverified.",
-            None, fix="Review the recording by hand or try again when tracking is available.")], report.mapping,
-            rules=report.rules, evidence_status="inconclusive")
-        _set(job_id, status="done", stage=None, seen=None, result=report_view(review, attempted),
-             preliminary_result=preliminary, note="Tracking was unavailable. This check requires review.")
-        return
-
-    # Rendering an overlay is separate from assessing the evidence. A drawing failure
-    # must not discard a completed tracking assessment.
-    _set(job_id, result=report_view(report, tracked))
+        note = "Tracking was unavailable. Review the recording or provide clearer evidence."
+    with _lock:
+        current = _graphs.get(job_id)
+        if current: proc = current[2]  # Preserve edits made while tracking was running.
+        _graphs[job_id] = (ref, tracked, proc)
+    result = report_view(compare(ref, tracked, procedure=proc), tracked)
+    result["tracking"]["accounted_usd"] = (tracking_meter.cost if tracking_meter.observed else tracking_meter.amount) if tracking_meter else 0
+    _set(job_id, result=result, preliminary_result=preliminary)
     try:
-        fps = float(iio.immeta(att_clip).get("fps", 30))
-        write_mp4(UPLOADS / f"{job_id}_attempt_seen.mp4", overlay_frames(att_clip, tracked), fps)
-        _set(job_id, status="done", stage=None, seen=f"uploads/{job_id}_attempt_seen.mp4",
-             result=report_view(report, tracked))
-    except Exception:  # noqa: BLE001 - keep the evidence assessment if only drawing failed
-        traceback.print_exc()
-        _set(job_id, status="done", stage=None, seen=None, note="The tracking view couldn't be drawn for this video.")
+        storage.update(job_id, event="evidence_assessed", reference_graph=ref.model_dump(),
+            attempt_graph=tracked.model_dump(), procedure=proc.to_dict(), assessment=result)
+    except storage.AccessError:
+        pass
+    seen = None
+    if tracked.meta.tracking_errors != {o.id: "Tracking unavailable" for o in att.objects}:
+        try:
+            target = _work(job_id) / "encoded" / f"{job_id}_attempt_seen.mp4"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            write_mp4(target, overlay_frames(clip, tracked), float(iio.immeta(clip).get("fps", 30)))
+            seen = f"/api/assets/{job_id}/{target.name}"
+        except Exception:
+            traceback.print_exc()
+            note = "The evidence assessment completed, but its video overlay could not be drawn."
+    return tracked, result, seen, note
 
 
-def recheck(overrides: dict[str, str], job: str | None = None, demo: list[str] | None = None) -> dict:
-    """Re-judge attempts with a person's rule choices — no model calls, instant."""
-    out: dict[str, dict] = {}
+def confirm(job_id: str, data: dict) -> None:
+    with _lock:
+        if get(job_id)["status"] != "awaiting_confirmation":
+            raise UploadError("This procedure is not waiting for confirmation.")
+        pending = _pending.get(job_id)
+        if pending is None:
+            saved = storage.record(job_id)
+            attempt_path = _work(job_id) / saved["pending_attempt"] if saved.get("pending_attempt") else None
+            pending = (attempt_path, TaskGraph.model_validate(saved["reference_graph"]),
+                       Procedure.from_dict(saved["procedure"]))
+        attempt, ref, original = pending
+        proc = Procedure.from_dict(data.get("procedure") or original.to_dict())
+        validate_procedure(proc, ref)
+        proc = proc.with_overrides(data.get("overrides") or {})
+        validate_procedure(proc, ref)
+        ensure_capacity()
+        storage.update(job_id, event="procedure_confirmed", reference_graph=ref.model_dump(), procedure=proc.to_dict())
+        _pending.pop(job_id, None)
+        previous = get(job_id) or {}
+        _set(job_id, procedure_confirmed=True, status="queued" if attempt else "ready",
+             stage="Procedure confirmed; checking attempt" if attempt else None,
+             reference={**(previous.get("reference") or {}), **procedure_view(proc)})
+        if attempt: _pool.submit(_continue, job_id, attempt, ref, proc)
+
+
+def validate_procedure(proc: Procedure, ref: TaskGraph):
+    ids = {o.id for o in ref.objects} | {SURFACE}
+    if any(k not in ids or v not in ("solid", "container", "surface") for k, v in proc.object_kinds.items()):
+        raise UploadError("Object kinds must describe known objects as solid, container or surface.")
+    keys = [s.key for s in proc.steps]
+    if not keys or len(keys) > 128 or len(set(keys)) != len(keys):
+        raise UploadError("Provide between one and 128 unique procedure steps.")
+    for step in proc.steps:
+        if (len(step.key) != 3 or step.key[0] not in ("on", "inside", "near")
+                or any(x not in ids for x in step.key[1:]) or step.key[1] == step.key[2]
+                or not isinstance(step.text, str) or not step.text.strip() or len(step.text) > 500
+                or not math.isfinite(step.start) or not math.isfinite(step.ref_time)
+                or not 0 <= step.start <= step.ref_time <= ref.video.duration_s):
+            raise UploadError("Every step needs a valid relation, distinct known objects, and a short description.")
+    for rule in proc.pairs:
+        if rule.before not in keys or rule.after not in keys or rule.strength not in ("required", "free", "as_shown"):
+            raise UploadError("Order rules must connect declared steps and have a valid strength.")
+    if proc.final_goals is not None and (not proc.final_goals or any(k not in keys for k in proc.final_goals)):
+        raise UploadError("Final goals must name one or more declared procedure steps.")
+    if any(a == b for a, b in _closure({(r.before, r.after) for r in proc.pairs if r.strength == "required"})):
+        raise UploadError("Required ordering rules cannot contain a cycle.")
+
+
+def load_graphs(job_id):
+    with _lock:
+        found = _graphs.get(job_id)
+    if found: return found
+    data = storage.record(job_id)
+    try:
+        return TaskGraph.model_validate(data["reference_graph"]), TaskGraph.model_validate(data["attempt_graph"]), Procedure.from_dict(data["procedure"])
+    except KeyError as exc: raise KeyError(job_id) from exc
+
+
+def load_reference(job_id):
+    state = get(job_id)
+    if not state or not state.get("procedure_confirmed"):
+        raise UploadError("Confirm the reference procedure first.")
+    with _lock:
+        cached = _graphs.get(job_id)
+    if cached: return cached[0], cached[2]
+    data = storage.record(job_id)
+    return TaskGraph.model_validate(data["reference_graph"]), Procedure.from_dict(data["procedure"])
+
+
+def edit_reference(job_id):
+    """Reopen a saved reference; existing attempts/trials retain their own procedure copies."""
+    with _lock:
+        state = get(job_id)
+        if not state or state.get("status") != "ready" or not state.get("procedure_only"):
+            raise UploadError("Only a saved reference can be reopened for editing.")
+        ref, proc = load_reference(job_id)
+        _pending[job_id] = (None, ref, proc)
+        storage.update(job_id, event="procedure_edit_started", pending_attempt=None)
+        _set(job_id, status="awaiting_confirmation", procedure_confirmed=False,
+             stage="Confirm the revised procedure", editable_procedure=proc.to_dict(),
+             reference_objects=[o.id for o in ref.objects], procedure_version=state.get("procedure_version", 1)+1)
+
+
+def submit_known(job_id, attempt, ref, proc, *, parent=None, metadata=None):
+    """Schedule an attempt using a frozen, confirmed reference and procedure."""
+    with _lock:
+        ensure_capacity()
+        storage.create(job_id)
+        validate_procedure(proc, ref)
+        _jobs[job_id] = {"id": job_id, "status": "queued", "stage": "Waiting to check your attempt",
+            "custom_reference": True, "second_reference": False, "procedure_confirmed": True,
+            "parent_job": parent, **(metadata or {})}
+        storage.update(job_id, event="confirmed_procedure_reused", reference_graph=ref.model_dump(), procedure=proc.to_dict())
+        _set(job_id, **_jobs[job_id])
+        _pool.submit(_continue, job_id, attempt, ref, proc)
+
+
+def list_procedures():
+    out = []
+    if not storage.ROOT.exists(): return out
+    for path in storage.ROOT.iterdir():
+        if not path.is_dir() or not storage._ID.fullmatch(path.name): continue
+        try:
+            storage.authorize(path.name)
+            data = storage.record(path.name)
+        except storage.AccessError: continue
+        job = data.get("job") or {}
+        if job.get("procedure_confirmed") and job.get("procedure_only"):
+            out.append({"id": path.name, "title": job.get("title", "My procedure"), "created": data["created"],
+                        "steps": len(data.get("procedure", {}).get("steps", [])), "status": job.get("status")})
+    return sorted(out, key=lambda item: item["created"], reverse=True)
+
+
+def list_checks():
+    """Small, owner-scoped recovery index; never expose graphs or owner tokens."""
+    out = []
+    if not storage.ROOT.exists(): return out
+    for path in storage.ROOT.iterdir():
+        if not path.is_dir() or not storage._ID.fullmatch(path.name): continue
+        try:
+            storage.authorize(path.name)
+            data = storage.record(path.name)
+            state = get(path.name) or {}
+        except storage.AccessError: continue
+        if not state or state.get("procedure_only"): continue
+        out.append({"id": path.name, "created": data["created"], "expires": data["expires"],
+                    "status": state.get("status"), "verdict": (state.get("result") or {}).get("verdict"),
+                    "human_decision": (state.get("human_review") or {}).get("decision")})
+    return sorted(out, key=lambda item: item["created"], reverse=True)[:20]
+
+
+def submit_followup(parent: str, job_id: str, attempt: Path):
+    ref, proc = load_reference(parent)
+    with _lock:
+        ensure_capacity()
+        previous = get(parent) or {}
+        if previous.get("status") not in ("done", "ready"):
+            raise UploadError("Complete the original assessment before adding a follow-up.")
+        _jobs[job_id] = {"id": job_id, "status": "queued", "stage": "Checking your clearer recording",
+            "custom_reference": previous.get("custom_reference", False), "second_reference": False,
+            "reference_demo": previous.get("reference_demo", "pack"), "procedure_confirmed": True,
+            "parent_job": parent, "reference": previous.get("reference")}
+        storage.update(job_id, event="followup_created", parent_job=parent,
+                       reference_graph=ref.model_dump(), procedure=proc.to_dict())
+        storage.update(parent, event="followup_requested", followup_job=job_id)
+        _set(job_id, **_jobs[job_id])
+        _pool.submit(_continue, job_id, attempt, ref, proc)
+
+
+def recheck(overrides, job=None, demo=None):
     if job is not None:
-        with _lock:
-            found = _graphs.get(job)
-        if found is None:
-            raise KeyError(job)
-        ref, att, proc = found
-        out[job] = report_view(compare(ref, att, procedure=proc.with_overrides(overrides)), att)
-        return out
+        ref, att, proc = load_graphs(job)
+        proc = proc.with_overrides(overrides)
+        validate_procedure(proc, ref)
+        with _lock: _graphs[job] = (ref, att, proc)
+        result = report_view(compare(ref, att, procedure=proc), att)
+        _set(job, result=result)
+        try: storage.update(job, event="rules_rechecked", procedure=proc.to_dict(), overrides=overrides, assessment=result)
+        except storage.AccessError: pass
+        return {job: result}
     ref, proc = builtin()
     proc = proc.with_overrides(overrides)
+    out = {}
     for stem in demo or []:
         path = DEMO / f"{Path(stem).name}.graph.json"
-        if not path.exists():
-            raise KeyError(stem)
+        if not path.exists(): raise KeyError(stem)
         att = TaskGraph.model_validate_json(path.read_text(encoding="utf-8"))
         out[stem] = report_view(compare(ref, att, procedure=proc), att)
     return out
+
+
+def cleanup():
+    removed = storage.cleanup()
+    with _lock:
+        for job in list(_jobs):
+            try: storage.record(job)
+            except storage.AccessError: removed.add(job)
+        for job in removed:
+            _jobs.pop(job, None); _graphs.pop(job, None); _pending.pop(job, None)

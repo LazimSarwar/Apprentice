@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-import sys
+import contextvars
 from pathlib import Path
 from typing import Any
 
@@ -24,12 +24,23 @@ BASETEN_DEFAULT_MODEL = "meta-models/muse-spark-open-1026"
 
 # USD per 1M tokens (input, cached input, output), public model pages 2026-10-27.
 _SPARK_PRICE = (1.25, 0.15, 4.25)
+usage_observer = contextvars.ContextVar("model_usage_observer", default=None)
+
+
+def record_usage(usd: float | None, *, estimated: bool = False) -> None:
+    observer = usage_observer.get()
+    if observer is not None:
+        observer(usd, estimated=estimated)
+
+
+class ConfigurationError(RuntimeError):
+    """A required service setting is unavailable; safe to report to a job."""
 
 
 def require_env(name: str) -> str:
     value = os.environ.get(name, "").strip()
     if not value:
-        sys.exit(f"{name} is not set. Copy .env.example to .env and fill it in.")
+        raise ConfigurationError(f"{name} is not set. Copy .env.example to .env and fill it in.")
     return value
 
 

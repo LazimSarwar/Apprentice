@@ -23,7 +23,8 @@ from pathlib import Path
 import httpx2 as httpx
 from openai import OpenAI
 
-from .clients import META_BASE_URL, MODEL_TIMEOUT_SECONDS, require_env, spark_cost_usd
+from .clients import META_BASE_URL, MODEL_TIMEOUT_SECONDS, require_env, spark_cost_usd, record_usage
+from .media import MEDIA_TIMEOUT_SECONDS, PROBE_TIMEOUT_SECONDS, source_digest
 
 TRANSCRIBE_URL = f"{META_BASE_URL}/asr/transcribe"
 TRANSCRIBE_MODEL = "muse-voice-transcribe-1.0"
@@ -78,15 +79,15 @@ class Narration:
 def has_audio(video: Path) -> bool:
     out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries",
                           "stream=index", "-of", "csv=p=0", str(video)],
-                         capture_output=True, text=True).stdout
+                         capture_output=True, text=True, check=True, timeout=PROBE_TIMEOUT_SECONDS).stdout
     return bool(out.strip())
 
 
 def extract_audio(video: Path, out_dir: Path) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
-    wav = out_dir / f"{video.stem}.16k.wav"
+    wav = out_dir / f"{video.stem}.{source_digest(video)[:20]}.16k.wav"
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-vn", "-ac", "1", "-ar", "16000",
-                    "-sample_fmt", "s16", str(wav)], check=True)
+                    "-sample_fmt", "s16", str(wav)], check=True, timeout=MEDIA_TIMEOUT_SECONDS)
     return wav
 
 
@@ -177,6 +178,7 @@ def read_narration(turns: list[Turn], steps: list[tuple[str, float, float]]) -> 
                  timeout=MODEL_TIMEOUT_SECONDS, max_retries=0)
     resp = api.responses.create(model=SPARK_MODEL, reasoning={"effort": "low"},
                                 input=PROMPT.format(steps=step_lines, turns=turn_lines))
+    record_usage(spark_cost_usd(resp.usage))
     data = _loads(resp.output_text)
     n = len(steps)
 

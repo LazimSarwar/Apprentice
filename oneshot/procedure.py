@@ -21,7 +21,7 @@ from dataclasses import asdict, dataclass, field
 
 from .narration import Narration
 from .schema import TaskGraph
-from .sim.scene import _is_container
+from .semantics import is_container as _is_container
 from .words import SURFACE, goal_past, nice, step_text
 
 Key = tuple[str, str, str]                     # (relation, object, target)
@@ -66,6 +66,8 @@ class Procedure:
     pairs: list[Rule]                          # one verdict per pair of milestones
     references: int = 1
     narration: dict | None = None
+    final_goals: list[Key] | None = None
+    object_kinds: dict[str, str] = field(default_factory=dict)
 
     def step(self, key: Key) -> StepInfo | None:
         return next((s for s in self.steps if s.key == key), None)
@@ -101,7 +103,7 @@ class Procedure:
                        "as_shown": "You reset this to the order shown."}[want]
                 r = Rule(r.before, r.after, want, "you", why, r.quote)
             pairs.append(r)
-        return Procedure(self.steps, pairs, self.references, self.narration)
+        return Procedure(self.steps, pairs, self.references, self.narration, self.final_goals, self.object_kinds)
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -112,7 +114,9 @@ class Procedure:
     def from_dict(cls, d: dict) -> "Procedure":
         steps = [StepInfo(**{**s, "key": tuple(s["key"])}) for s in d["steps"]]
         pairs = [Rule(**{**r, "before": tuple(r["before"]), "after": tuple(r["after"])}) for r in d["pairs"]]
-        return cls(steps, pairs, d.get("references", 1), d.get("narration"))
+        return cls(steps, pairs, d.get("references", 1), d.get("narration"),
+                   [tuple(k) for k in d["final_goals"]] if d.get("final_goals") is not None else None,
+                   d.get("object_kinds") or {})
 
 
 def pair_id(before: Key, after: Key) -> str:
@@ -149,6 +153,8 @@ def relation_of(step, graph: TaskGraph) -> str | None:
 
 
 def _is_surface(obj) -> bool:
+    if getattr(obj, "kind", None) is not None:
+        return obj.kind == "surface"
     text = f"{obj.id} {obj.shape or ''}".lower()
     return any(word in text for word in _SURFACE_WORDS) and not _is_container(obj)
 
@@ -225,8 +231,11 @@ def _mods(obj_id: str) -> set[str]:
 
 
 def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
-    """attempt id -> reference id. Exact id first (guided extraction makes this the norm),
-    then same colour and kind, using left/right/top-style modifiers to break ties."""
+    """Attempt -> reference identity, with unique appearance matches for renamed objects.
+
+    Colour alone cannot turn an unfamiliar object into a required one. Fallback matches
+    must be unique in both directions; object iteration order never resolves ambiguity.
+    """
     ref_ids = {o.id for o in ref.objects if not _is_surface(o)}
     mapping: dict[str, str] = {}
     used: set[str] = set()
@@ -234,16 +243,30 @@ def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
         if a.id in ref_ids:
             mapping[a.id] = a.id
             used.add(a.id)
-    for a in att.objects:
-        if a.id in mapping or _is_surface(a):           # the surface is canonical, never matched by colour
-            continue
-        cands = [r for r in ref.objects if r.id in ref_ids and r.id not in used
-                 and _color(r) == _color(a) and _is_container(r) == _is_container(a)]
-        if len(cands) > 1:
-            cands.sort(key=lambda r: -len(_mods(r.id) & _mods(a.id)))
-        if cands:
-            mapping[a.id] = cands[0].id
-            used.add(cands[0].id)
+    def description(o):
+        return " ".join((o.tracking_description or "").casefold().split())
+
+    def shape(o):
+        value = " ".join((o.shape or "").casefold().split())
+        return {"cube": "block", "cuboid": "block"}.get(value, value)
+
+    def same_description(a, r):
+        return bool(description(a)) and description(a) == description(r)
+
+    def same_shape(a, r):
+        # Rich descriptions that disagree may distinguish otherwise identical parts.
+        if description(a) and description(r) and description(a) != description(r):
+            return False
+        return bool(_color(a) and shape(a)) and _color(a) == _color(r) and shape(a) == shape(r)
+
+    for matches in (same_description, same_shape):
+        candidates = {a.id: [r.id for r in ref.objects if r.id in ref_ids and r.id not in used
+                            and _is_container(r) == _is_container(a) and matches(a, r)]
+                      for a in att.objects if a.id not in mapping and not _is_surface(a)}
+        for aid, ids in candidates.items():
+            if len(ids) == 1 and sum(ids[0] in others for others in candidates.values()) == 1:
+                mapping[aid] = ids[0]
+                used.add(ids[0])
     return mapping
 
 
@@ -316,5 +339,8 @@ def learn(refs: list[TaskGraph], narration: Narration | None = None) -> Procedur
             else:
                 pairs.append(Rule(a, b, "as_shown", "shown",
                                   "Only seen in this order; nothing says the order matters."))
+    terminal = final_keys(main, {})
+    last = {key[1]: key for _, key, _ in events(main, {})}
+    terminal |= {key for obj, key in last.items() if not any(k[1] == obj for k in terminal)}
     return Procedure(steps, pairs, references=len(refs),
-                     narration=narration.to_dict() if narration else None)
+                     narration=narration.to_dict() if narration else None, final_goals=sorted(terminal))

@@ -41,10 +41,16 @@ def track_with_fallback(clip: Path, objects: list, fps: float | None,
     is retried once with a plainer one ("blue rectangle") — only when its colour is unique
     among the objects, so the retry can't latch onto a different object."""
     concepts = {o.id: o.concept() for o in objects}
+    # A text concept may find several identical parts. The longest trajectory cannot
+    # identify which graph object it belongs to. Abstain until instance grounding exists.
+    normalized = [c.casefold() for c in concepts.values()]
+    ambiguous = {oid for oid, concept in concepts.items() if normalized.count(concept.casefold()) > 1}
+    unique = {oid: c for oid, c in concepts.items() if oid not in ambiguous}
     start = time.monotonic()
-    batch = track_objects(clip, sorted(set(concepts.values())), fps, file_id=file_id)
+    batch = track_objects(clip, sorted(set(unique.values())), fps, file_id=file_id)
     by_id = {oid: batch.tracks.get(c) for oid, c in concepts.items()}
     errors = {oid: batch.errors[c] for oid, c in concepts.items() if c in batch.errors}
+    errors.update({oid: "Ambiguous object identity: multiple objects have the same visual description." for oid in ambiguous})
     colours = [o.color for o in objects if o.color]
     missing = {o.id: f"{o.color} rectangle" for o in objects
                if by_id[o.id] is None and o.id not in errors and o.color and colours.count(o.color) == 1}
@@ -98,7 +104,7 @@ def build_task_graph(video: Path, work_dir: Path | None = None, provider: str = 
             warnings.append(f"no SAM track for object '{obj.id}' ({concepts[obj.id]!r})")
         objects.append(
             ObjectWithEvidence(
-                id=obj.id, color=obj.color, shape=obj.shape,
+                **obj.model_dump(),
                 tracked=obj_track is not None, track=obj_track,
             )
         )
@@ -151,7 +157,7 @@ def add_evidence(graph: TaskGraph, clip: Path) -> TaskGraph:
     tracking = track_with_fallback(clip, graph.objects, info.fps)
     tracks = tracking.tracks
     objects = [
-        ObjectWithEvidence(id=o.id, color=o.color, shape=o.shape,
+        ObjectWithEvidence(**o.model_dump(exclude={"tracked", "track"}),
                            tracked=tracks.get(o.id) is not None, track=tracks.get(o.id))
         for o in graph.objects
     ]

@@ -1,12 +1,12 @@
-"""Deploy the web app on Modal (https://modal.com) — one always-warm CPU container.
+"""Deploy the web app on Modal (https://modal.com) — one on-demand CPU container.
 
 From app/:
     pip install modal && modal setup                        # once: sign in
     modal secret create oneshot-keys --from-dotenv .env     # once: the model API keys
     modal deploy deploy/modal_app.py                        # prints the public URL
 
-Jobs and live sessions live in memory, so the app is pinned to a single container
-(`max_containers=1`); the spend ledger sits on a Volume so a restart keeps the total.
+The scheduler and active sessions live in memory, so keep one container. Retained
+job/procedure metadata, private files and the spend ledger live on a persistent Volume.
 """
 
 from pathlib import Path
@@ -19,7 +19,8 @@ REMOTE = "/root/app"
 image = (
     modal.Image.debian_slim(python_version="3.12")
     .apt_install("ffmpeg")
-    .pip_install_from_requirements(str(ROOT / "requirements.txt"))
+    .pip_install_from_requirements(str(ROOT / "requirements.lock"))
+    .add_local_file(str(ROOT / "requirements.lock"), remote_path=f"{REMOTE}/requirements.lock")
     .add_local_dir(str(ROOT / "oneshot"), remote_path=f"{REMOTE}/oneshot", ignore=["**/__pycache__"])
     .add_local_dir(str(ROOT / "web"), remote_path=f"{REMOTE}/web",
                    ignore=["**/__pycache__", "static/uploads/**", "static/renders/**"])
@@ -39,9 +40,6 @@ data = modal.Volume.from_name("oneshot-data", create_if_missing=True)
     max_containers=1,
     min_containers=0,                 # pay only while someone is using the page (a few seconds' cold start)
     scaledown_window=600,
-    # Running, this is ~$0.06/h (Modal list prices: $0.0000131/core/s + $0.00000222/GiB/s): a judge's visit
-    # plus the 10-minute scaledown costs about a cent. With credit to spare, min_containers=1 keeps it warm
-    # (~$1.5/day) so nobody ever waits for a cold start.
 )
 @modal.concurrent(max_inputs=40)
 @modal.asgi_app()
@@ -52,5 +50,6 @@ def web():
     os.chdir(REMOTE)
     sys.path.insert(0, REMOTE)
     os.environ.setdefault("BUDGET_FILE", "/data/budget.json")
+    os.environ.setdefault("PRIVATE_DATA_DIR", "/data/private")
     from web.server import app as fastapi_app
     return fastapi_app

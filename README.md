@@ -7,16 +7,138 @@ wrong order, the wrong place — and the moment it happened, backed by tracked v
 For training new staff, lab protocols, kitting and packing QA, assembly checks. The same learned procedure is
 precise enough to hand to a (simulated) robot arm, which carries it out and checks its own work.
 
-> Status: working deployed prototype. The judge-facing page leads with real phone recordings,
+> Status: working Meta-model application. The judge-facing page leads with real phone recordings,
 > reports abstentions explicitly, and offers live uploads with either demo reference or your own.
+
+## Dynamic object discovery (Nov 3)
+
+Object names are discovered from each video, not selected from a packing whitelist. The reference now supplies appearance-only identity hints (including visible markings and object kind) to upload and camera reads. Absent objects must not be invented from the guide; unfamiliar objects retain their own identities. Unique visual descriptions can match renamed objects. A same-colour object of a different shape cannot silently substitute for a required item, and ambiguous matches remain unresolved. Reports show each discovered object, its visual description and tracking status separately from placement verification. The checked task vocabulary remains tabletop placements: on, inside and near. This is not a claim to recognize every possible object or procedure.
+
+## Real packing tests and upload recovery (Nov 3)
+
+Five personal phone recordings exercised correct packing, required order, an omitted charger,
+wrong card placement, and a valid alternate order. They exposed real extraction and tracking
+failures: coarse containment was mistaken for a wrong support, and a generic "white block"
+tracking query followed the card instead of the charger. Physical tracking descriptions and
+duplicate-identity checks now address those failures without weakening final-state checks.
+Fresh P01 and P05 inference still requests review when the card hides the final cube.
+These are development cases across multiple builds, not five automatic passes or an independent
+accuracy benchmark. Sanitized observations, clip hashes and the two post-fix assessments are in
+[`packing_development.json`](web/static/media/packing_development.json); personal videos remain private.
+
+Uploads now show byte progress and protect against leaving mid-upload. Every follow-up updates
+its result URL; reopening a completed check restores its own confirmed procedure. A private
+recent-check list helps recover accepted jobs, including after refresh. Downloaded JSON reports
+preserve machine assessments and separate human-review history. Additional model-proposed final
+requirements are explicitly shown for keeping or removing before confirmation, rather than
+remaining hidden and blocking the save. Interrupted transfers still require a new upload;
+accepted jobs are recoverable, while an interrupted server-side computation is reported as stopped.
+
+Useful routes: `GET /api/jobs` and `GET /api/jobs/{id}/report`. Both require the owning browser cookie;
+recordings still expire after 24 hours. Download a report before expiry to retain it locally.
+
+## Reusable procedures and the independent packing trial (Oct 31)
+
+Open `/judge` for the guided three-minute demonstration, `/?teach=1#try` to teach a
+reference, and `/pilot` for the prospective everyday-packing trial. Teach a reference
+without requiring an attempt, confirm or correct its steps, then reuse it for uploads
+and camera checks. Saved references can be reopened for editing; existing attempts and
+frozen trials retain their own copies of the earlier procedure.
+
+The packing protocol declares nine cases before inference: correct, order-only error,
+skipped card, wrong accessory placement, correct placement undone, occlusion, another
+camera angle, a corrected mistake, and ambiguous identical parts. The setup checks four
+explicit role assignments, final requirements and liner-first rules. A plan hash freezes
+the procedure, labels and source fingerprint. Changes to the source refuse new trial
+submissions. Labels never enter model extraction prompts. First submissions, retakes,
+clip hashes, failures, reviews, latency and optional self-timed human review measurements
+stay in an owner-private downloadable report. Reused clips are rejected.
+
+**Independent packing results and measured workplace benefits remain pending.** A second
+person must supply new recordings. Anonymous participant codes and review timings are
+self-reported; the optional time differences exclude model waiting and are not a
+controlled impact study. The recording guide is in `../Real-footage/packing-pilot/`.
+
+All **132 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
+3.12.10 deployment image**, including the two false-accept regressions, reference-only
+confirmation, frozen labels, first-submission preservation, source drift, duplicate
+recordings, private reports and separate timing denominators. `pip check` passes in the
+Linux image. Reproduce the image validation with `python -m modal run deploy/validate.py`.
+
+Useful routes: `POST /api/procedures`, `GET /api/procedures`,
+`POST /api/procedures/{id}/edit`, `POST /api/pilots`,
+`POST /api/pilots/{id}/cases/{case}`, and `GET /api/pilots/{id}/export`.
+
+## Verified live procedures (Oct 30 follow-up)
+
+The live application now combines an editable procedure, continuous camera/replay monitoring,
+tracking-backed completion, follow-up recordings, separate human review, and a saved decision history.
+Production paths call Meta's Muse Spark and SAM services; the offline tests mock those services explicitly.
+
+Custom references pause for confirmation before an attempt is judged. Review the full step list,
+correct solid-object/container interpretations, add or remove steps, set ordering rules, and mark
+required final placements. The confirmed procedure is retained with the result. A missing reference
+step cannot be recovered simply by checking the attempt against the same incomplete model output.
+
+Acceptance now checks terminal placements separately from intermediate milestones. Reaching a tray
+and subsequently moving elsewhere cannot remain a verified pass. Identical object descriptions are
+reported as ambiguous instead of sharing one trajectory; independent identities must be established
+before those objects can corroborate one another. Missing evidence requests review.
+
+Camera sessions receive server-sent updates and adapt their read interval to observed provider latency.
+Their final assessment uses the same tracking gate as uploaded attempts. This is continuous input and
+feedback, with model/provider processing delay; it is not a claim of subsecond intervention.
+
+Recordings and derived files are outside the static directory and are accessible only to the owning
+browser cookie. They expire after 24 hours by default (`RETENTION_SECONDS`) and can be deleted after
+processing. Human decisions are labelled separately and never turn an unverified machine result into
+machine corroboration. A clearer follow-up is assessed as a new recording against the same confirmed
+procedure, with a link to the original decision; recordings are not silently fused.
+
+The current cached phone replay resolves **6/9** expected outcomes with **3 review cases**, **0 false
+accepts**, and **0 false rejects**. A previously passing take now requires review because its final
+placement is not supported. The earlier report remains in `web/static/media/real_results_baseline.json`.
+The same sixteen generated fixtures still match **16/16** expected outcomes, with two abstentions, in
+`current_validation.json`. This is an offline development replay, not new inference or new examples.
+Historical live-upload/repair reports below describe the earlier build and are not current-build evidence.
+The new local recorded-camera transport check completed in **50.07 seconds** with two actual Meta
+reads, zero read/tracking errors, a tracked final pass, and a private overlay that returns 404 without
+the owner cookie (`web/static/media/live_session_validation.json`). This tests one existing phone
+clip, not a live person at a webcam or a new accuracy benchmark. That earlier build passed 83 tests in the original and a fresh isolated Python 3.14.5 environment; the current suite and Linux validation are reported above.
+
+```bash
+python -m unittest discover -s tests -v
+python -m web.build_judging --reports-only
+python -m uvicorn web.server:app --port 8000
+```
+
+`requirements.lock` records the exact tested dependency versions. CI and the deployment image specify
+Python 3.12. The current lock has also passed a clean Linux/Python 3.12 image install, `pip check`, and the full offline suite. Model-service and browser checks remain separate from offline tests.
+
+Uploads, camera duration, chunk sizes, session admission, read count, private storage, and ffmpeg/ffprobe
+runtime are bounded on the server. The spend ledger reserves estimated cost before concurrent model
+work, preserves charges for failed/unknown work, accounts for interrupted calls on restart, and refuses
+to reset a corrupted ledger. Tracking charges remain estimates because the service reports no usage;
+provider bills remain authoritative. Run a single server process/container for the in-memory scheduler.
+
+Private recordings are sent to the configured model services for processing. The browser cookie is a
+session capability, not a multi-user account system. Keep the site on HTTPS for remote use. A bookmark
+to `?job=<id>` resumes a pending confirmation or retrieves a retained result from the same browser;
+an interrupted inference is reported as interrupted rather than silently accepted.
+Retention across replacement containers requires a persistent `PRIVATE_DATA_DIR` and budget file.
+Modal uses `/data/private` on its existing volume; Docker should mount a named volume at `/data`.
+
+Useful routes: `GET /api/watch/{id}/events`, `POST /api/jobs/{id}/procedure`,
+`POST /api/jobs/{id}/followup`, `POST /api/jobs/{id}/review`, `GET /api/jobs/{id}/history`,
+`DELETE /api/jobs/{id}`, and the authenticated recording route `/api/assets/{id}/{filename}`.
 
 ## Evidence and reliability (Oct 30)
 
 The phone-footage development set contains **one reference and nine separate attempts** of a two-block
-stacking task. With the current conservative checker: **7/9 expected outcomes resolved, 2 abstentions,
+stacking task. With the current conservative checker: **6/9 expected outcomes resolved, 3 abstentions,
 0 false accepts among six incorrect attempts, and 0 false rejects among three acceptable/occluded attempts**.
 The reference self-check is excluded from those counts; its tracker conflict now correctly requires review.
-The two missing-block attempts require review because the absent block has no supporting track.
+The two missing-block attempts require review because the absent block has no supporting track. A correct take also requires review because its final placement is not corroborated. The earlier 7/9 report is historical.
 
 These are development results, not a held-out real-world benchmark: earlier checker changes were informed
 by these recordings. The two reversed stacks change the final structure and are diagnosed as wrong placement;
@@ -193,7 +315,7 @@ since every check calls the hosted models. Without uploads, the demo sections ar
 statically.
 
 **Catch it while it happens (near-live):** the page's section 4 plays a sample attempt as if live, or records from
-the browser camera (`MediaRecorder`, 1 s WebM chunks to `POST /api/watch/{id}/chunk`). Every 2 s the page asks for a
+the browser camera (`MediaRecorder`, 1 s WebM chunks to `POST /api/watch/{id}/chunk`). At an interval adapted to observed provider delay the page asks for a
 read (`POST /api/watch/{id}/read`): the server cuts the video so far into a small 5 fps clip and Muse Spark reads it
 at *minimal* reasoning effort (~8 s, ~$0.007; the model samples frames itself, so the low frame rate only shrinks
 the upload). Up to four reads overlap, and a slow read never overwrites a longer one. Each read is judged only for what is
@@ -272,8 +394,7 @@ python probes/pack_eval.py --provider baseten    # graphs cached as runs/pack_ev
 
 ## Deploy (live product)
 
-The page runs as one CPU container with `ffmpeg`; jobs and live sessions are in memory, so keep it to a single
-instance. Every model call the public page triggers is charged to a spend ledger (`web/budget.py`): once
+The page runs as one CPU container with `ffmpeg`. The scheduler and active sessions are in memory; retained job/procedure metadata, recordings and the budget ledger use the mounted data volume. Keep a single instance. Every model call the public page triggers is charged to a spend ledger (`web/budget.py`): once
 `SPEND_CAP_USD` (default 15) is reached, new checks are refused with a clear message while the precomputed sample
 verdicts keep working. `MAX_UPLOAD_SECONDS` (default 120) bounds each upload; checks queue one at a time, at most
 three waiting; near-live sessions are capped at two at once and 60 reads each. `GET /api/health` reports the spend.
@@ -284,7 +405,7 @@ modal secret create oneshot-keys --from-dotenv .env     # once: the model keys (
 modal deploy deploy/modal_app.py                        # prints the public URL
 ```
 
-`Dockerfile` builds the same app for any other container host (`docker build -t oneshot . && docker run -p 8000:8000
+`Dockerfile` builds the same app for any other container host (`docker build -t oneshot . && docker run -v oneshot-data:/data -p 8000:8000
 --env-file .env oneshot`).
 
 ## Run on the simulated arm (P1)

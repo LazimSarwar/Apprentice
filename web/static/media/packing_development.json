@@ -1,0 +1,373 @@
+{
+  "title": "Five real packing recordings: development study",
+  "type": "development observations, not a held-out benchmark",
+  "scope": "One person, one workspace, one reference, five attempts. These recordings informed fixes. They were processed across different builds; expected scenarios were not frozen in the independent trial system. No accuracy percentage is claimed.",
+  "media_public": false,
+  "fresh_recheck_pipeline_sha256": "ee44e434a690921e7ba2354141e5bc8d2d065846e32c4737a7f6921a3fb650f8",
+  "remaining_limit": "The card covers the cube at the end of otherwise correct attempts. Earlier visible placement does not prove the required final placement remains true.",
+  "cases": [
+    {
+      "id": "P01",
+      "scenario": "Correct reference order",
+      "expected_behavior": "Accept if all required evidence is visible",
+      "observation": "The original result exposed containment and tracking errors. Fresh inference after the fixes verifies the visible placements; the covered final cube still requires review.",
+      "clip_sha256": "973584f495306a85640269fc0a02aea9e82fdcf87447259a81f4734fe41189f0",
+      "fresh_post_fix_assessment": {
+        "passed": false,
+        "verdict": "unsure",
+        "milestones": [
+          {
+            "text": "Places the white liner in the yellow box",
+            "done": true,
+            "time": 5.5,
+            "ref_time": 7.5,
+            "critical": true,
+            "reason": null,
+            "quote": "The liner must go in first.",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the multicolor cube on the white liner",
+            "done": true,
+            "time": 11.0,
+            "ref_time": 12.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the white charger in the yellow box",
+            "done": true,
+            "time": 19.5,
+            "ref_time": 18.8,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the white card on the multicolor cube",
+            "done": true,
+            "time": 27.5,
+            "ref_time": 25.2,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          }
+        ],
+        "issues": [
+          {
+            "kind": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the multicolor cube.",
+            "time": 11.0,
+            "objects": [
+              "multicolor_cube",
+              "white_liner"
+            ],
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          }
+        ],
+        "mapping": {
+          "yellow_box": "yellow_box",
+          "white_liner": "white_liner",
+          "multicolor_cube": "multicolor_cube",
+          "white_charger": "white_charger",
+          "white_card": "white_card"
+        },
+        "rules": [
+          {
+            "id": "inside/white_liner/yellow_box -> on/multicolor_cube/white_liner",
+            "strength": "required",
+            "source": "said",
+            "why": "Said while recording the reference.",
+            "quote": "The liner must go in first.",
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the multicolor cube on the white liner"
+          },
+          {
+            "id": "inside/white_liner/yellow_box -> inside/white_charger/yellow_box",
+            "strength": "required",
+            "source": "said",
+            "why": "Said while recording the reference.",
+            "quote": "The liner must go in first.",
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the white charger in the yellow box"
+          },
+          {
+            "id": "on/multicolor_cube/white_liner -> inside/white_charger/yellow_box",
+            "strength": "as_shown",
+            "source": "you",
+            "why": "You reset this to the order shown.",
+            "quote": null,
+            "before": "Places the multicolor cube on the white liner",
+            "after": "Places the white charger in the yellow box"
+          },
+          {
+            "id": "on/multicolor_cube/white_liner -> on/white_card/multicolor_cube",
+            "strength": "required",
+            "source": "you",
+            "why": "You marked this order as required.",
+            "quote": null,
+            "before": "Places the multicolor cube on the white liner",
+            "after": "Places the white card on the multicolor cube"
+          },
+          {
+            "id": "inside/white_charger/yellow_box -> on/white_card/multicolor_cube",
+            "strength": "as_shown",
+            "source": "shown",
+            "why": "Only seen in this order; nothing says the order matters.",
+            "quote": null,
+            "before": "Places the white charger in the yellow box",
+            "after": "Places the white card on the multicolor cube"
+          }
+        ],
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "white_charger",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "white_liner",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "multicolor_cube",
+              "white_liner"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "white_card",
+              "multicolor_cube"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "P02",
+      "scenario": "Charger before the liner",
+      "expected_behavior": "Flag the required order violation",
+      "observation": "The check surfaced the liner-first violation, with incomplete tracking support.",
+      "clip_sha256": "a2ef1ab273b462e2fa46d3a132c6824d9f5255b626b99bde939088f5201a46a8"
+    },
+    {
+      "id": "P03",
+      "scenario": "Charger omitted",
+      "expected_behavior": "Flag the missing charger",
+      "observation": "The check surfaced the omitted charger, with incomplete tracking support.",
+      "clip_sha256": "d723bb402e4f7fb199233e0dd6ff50e689911ca271beb8d74a3e8d1cc02d42af"
+    },
+    {
+      "id": "P04",
+      "scenario": "Card beside the cube",
+      "expected_behavior": "Flag the wrong card placement",
+      "observation": "The check surfaced the wrong card placement; tracking support was partial.",
+      "clip_sha256": "9d042cfd0c6bbfa40d601ff8238573b49e6a1054c6ffd09ef44986a68e8936bf"
+    },
+    {
+      "id": "P05",
+      "scenario": "Correct allowed alternate order",
+      "expected_behavior": "Allow the alternate order; review missing final evidence",
+      "observation": "Fresh inference after the tracking fix no longer reports the charger in the wrong place. The allowed order is a note; the covered final cube still requires review.",
+      "clip_sha256": "c393363742f3c8c9a8e3821a0c527c5b86cb831d8d9daa0024a2f682fd218d17",
+      "fresh_post_fix_assessment": {
+        "passed": false,
+        "verdict": "unsure",
+        "milestones": [
+          {
+            "text": "Places the white liner in the yellow box",
+            "done": true,
+            "time": 5.5,
+            "ref_time": 8,
+            "critical": true,
+            "reason": null,
+            "quote": "Thethe liner must go in first.",
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the colorful cube on the white liner",
+            "done": true,
+            "time": 20.0,
+            "ref_time": 12.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Places the white charger in the yellow box",
+            "done": true,
+            "time": 14.5,
+            "ref_time": 19,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "confirmed"
+          },
+          {
+            "text": "Stacks the white card on the colorful cube",
+            "done": true,
+            "time": 26.5,
+            "ref_time": 25.5,
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "evidence": "seen"
+          }
+        ],
+        "issues": [
+          {
+            "kind": "order",
+            "severity": "warn",
+            "message": "Different order from the reference: \u201cPlaces the white charger in the yellow box\u201d happened before \u201cPlaces the colorful cube on the white liner\u201d",
+            "time": 14.5,
+            "objects": [
+              "white_charger",
+              "colorful_cube"
+            ],
+            "critical": false,
+            "reason": "Nothing says this order matters. Mark it as required if it does.",
+            "quote": null,
+            "fix": null
+          },
+          {
+            "kind": "unknown",
+            "severity": "unknown",
+            "message": "Couldn't verify the final placement of the colorful cube.",
+            "time": 20.0,
+            "objects": [
+              "colorful_cube",
+              "white_liner"
+            ],
+            "critical": false,
+            "reason": null,
+            "quote": null,
+            "fix": "Keep the final arrangement visible for review."
+          }
+        ],
+        "mapping": {
+          "yellow_box": "yellow_box",
+          "white_liner": "white_liner",
+          "colorful_cube": "colorful_cube",
+          "white_charger": "white_charger",
+          "white_card": "white_card"
+        },
+        "rules": [
+          {
+            "id": "inside/white_liner/yellow_box -> on/colorful_cube/white_liner",
+            "strength": "required",
+            "source": "said",
+            "why": "The colorful cube goes on the white liner, so the white liner was in the yellow box first.",
+            "quote": "Thethe liner must go in first.",
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the colorful cube on the white liner"
+          },
+          {
+            "id": "inside/white_liner/yellow_box -> inside/white_charger/yellow_box",
+            "strength": "required",
+            "source": "said",
+            "why": "The white charger goes on the white liner, so the white liner was in the yellow box first.",
+            "quote": "Thethe liner must go in first.",
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the white charger in the yellow box"
+          },
+          {
+            "id": "on/colorful_cube/white_liner -> inside/white_charger/yellow_box",
+            "strength": "as_shown",
+            "source": "shown",
+            "why": "Only seen in this order; nothing says the order matters.",
+            "quote": null,
+            "before": "Places the colorful cube on the white liner",
+            "after": "Places the white charger in the yellow box"
+          },
+          {
+            "id": "on/colorful_cube/white_liner -> on/white_card/colorful_cube",
+            "strength": "required",
+            "source": "physical",
+            "why": "The white card goes on the colorful cube, so the colorful cube was on the white liner first.",
+            "quote": null,
+            "before": "Places the colorful cube on the white liner",
+            "after": "Stacks the white card on the colorful cube"
+          },
+          {
+            "id": "inside/white_charger/yellow_box -> on/white_card/colorful_cube",
+            "strength": "as_shown",
+            "source": "shown",
+            "why": "Only seen in this order; nothing says the order matters.",
+            "quote": null,
+            "before": "Places the white charger in the yellow box",
+            "after": "Stacks the white card on the colorful cube"
+          }
+        ],
+        "verified": false,
+        "tracking_used": true,
+        "evidence_status": "inconclusive",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "white_charger",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "white_liner",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "colorful_cube",
+              "white_liner"
+            ],
+            "evidence": "unseen",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "white_card",
+              "colorful_cube"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ]
+      }
+    }
+  ]
+}
