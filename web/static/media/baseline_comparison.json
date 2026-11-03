@@ -1,0 +1,407 @@
+{
+  "type": "offline comparison of what each layer adds",
+  "fresh_model_inference": false,
+  "pipeline_sha256": "7029d1d008c857cc51ba2f9a7a0c3e17c3ab9de02fb920cf2135c3c6cba71a12",
+  "final_picture_definition": "Accept when every required final placement holds in the attempt's last state. Order is ignored and it never abstains.",
+  "limits": [
+    "The final-picture check is our own simple comparison, written to show what order checking adds. It is not another product.",
+    "All three checks use the same saved video-model readings, so a reading error affects all of them.",
+    "These are development recordings that informed checker fixes, not a held-out benchmark.",
+    "The generated recordings come from one renderer. The phone recordings are one person, two blocks and one workspace, and contain no order-only mistake."
+  ],
+  "generated": {
+    "summary": {
+      "cases": 24,
+      "incorrect": 12,
+      "correct": 9,
+      "occluded": 3,
+      "order_only": 3,
+      "systems": {
+        "final_picture": {
+          "incorrect_accepted": 3,
+          "incorrect_rejected": 9,
+          "incorrect_review": 0,
+          "order_only_accepted": 3,
+          "correct_accepted": 9,
+          "correct_rejected": 0,
+          "correct_review": 0,
+          "occluded_rejected": 0,
+          "occluded_review": 0,
+          "occluded_accepted": 3
+        },
+        "model_reading": {
+          "incorrect_accepted": 0,
+          "incorrect_rejected": 12,
+          "incorrect_review": 0,
+          "order_only_accepted": 0,
+          "correct_accepted": 9,
+          "correct_rejected": 0,
+          "correct_review": 0,
+          "occluded_rejected": 0,
+          "occluded_review": 3,
+          "occluded_accepted": 0
+        },
+        "with_tracking": {
+          "incorrect_accepted": 0,
+          "incorrect_rejected": 12,
+          "incorrect_review": 0,
+          "order_only_accepted": 0,
+          "correct_accepted": 9,
+          "correct_rejected": 0,
+          "correct_review": 0,
+          "occluded_rejected": 0,
+          "occluded_review": 3,
+          "occluded_accepted": 0
+        }
+      }
+    },
+    "cases": [
+      {
+        "id": "pack_hidden",
+        "kind": "hidden",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "review",
+          "with_tracking": "review"
+        }
+      },
+      {
+        "id": "pack_loose",
+        "kind": "loose",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "pack_ok",
+        "kind": "ok",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "pack_ok_alt",
+        "kind": "ok_alt",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "pack_order",
+        "kind": "order",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "pack_skip_card",
+        "kind": "skip_card",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "pack_skip_liner",
+        "kind": "skip_liner",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "pack_wrong_place",
+        "kind": "wrong_place",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_ok_0",
+        "kind": "ok",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "judge_ok_1",
+        "kind": "ok",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "judge_ok_alt_0",
+        "kind": "ok_alt",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "judge_ok_alt_1",
+        "kind": "ok_alt",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "judge_loose_0",
+        "kind": "loose",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "judge_loose_1",
+        "kind": "loose",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "judge_order_0",
+        "kind": "order",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_order_1",
+        "kind": "order",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_skip_liner_0",
+        "kind": "skip_liner",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_skip_liner_1",
+        "kind": "skip_liner",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_skip_card_0",
+        "kind": "skip_card",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_skip_card_1",
+        "kind": "skip_card",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_wrong_place_0",
+        "kind": "wrong_place",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_wrong_place_1",
+        "kind": "wrong_place",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "judge_hidden_0",
+        "kind": "hidden",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "review",
+          "with_tracking": "review"
+        }
+      },
+      {
+        "id": "judge_hidden_1",
+        "kind": "hidden",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "review",
+          "with_tracking": "review"
+        }
+      }
+    ]
+  },
+  "phone": {
+    "summary": {
+      "cases": 9,
+      "incorrect": 6,
+      "correct": 2,
+      "occluded": 1,
+      "order_only": 0,
+      "systems": {
+        "final_picture": {
+          "incorrect_accepted": 0,
+          "incorrect_rejected": 6,
+          "incorrect_review": 0,
+          "order_only_accepted": 0,
+          "correct_accepted": 2,
+          "correct_rejected": 0,
+          "correct_review": 0,
+          "occluded_rejected": 0,
+          "occluded_review": 0,
+          "occluded_accepted": 1
+        },
+        "model_reading": {
+          "incorrect_accepted": 0,
+          "incorrect_rejected": 6,
+          "incorrect_review": 0,
+          "order_only_accepted": 0,
+          "correct_accepted": 2,
+          "correct_rejected": 0,
+          "correct_review": 0,
+          "occluded_rejected": 0,
+          "occluded_review": 0,
+          "occluded_accepted": 1
+        },
+        "with_tracking": {
+          "incorrect_accepted": 0,
+          "incorrect_rejected": 4,
+          "incorrect_review": 2,
+          "order_only_accepted": 0,
+          "correct_accepted": 1,
+          "correct_rejected": 0,
+          "correct_review": 1,
+          "occluded_rejected": 0,
+          "occluded_review": 0,
+          "occluded_accepted": 1
+        }
+      }
+    },
+    "cases": [
+      {
+        "id": "real_ok_2",
+        "kind": "pass",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "review"
+        }
+      },
+      {
+        "id": "real_ok_3",
+        "kind": "pass",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      },
+      {
+        "id": "real_order_1",
+        "kind": "wrong_order",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "real_order_2",
+        "kind": "wrong_order",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "real_wrongplace_1",
+        "kind": "wrong_place",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "real_wrongplace_2",
+        "kind": "wrong_place",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "reject"
+        }
+      },
+      {
+        "id": "real_skip_1",
+        "kind": "skipped",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "review"
+        }
+      },
+      {
+        "id": "real_skip_2",
+        "kind": "skipped",
+        "outcomes": {
+          "final_picture": "reject",
+          "model_reading": "reject",
+          "with_tracking": "review"
+        }
+      },
+      {
+        "id": "real_hidden_1",
+        "kind": "no_false_fail",
+        "outcomes": {
+          "final_picture": "accept",
+          "model_reading": "accept",
+          "with_tracking": "accept"
+        }
+      }
+    ]
+  }
+}

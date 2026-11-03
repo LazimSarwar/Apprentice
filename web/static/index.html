@@ -343,6 +343,7 @@
       <p id="accintro"></p></div></div>
     <div class="acc" id="acc"></div>
     <div class="caveat" id="acccaveat"></div>
+    <div class="card" id="baseline-comparison" style="margin-top:18px" hidden></div>
     <div class="card" id="fresh-eval" style="margin-top:18px" hidden></div>
     <div class="card" id="tracking-repair" style="margin-top:18px" hidden></div>
     <div class="card" id="live-validation" style="margin-top:18px" hidden></div>
@@ -883,7 +884,20 @@ function initWatch(){
   wReset();
 }
 
+function renderBaseline(){
+  if(!D.baseline)return;
+  const G=D.baseline.generated.summary,P=D.baseline.phone.summary;
+  const review=s=>s.incorrect_review+s.correct_review+s.occluded_review;
+  const names={final_picture:'Final picture only',model_reading:'Rules on the video reading',with_tracking:'Rules plus tracking (shipped)'};
+  const rows=Object.keys(names).map(k=>{const g=G.systems[k],p=P.systems[k];
+    return `<tr><th scope="row" style="text-align:left;padding:6px 10px 6px 0">${names[k]}</th><td style="padding:6px 10px"><b>${g.order_only_accepted}</b> of ${G.order_only}</td><td style="padding:6px 10px">${g.incorrect_accepted} of ${G.incorrect}</td><td style="padding:6px 10px">${g.correct_rejected} of ${G.correct}</td><td style="padding:6px 10px">${review(g)}</td><td style="padding:6px 10px">${p.incorrect_accepted} of ${P.incorrect}</td><td style="padding:6px 10px">${p.correct_rejected} of ${P.correct}</td><td style="padding:6px 10px">${review(p)}</td></tr>`;}).join('');
+  const moved=review(P.systems.with_tracking)-review(P.systems.model_reading);
+  $('baseline-comparison').hidden=false;
+  $('baseline-comparison').innerHTML=`<h3>What order checking adds · same saved readings</h3><p>On generated order-only mistakes, where the final picture looks right, a final-picture check accepted <b>${G.systems.final_picture.order_only_accepted} of ${G.order_only}</b>. The rule checker accepted <b>${G.systems.with_tracking.order_only_accepted} of ${G.order_only}</b>.</p><div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:14px;min-width:620px"><thead><tr><th></th><th colspan="4" style="padding:6px 10px;text-align:left">Generated · ${G.cases} recordings</th><th colspan="3" style="padding:6px 10px;text-align:left">Phone · ${P.cases} recordings</th></tr><tr><th></th><th style="padding:6px 10px;text-align:left;font-weight:500">Order-only mistakes accepted</th><th style="padding:6px 10px;text-align:left;font-weight:500">All mistakes accepted</th><th style="padding:6px 10px;text-align:left;font-weight:500">Correct rejected</th><th style="padding:6px 10px;text-align:left;font-weight:500">Sent to review</th><th style="padding:6px 10px;text-align:left;font-weight:500">Mistakes accepted</th><th style="padding:6px 10px;text-align:left;font-weight:500">Correct rejected</th><th style="padding:6px 10px;text-align:left;font-weight:500">Sent to review</th></tr></thead><tbody>${rows}</tbody></table></div><p class="sub">The phone recordings contain no order-only mistake, and there the final-picture check did just as well. Tracking also sent ${moved} phone cases that the reading alone had right to review. In these recordings tracking added caution, not corrections. The final-picture check is our own simple comparison, not another product. All three use the same readings, from development recordings that informed checker fixes, so this is not a held-out benchmark.</p><a href="/static/media/baseline_comparison.json" download>Download every case</a>`;
+}
+
 function renderAcc(){
+  renderBaseline();
   if(D.current_validation){const S=D.current_validation.summary;$('current-validation').hidden=false;$('current-validation').innerHTML=`<h3>Current acceptance policy · offline replay</h3><p>${S.matched_expected}/${S.total} expected outcomes matched; ${S.abstentions} require review. The checker now separately checks final placements and ambiguous identities.</p><p>These are the same generated development fixtures, evaluated again without model calls. Historical service reports do not certify this changed build.</p><a href="/static/media/current_validation.json" download>Download the current replay</a>`;}
   const P=D.accuracy.pack||{}, T=D.accuracy.trays||{};
   const rows=[['ok','correct attempts passed'],['ok_alt','free-order attempts passed'],['loose','unusual orders noted, not failed'],['order','required orders caught'],

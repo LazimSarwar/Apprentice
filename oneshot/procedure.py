@@ -280,6 +280,22 @@ def events(graph: TaskGraph, mapping: dict[str, str]) -> list[tuple[float, Key, 
     return out
 
 
+def placement_timeline(graph: TaskGraph, mapping: dict[str, str]) -> list[tuple[float, str, Key | None]]:
+    """(time, object in reference ids, where it now is) in time order. None means it was
+    picked up or moved with no destination reported, so it is no longer placed anywhere.
+    A push with no target is left out: it nudges an object without saying it left."""
+    to_ref = lambda x: mapping.get(x, x)
+    placed = {s.order: s for s in canonical_steps(graph) if s.target}
+    out: list[tuple[float, str, Key | None]] = []
+    for s in sorted(graph.steps, key=lambda s: (s.end_s, s.order)):
+        found = placed.get(s.order)
+        if found is not None:
+            out.append((s.end_s, to_ref(s.object), (relation_of(found, graph), to_ref(s.object), to_ref(found.target))))
+        elif s.action != "push":
+            out.append((s.end_s, to_ref(s.object), None))
+    return out
+
+
 def first_times(graph: TaskGraph, mapping: dict[str, str]) -> dict[Key, float]:
     first: dict[Key, float] = {}
     for t, k, _ in events(graph, mapping):

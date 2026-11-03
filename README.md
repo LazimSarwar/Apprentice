@@ -10,6 +10,24 @@ precise enough to hand to a (simulated) robot arm, which carries it out and chec
 > Status: working Meta-model application. The judge-facing page leads with real phone recordings,
 > reports abstentions explicitly, and offers live uploads with either demo reference or your own.
 
+## What order checking adds (Nov 3)
+
+Three checks read the same saved video-model readings, with no new model calls
+(`python -m web.baseline`, full results in `web/static/media/baseline_comparison.json`).
+
+| Check | Generated: order-only mistakes accepted (of 3) | Generated: all mistakes accepted (of 12) | Generated: sent to review (of 24) | Phone: mistakes accepted (of 6) | Phone: correct rejected (of 2) | Phone: sent to review (of 9) |
+|---|---:|---:|---:|---:|---:|---:|
+| Final picture only | **3** | 3 | 0 | 0 | 0 | 0 |
+| Rules on the video reading | **0** | 0 | 3 | 0 | 0 | 0 |
+| Rules plus tracking (shipped) | **0** | 0 | 3 | 0 | 0 | 3 |
+
+- **What this shows:** a final-picture check accepts order-only mistakes, because their final arrangement looks right. The rule checker rejects them.
+- **What it does not show:** the phone recordings contain no order-only mistake, and there the final-picture check did just as well.
+- **Tracking added caution, not corrections.** Across 36 saved tracked readings, tracking changed five verdicts. All five moved to review, and none corrected a wrong reading.
+- **Scope:** the final-picture check is our own simple comparison, not another product. These are three generated order-only cases and development recordings, not a held-out benchmark.
+
+**Order is now checked at the moment of placement.** A required earlier step must still hold when the later step happens. Taking the liner out, adding the charger and putting the liner back ends in the same picture, but now fails. This follows a false accept found in review. It is covered by constructed tests and changed none of 118 saved verdicts. None of those saved readings reports an object being taken back out, so behaviour on a real recording of a removal is untested, and the rule depends on the video model reporting that removal.
+
 ## Dynamic object discovery (Nov 3)
 
 Object names are discovered from each video, not selected from a packing whitelist. The reference now supplies appearance-only identity hints (including visible markings and object kind) to upload and camera reads. Absent objects must not be invented from the guide; unfamiliar objects retain their own identities. Unique visual descriptions can match renamed objects. A same-colour object of a different shape cannot silently substitute for a required item, and ambiguous matches remain unresolved. Reports show each discovered object, its visual description and tracking status separately from placement verification. The checked task vocabulary remains tabletop placements: on, inside and near. This is not a claim to recognize every possible object or procedure.
@@ -59,7 +77,7 @@ person must supply new recordings. Anonymous participant codes and review timing
 self-reported; the optional time differences exclude model waiting and are not a
 controlled impact study. The recording guide is in `../Real-footage/packing-pilot/`.
 
-All **132 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
+All **148 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
 3.12.10 deployment image**, including the two false-accept regressions, reference-only
 confirmation, frozen labels, first-submission preservation, source drift, duplicate
 recordings, private reports and separate timing denominators. `pip check` passes in the

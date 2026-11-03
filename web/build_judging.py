@@ -178,6 +178,8 @@ def refresh(reports_only: bool = False) -> None:
             data['live_validation'] = validation
     from web.replay_validation import refresh as replay
     data['current_validation'] = replay()
+    from web.baseline import refresh as baseline
+    data['baseline'] = baseline()
     manifest.write_text(json.dumps(data, indent=2), encoding="utf-8")
     (MEDIA / "real_results.json").write_text(json.dumps(real, indent=2), encoding="utf-8")
     print("Real footage:", json.dumps(real["summary"]))

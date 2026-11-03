@@ -23,7 +23,7 @@ import argparse
 import sys
 from dataclasses import asdict, dataclass, field
 
-from .check import Issue, Report, compare
+from .check import Issue, Report, compare, undone_issues
 from .procedure import Key, Procedure, first_times, learn, map_objects
 from .schema import TaskGraph
 from .words import clock, imperative
@@ -82,6 +82,7 @@ def wrong_now(ref: TaskGraph, att: TaskGraph, proc: Procedure) -> list[Issue]:
     out = [i for i in compare(ref, att, procedure=proc, final=False).issues if i.kind == "wrong_place"]
     misplaced = {i.objects[0] for i in out}
     first = reached(ref, att, proc)
+    out += [i for i in undone_issues(ref, att, proc) if i.objects[0] not in misplaced]
 
     late: dict[tuple[str, Key], list[Key]] = {}       # (level, late step) -> steps done before it
     for r in proc.enforced():

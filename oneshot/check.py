@@ -30,7 +30,7 @@ from types import SimpleNamespace
 
 from .narration import Narration, Turn, listen, narrate, spoken_text
 from .procedure import (Key, Milestone, Procedure, Rule, events, final_keys, learn,  # noqa: F401
-                        map_objects, milestones, pair_id)
+                        map_objects, milestones, pair_id, placement_timeline)
 from .schema import TaskGraph
 from .tracking_identity import ambiguous_tracks
 from .sim import monitor
@@ -208,6 +208,70 @@ def _inside_container(placement: Key, container: str, locations: dict[str, Key])
     return False
 
 
+def holds_now(key: Key, locations: dict[str, Key | None]) -> bool:
+    """Does this placement hold given where every object currently is? A coarser description
+    of the same placement ("in the box" for something on a liner in that box) still counts:
+    a reading that is merely less specific is not evidence that the object moved."""
+    current = locations.get(key[1])
+    if current is None:
+        return False
+    return (current == key
+            or (key[0] == "inside" and _inside_container(current, key[2], locations))
+            or (current[0] == "inside" and _inside_container(key, current[2], locations)))
+
+
+def undone_issues(ref: TaskGraph, att: TaskGraph, proc: Procedure, mapping: dict[str, str] | None = None) -> list[Issue]:
+    """A required earlier step must still hold when the later step happens. Reaching it once
+    is not enough: taking the liner out, adding the charger and putting the liner back ends in
+    the same picture, but the charger went into a bare box. Only applies where the reference
+    itself still had the earlier step in place at that moment."""
+    keys = {s.key for s in proc.steps}
+    rules = [r for r in proc.pairs if r.strength == "required" and r.before[1] != r.after[1]
+             and r.before in keys and r.after in keys]
+    if not rules:
+        return []
+    mapping = map_objects(ref, att) if mapping is None else mapping
+
+    def reached_by(key: Key, locations: dict[str, Key | None]) -> set[Key]:
+        return {key} | {k for k in keys if k[0] == "inside" and k[1] == key[1] and k != key
+                        and _inside_container(key, k[2], locations)}
+
+    def kept_in_reference(rule: Rule) -> bool:
+        locations: dict[str, Key | None] = {}
+        for _, obj, key in placement_timeline(ref, {}):
+            locations[obj] = key
+            if key is not None and rule.after in reached_by(key, locations):
+                return rule.before[1] not in locations or holds_now(rule.before, locations)
+        return True
+
+    enforced = [r for r in rules if kept_in_reference(r)]
+    locations: dict[str, Key | None] = {}
+    reached: set[Key] = set()
+    undone: dict[Key, list[tuple[float, Rule]]] = {}
+    for t, obj, key in placement_timeline(att, mapping):
+        locations[obj] = key
+        if key is None:
+            continue
+        now = reached_by(key, locations)
+        for rule in enforced:
+            if rule.after in now and rule.before in reached and not holds_now(rule.before, locations):
+                undone.setdefault(rule.before, []).append((t, rule))
+        reached |= now
+    issues = []
+    for before, found in undone.items():
+        step = proc.step(before)
+        later = [proc.step(k) for k in dict.fromkeys(r.after for _, r in found)]
+        names = " and ".join(_q(s.text) for s in later)
+        rule = next((r for _, r in found if r.quote), found[0][1])
+        spoken = next((s.reason for s in (step, *later) if s.critical and s.reason), None)
+        issues.append(Issue("order", "fail", f"Wrong order: {names} happened while {_q(step.text)} was no longer in place",
+                            found[0][0], [before[1], *[s.key[1] for s in later]],
+                            step.critical or any(s.critical for s in later),
+                            spoken or (None if rule.quote else rule.why), rule.quote,
+                            f"{imperative(step.text)} and leave it in place before {names}."))
+    return issues
+
+
 def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | None = None,
             procedure: Procedure | None = None, *, final: bool = True) -> Report:
     """Check `att` against the procedure (learned from `ref` alone when not given).
@@ -324,6 +388,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     broken = [r for r, v in zip(enforced, monitor.check_rules(trace, mon))
               if not v.ok and r.before in first and r.after in first]   # skips are reported already
     issues += _order_issues(broken, first, info)
+    issues += undone_issues(ref, att, proc, mapping)
 
     for t, k, s in evs:
         if k not in ms_keys and k not in explained and k not in entailed:
