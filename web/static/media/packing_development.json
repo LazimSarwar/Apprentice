@@ -542,12 +542,12 @@
   "single_build_run": {
     "type": "one fresh inference per recording, first result kept, then replayed on this build",
     "fresh_model_inference": true,
-    "pipeline_sha256": "629826919a66e44fab1da7ca93b75f906d7733b524c509646209f9ae0580e414",
+    "pipeline_sha256": "bd47cf40043994c4bca53a219ad1da16aef95b33a93616c19459bb09bf01e990",
     "date": "2026-11-03",
     "note": "Not independent: these recordings informed checker fixes. One person, one workspace, one run per clip, so verdicts may differ between runs. Descriptions were written from sampled frames before this run.",
     "known_errors": [
-      "P02 also reports a false wrong placement of the card, from a model misreading.",
       "P02 lost tracking on the box to a timeout.",
+      "The first reading of P02 reports a false wrong placement of the card. Closer looks now send it to review instead of reporting it as a failure.",
       "The final-picture check rejects P02 because of that misreading, so this set does not show it accepting a real order-only mistake."
     ],
     "cases": {
@@ -594,9 +594,38 @@
             "message": "Couldn't verify the final placement of the white charger."
           },
           {
-            "severity": "fail",
+            "severity": "unknown",
+            "kind": "unknown",
+            "message": "Couldn't verify: Places the white card on the multicolor cube \u2014 the first reading put the white card on the white liner, but closer looks at this moment did not agree."
+          }
+        ],
+        "second_looks": [
+          {
+            "key": [
+              "on",
+              "white_card",
+              "multicolor_cube"
+            ],
             "kind": "wrong_place",
-            "message": "Put the white card on the white liner instead of on the multicolor cube"
+            "looks": [
+              {
+                "window": [
+                  26.0,
+                  31.2
+                ],
+                "answer": "expected",
+                "seen": "The white card rests on top of the Rubik's cube."
+              },
+              {
+                "window": [
+                  21.0,
+                  31.2
+                ],
+                "answer": "other",
+                "seen": "The card is held above the box while the cube sits uncovered beside the liner."
+              }
+            ],
+            "outcome": "unclear"
           }
         ]
       },
@@ -612,6 +641,35 @@
             "kind": "skipped",
             "message": "Skipped: Places the white charger in the yellow box (expected after 0:11)"
           }
+        ],
+        "second_looks": [
+          {
+            "key": [
+              "inside",
+              "white_charger",
+              "yellow_box"
+            ],
+            "kind": "skipped",
+            "looks": [
+              {
+                "window": [
+                  22.5,
+                  30.5
+                ],
+                "answer": "other",
+                "seen": "White charger sits on wood outside yellow box."
+              },
+              {
+                "window": [
+                  11.5,
+                  30.5
+                ],
+                "answer": "other",
+                "seen": "White charger lies on table outside yellow box."
+              }
+            ],
+            "outcome": "confirmed"
+          }
         ]
       },
       "P04": {
@@ -625,6 +683,35 @@
             "severity": "fail",
             "kind": "wrong_place",
             "message": "Put the white card on the white liner instead of on the multicolor cube"
+          }
+        ],
+        "second_looks": [
+          {
+            "key": [
+              "on",
+              "white_card",
+              "multicolor_cube"
+            ],
+            "kind": "wrong_place",
+            "looks": [
+              {
+                "window": [
+                  28.2,
+                  33.63
+                ],
+                "answer": "other",
+                "seen": "The card with blue logo lies on the white lining on the right side of the box."
+              },
+              {
+                "window": [
+                  23.2,
+                  33.63
+                ],
+                "answer": "other",
+                "seen": "The card lies on the white lining inside the box."
+              }
+            ],
+            "outcome": "confirmed"
           }
         ]
       },
@@ -643,5 +730,31 @@
         ]
       }
     }
+  },
+  "closer_look_evaluation": {
+    "type": "development evaluation of double-checking reported problems",
+    "fresh_model_inference": true,
+    "pipeline_sha256": "bd47cf40043994c4bca53a219ad1da16aef95b33a93616c19459bb09bf01e990",
+    "scope": "Thirteen reported problems across real and generated recordings: twelve true and one false. One false problem is too few to measure how often false problems are caught.",
+    "first_pass": {
+      "true_problems": 12,
+      "true_confirmed": 7,
+      "true_sent_to_review": 5,
+      "true_not_checked": 0,
+      "false_problems": 1,
+      "false_sent_to_review": 1,
+      "false_confirmed": 0
+    },
+    "final_pass": {
+      "true_problems": 12,
+      "true_confirmed": 11,
+      "true_sent_to_review": 0,
+      "true_not_checked": 1,
+      "false_problems": 1,
+      "false_sent_to_review": 1,
+      "false_confirmed": 0
+    },
+    "tuning_disclosure": "The first pass sent five true problems to review because a hand covers the lens as the phone recording stops. The question and clip windows were then changed on these same recordings, so the final pass is not independent.",
+    "repeatability": "Answers about the false problem differed between passes, disputed and then unclear, although both send it to review."
   }
 }

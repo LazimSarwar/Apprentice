@@ -186,6 +186,7 @@ class GraphMeta(BaseModel):
     track_seconds: Optional[float] = None
     tracking_errors: dict[str, str] = Field(default_factory=dict)
     tracking_parser: Optional[str] = None
+    second_looks: list[dict] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
 
 

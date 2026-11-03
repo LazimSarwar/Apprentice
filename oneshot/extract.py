@@ -172,6 +172,14 @@ def _open_caller(clip: Path, model: str, prompt: str, host: str) -> tuple[Callab
     return call, None
 
 
+def ask_about_clip(clip: Path, prompt: str, effort: str = "low", model: str = MODEL) -> str:
+    """One question about one clip on the hosted model, recorded against the budget."""
+    call, _ = _hosted_caller(clip, model, prompt, effort)
+    text, usage = call(None)
+    record_usage(spark_cost_usd(usage))
+    return text or ""
+
+
 def extract_graph(clip: Path, provider: str = "hosted", model: str | None = None,
                   known_objects: list[dict] | None = None,
                   spoken: str | None = None, effort: str = "low") -> tuple[RawGraph, dict[str, Any]]:

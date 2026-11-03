@@ -94,6 +94,7 @@
           ]
         }
       ],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 113.7,
@@ -228,6 +229,7 @@
           ]
         }
       ],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 21.9,
@@ -301,6 +303,7 @@
       "evidence_status": "partial",
       "final_states": [],
       "order_checks": [],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 38.99,
@@ -397,6 +400,7 @@
       "evidence_status": "partial",
       "final_states": [],
       "order_checks": [],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 81.76,
@@ -513,6 +517,7 @@
         }
       ],
       "order_checks": [],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 133.66,
@@ -618,6 +623,7 @@
         }
       ],
       "order_checks": [],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 101.49,
@@ -723,6 +729,7 @@
         }
       ],
       "order_checks": [],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 95.15,
@@ -818,6 +825,7 @@
         }
       ],
       "order_checks": [],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 97.77,
@@ -942,6 +950,7 @@
           ]
         }
       ],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 42.92,
@@ -1047,6 +1056,7 @@
         ]
       }
     ],
+    "second_looks": [],
     "tracking": {
       "parser": null,
       "seconds": 49.64,
@@ -1136,7 +1146,7 @@
   "method": {
     "type": "development replay",
     "fresh_model_inference": false,
-    "checker_sha256": "1353ed2a98f8cd5a60b1d790557f1d8ca8400b81ecc4bec5481d02bb4854b0f9",
+    "checker_sha256": "2224de78a475d2a46a2f9af0a0b094faa7ab22c97850ab26278735576706970d",
     "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
     "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
     "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",

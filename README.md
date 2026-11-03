@@ -30,6 +30,8 @@ Three checks read the same saved video-model readings, with no new model calls
 
 **Items hidden by a required step no longer block a correct result.** A card on top of a cube hides the cube, as the procedure requires. That now counts when the cube's placement was confirmed first, it stayed visible until the covering step began, and the covering object is over it when it disappears. Otherwise it still requires review.
 
+**Reported problems are double-checked before they reach a person.** Each wrong placement or skip gets two neutral multiple-choice questions about a short clip and a wider clip, with no hint of the first reading. If both show the problem, it stays a failure. Anything else goes to review, and a closer look can never turn a problem into a pass. If a look cannot run, the problem is reported as it was. Across 13 reported problems, 11 of 12 true problems were confirmed and the one false problem went to review. The first pass confirmed only 7, because a hand covers the lens as a phone recording stops. The question was changed on these same clips, so this is development evidence, and one false problem is too few to measure how often they are caught.
+
 **The tracker now searches for procedure objects the reading left out.** A video model can omit something in plain view. If the search finds the object away from its place, the step is a clear skip. If it finds nothing, the result goes to review. If the reading misses a step but the tracker shows the object in place, that also goes to review, so a skip now takes both witnesses. This applies to the web application, not yet to the command-line tools.
 
 **Order is now checked at the moment of placement.** A required earlier step must still hold when the later step happens. Taking the liner out, adding the charger and putting the liner back ends in the same picture, but now fails. This follows a false accept found in review. It is covered by constructed tests and changed none of 118 saved verdicts. None of those saved readings reports an object being taken back out, so behaviour on a real recording of a removal is untested. This rule depends on the video model reporting the removal. If it does not, the tracker's arrival check is the fallback, shown so far only by a constructed test.
@@ -45,7 +47,7 @@ wrong card placement, and a valid alternate order. They exposed real extraction 
 failures: coarse containment was mistaken for a wrong support, and a generic "white block"
 tracking query followed the card instead of the charger. Physical tracking descriptions and
 duplicate-identity checks now address those failures without weakening final-state checks.
-A later run gave each clip one fresh reading on a single build, kept the first result, and matched what each recording shows: P01 passed, P02 failed for wrong order, P03 failed as skipped, P04 failed for wrong placement, and P05 passed with a note. P02 also reported a false wrong placement of the card, and its box tracking timed out. These clips informed the fixes, so this is not independent validation (`single_build_run` in the report below).
+A later run gave each clip one fresh reading on a single build, kept the first result, and matched what each recording shows: P01 passed, P02 failed for wrong order, P03 failed as skipped, P04 failed for wrong placement, and P05 passed with a note. P02's first reading also reported a false wrong placement of the card, which closer looks now send to review, and its box tracking timed out. These clips informed the fixes, so this is not independent validation (`single_build_run` in the report below).
 These are development cases across multiple builds, not five automatic passes or an independent
 accuracy benchmark. Sanitized observations, clip hashes and the two post-fix assessments are in
 [`packing_development.json`](web/static/media/packing_development.json); personal videos remain private.
@@ -83,7 +85,7 @@ person must supply new recordings. Anonymous participant codes and review timing
 self-reported; the optional time differences exclude model waiting and are not a
 controlled impact study. The recording guide is in `../Real-footage/packing-pilot/`.
 
-All **181 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
+All **209 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
 3.12.10 deployment image**, including the two false-accept regressions, reference-only
 confirmation, frozen labels, first-submission preservation, source drift, duplicate
 recordings, private reports and separate timing denominators. `pip check` passes in the

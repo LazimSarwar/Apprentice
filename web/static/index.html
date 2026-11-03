@@ -480,6 +480,9 @@ function renderReport(a, el, video, sub){
   const orders=a.order_checks||[];
   if(orders.length){const n=k=>orders.filter(o=>o.tracker===k).length,unclear=n('unknown')+n('too_close');
     h+=`<p class="fine"><b>Required order:</b> the tracker agrees on ${n('agrees')} of ${orders.length}${unclear?` and could not tell on ${unclear}`:''}${n('conflicts')?`. It disagrees on ${n('conflicts')}`:''}.</p>`;}
+  const looks=a.second_looks||[];
+  if(looks.length){const n=k=>looks.filter(l=>l.outcome===k).length,review=n('disputed')+n('unclear');
+    h+=`<p class="fine"><b>Closer look:</b> ${n('confirmed')} reported problem${n('confirmed')===1?'':'s'} confirmed${review?`, ${review} sent to review`:''}${n('not_checked')?`, ${n('not_checked')} could not be checked`:''}.</p>`;}
   const covered=(a.final_states||[]).filter(s=>s.evidence==='covered').map(s=>esc(s.key[1].replace(/_/g,' ')));
   if(covered.length)h+=`<p class="fine"><b>Hidden as expected:</b> ${covered.join(', ')}. A later step in the procedure covers it, and the tracker saw it placed first.</p>`;
   if(a.detections?.length){

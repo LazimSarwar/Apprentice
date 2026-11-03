@@ -58,6 +58,8 @@ class Issue:
     reason: str | None = None      # why it matters (spoken in the reference, or the rule's basis)
     quote: str | None = None       # the exact words, when it was said
     fix: str | None = None
+    check_key: list[str] | None = None     # the expected placement a closer look can test
+    reported_key: list[str] | None = None  # where the reading says the object went instead
 
 
 @dataclass
@@ -73,6 +75,7 @@ class Report:
     evidence_status: str = "model_only"  # model_only | partial | corroborated | inconclusive
     final_states: list[dict] = field(default_factory=list)
     order_checks: list[dict] = field(default_factory=list)
+    second_looks: list[dict] = field(default_factory=list)
 
     def summary(self) -> str:
         fails = [i for i in self.issues if i.severity == "fail"]
@@ -100,7 +103,7 @@ class Report:
                 "issues": [asdict(i) for i in self.issues], "mapping": self.mapping,
                 "rules": self.rules, "verified": self.verified, "tracking_used": self.tracking_used,
                 "evidence_status": self.evidence_status, "final_states": self.final_states,
-                "order_checks": self.order_checks}
+                "order_checks": self.order_checks, "second_looks": self.second_looks}
 
 
 # --- tracking evidence -------------------------------------------------------------
@@ -403,6 +406,20 @@ def undone_issues(ref: TaskGraph, att: TaskGraph, proc: Procedure, mapping: dict
     return issues
 
 
+def _closer_look(att: TaskGraph, key: Key) -> str | None:
+    """The closer-look result for this expected placement, when it does not back the problem."""
+    for look in att.meta.second_looks:
+        if tuple(look["key"]) == key and look["outcome"] in ("disputed", "unclear"):
+            return look["outcome"]
+    return None
+
+
+def _closer_look_phrase(outcome: str, a: str, relation: str, target: str) -> str:
+    if outcome == "disputed":
+        return f"two closer looks show the {nice(a)} {where(relation, target)}"
+    return "closer looks at this moment did not agree"
+
+
 def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | None = None,
             procedure: Procedure | None = None, *, final: bool = True) -> Report:
     """Check `att` against the procedure (learned from `ref` alone when not given).
@@ -491,10 +508,17 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                     m.critical, m.reason, m.quote,
                                     "Re-record with the whole workspace in view, or check this step by hand."))
                 continue
+            closer = _closer_look(att, m.key)
+            if closer:
+                issues.append(Issue("unknown", "unknown",
+                                    f"Couldn't verify: {m.text} — the first reading put the {nice(a)} {where(k[0], k[2])}, "
+                                    f"but {_closer_look_phrase(closer, a, rel, b)}.", t, [a, k[2], b],
+                                    m.critical, m.reason, m.quote, "Review this moment in the recording."))
+                continue
             issues.append(Issue("wrong_place", "fail",
                                 f"Put the {nice(a)} {where(k[0], k[2])} instead of {where(rel, b)}",
                                 t, [a, k[2], b], m.critical, m.reason, m.quote,
-                                f"Move the {nice(a)} {into(rel, b)}."))
+                                f"Move the {nice(a)} {into(rel, b)}.", list(m.key), list(k)))
         elif tracked and obj is not None and obj.from_reference and not obj.track and obj.id not in att.meta.tracking_errors:
             issues.append(Issue("unknown", "unknown",
                                 f"Couldn't verify: {m.text} — the {nice(a)} was not found anywhere in this recording.",
@@ -513,8 +537,15 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                 m.reason, m.quote, "Review the recording to confirm this step happened."))
         else:
             hint = f" (expected after {clock(prev_time)})" if prev_time is not None else ""
-            issues.append(Issue("skipped", "fail", f"Skipped: {m.text}{hint}", prev_time, [a, b],
-                                m.critical, m.reason, m.quote, f"{imperative(m.text)}."))
+            closer = _closer_look(att, m.key)
+            if closer:
+                issues.append(Issue("unknown", "unknown",
+                                    f"Couldn't verify: {m.text} — the first reading missed this step, but "
+                                    f"{_closer_look_phrase(closer, a, rel, b)}.", prev_time, [a, b],
+                                    m.critical, m.reason, m.quote, "Review this moment in the recording."))
+            else:
+                issues.append(Issue("skipped", "fail", f"Skipped: {m.text}{hint}", prev_time, [a, b],
+                                    m.critical, m.reason, m.quote, f"{imperative(m.text)}.", list(m.key)))
 
     # Order: replay when each milestone was reached through the temporal monitor, against
     # every pair whose order is required or was only shown (free pairs are not checked).
@@ -619,12 +650,14 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
             final_states.append({"key": list(key), "evidence": ev, "holds": not (conflicting or explicit_conflict)})
             if conflicting or explicit_conflict:
                 coarse = last is not None and last[1][0] == "inside" and _inside_container(key, last[1][2], locations)
-                severity = "unknown" if coarse or (tracked and ev != "contradicted") else "fail"
+                closer = _closer_look(att, key)
+                severity = "unknown" if coarse or closer or (tracked and ev != "contradicted") else "fail"
                 issues.append(Issue("unknown" if severity == "unknown" else "wrong_place", severity,
                     (f"Couldn't verify the final placement of the {nice(key[1])} {where(key[0], key[2])}."
                      if coarse else f"Final placement changed: the {nice(key[1])} must finish {where(key[0], key[2])}."),
                     last[0] if last else None, list(key[1:]),
-                    fix=f"Move the {nice(key[1])} {into(key[0], key[2])} and show the final result."))
+                    fix=f"Move the {nice(key[1])} {into(key[0], key[2])} and show the final result.",
+                    check_key=list(key), reported_key=list(last[1]) if last else None))
             elif tracked and ev in ("contradicted", "unseen"):
                 issues.append(Issue("unknown", "unknown", f"Couldn't verify the final placement of the {nice(key[1])}.",
                     last[0] if last else None, list(key[1:]), fix="Keep the final arrangement visible for review."))
@@ -648,7 +681,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     return Report(passed=verdict in ("pass", "pass_notes"), verdict=verdict, milestones=status, issues=issues,
                   mapping=mapping, rules=[rule_view(r, proc) for r in proc.shown()], verified=corroborated,
                   tracking_used=tracked, evidence_status=evidence_status, final_states=final_states,
-                  order_checks=checks)
+                  order_checks=checks, second_looks=att.meta.second_looks)
 
 
 def _order_issues(broken: list[Rule], first: dict[Key, float], info: dict) -> list[Issue]:

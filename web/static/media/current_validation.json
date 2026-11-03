@@ -1,7 +1,7 @@
 {
   "type": "offline development replay",
   "fresh_model_inference": false,
-  "pipeline_sha256": "629826919a66e44fab1da7ca93b75f906d7733b524c509646209f9ae0580e414",
+  "pipeline_sha256": "bd47cf40043994c4bca53a219ad1da16aef95b33a93616c19459bb09bf01e990",
   "historical_pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
   "scope": "Same sixteen packaged generated fixtures, checked under the current acceptance policy.",
   "summary": {
@@ -59,6 +59,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -225,6 +226,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -391,6 +393,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -557,6 +560,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -723,6 +727,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -901,6 +906,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1079,6 +1085,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1257,6 +1264,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1417,6 +1425,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1588,6 +1597,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1768,6 +1778,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1937,6 +1948,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -2106,6 +2118,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -2275,6 +2288,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -2483,6 +2497,7 @@
             ]
           }
         ],
+        "second_looks": [],
         "tracking": {
           "parser": "sam_boxes_v1",
           "seconds": 74.63,
@@ -2745,6 +2760,7 @@
             ]
           }
         ],
+        "second_looks": [],
         "tracking": {
           "parser": "sam_boxes_v1",
           "seconds": 55.61,

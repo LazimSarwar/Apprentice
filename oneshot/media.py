@@ -107,6 +107,19 @@ def cut(path: Path, seconds: float | None, out: Path, max_height: int = 480, fps
     return out
 
 
+def segment(path: Path, start: float, end: float, out: Path, max_height: int = 720) -> Path:
+    """One stretch of a video as a small H.264 clip, for a closer look at a single moment."""
+    if not (math.isfinite(start) and math.isfinite(end)) or start < 0 or end <= start:
+        raise ValueError("A clip needs a finite start before its end")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    _encode(
+        ["ffmpeg", "-y", "-v", "error", "-ss", f"{start:.2f}", "-t", f"{end - start:.2f}", "-i", str(path),
+         "-vf", _scale(max_height), "-an", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-crf", "26"],
+        out,
+    )
+    return out
+
+
 def frame_to_seconds(frame_index: int, fps: float | None) -> float:
     """Map a SAM frame index back to a timestamp on the uploaded clip."""
     if not fps:

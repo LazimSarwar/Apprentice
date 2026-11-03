@@ -381,7 +381,8 @@
             "red_product"
           ]
         }
-      ]
+      ],
+      "second_looks": []
     },
     {
       "id": "pack_ok_alt",
@@ -623,7 +624,8 @@
             "red_product"
           ]
         }
-      ]
+      ],
+      "second_looks": []
     },
     {
       "id": "pack_loose",
@@ -877,7 +879,8 @@
             "red_product"
           ]
         }
-      ]
+      ],
+      "second_looks": []
     },
     {
       "id": "pack_order",
@@ -1131,7 +1134,8 @@
             "red_product"
           ]
         }
-      ]
+      ],
+      "second_looks": []
     },
     {
       "id": "pack_skip_liner",
@@ -1301,7 +1305,8 @@
           "last_seen": 9.967
         }
       ],
-      "order_checks": []
+      "order_checks": [],
+      "second_looks": []
     },
     {
       "id": "pack_skip_card",
@@ -1508,7 +1513,8 @@
             "brown_box"
           ]
         }
-      ]
+      ],
+      "second_looks": []
     },
     {
       "id": "pack_wrong_place",
@@ -1734,7 +1740,8 @@
             "red_product"
           ]
         }
-      ]
+      ],
+      "second_looks": []
     },
     {
       "id": "pack_hidden",
@@ -1974,7 +1981,8 @@
             "brown_box"
           ]
         }
-      ]
+      ],
+      "second_looks": []
     }
   ],
   "robot": {
@@ -2145,6 +2153,7 @@
             ]
           }
         ],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 113.7,
@@ -2279,6 +2288,7 @@
             ]
           }
         ],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 21.9,
@@ -2352,6 +2362,7 @@
         "evidence_status": "partial",
         "final_states": [],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 38.99,
@@ -2448,6 +2459,7 @@
         "evidence_status": "partial",
         "final_states": [],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 81.76,
@@ -2564,6 +2576,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 133.66,
@@ -2669,6 +2682,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 101.49,
@@ -2774,6 +2788,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 95.15,
@@ -2869,6 +2884,7 @@
           }
         ],
         "order_checks": [],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 97.77,
@@ -2993,6 +3009,7 @@
             ]
           }
         ],
+        "second_looks": [],
         "tracking": {
           "parser": null,
           "seconds": 42.92,
@@ -3098,6 +3115,7 @@
           ]
         }
       ],
+      "second_looks": [],
       "tracking": {
         "parser": null,
         "seconds": 49.64,
@@ -3187,7 +3205,7 @@
     "method": {
       "type": "development replay",
       "fresh_model_inference": false,
-      "checker_sha256": "1353ed2a98f8cd5a60b1d790557f1d8ca8400b81ecc4bec5481d02bb4854b0f9",
+      "checker_sha256": "2224de78a475d2a46a2f9af0a0b094faa7ab22c97850ab26278735576706970d",
       "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
       "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
       "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",
@@ -4394,7 +4412,7 @@
   "current_validation": {
     "type": "offline development replay",
     "fresh_model_inference": false,
-    "pipeline_sha256": "629826919a66e44fab1da7ca93b75f906d7733b524c509646209f9ae0580e414",
+    "pipeline_sha256": "bd47cf40043994c4bca53a219ad1da16aef95b33a93616c19459bb09bf01e990",
     "historical_pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
     "scope": "Same sixteen packaged generated fixtures, checked under the current acceptance policy.",
     "summary": {
@@ -4452,6 +4470,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -4618,6 +4637,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -4784,6 +4804,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -4950,6 +4971,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -5116,6 +5138,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -5294,6 +5317,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -5472,6 +5496,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -5650,6 +5675,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -5810,6 +5836,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -5981,6 +6008,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -6161,6 +6189,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -6330,6 +6359,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -6499,6 +6529,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -6668,6 +6699,7 @@
             }
           ],
           "order_checks": [],
+          "second_looks": [],
           "tracking": {
             "parser": null,
             "seconds": null,
@@ -6876,6 +6908,7 @@
               ]
             }
           ],
+          "second_looks": [],
           "tracking": {
             "parser": "sam_boxes_v1",
             "seconds": 74.63,
@@ -7138,6 +7171,7 @@
               ]
             }
           ],
+          "second_looks": [],
           "tracking": {
             "parser": "sam_boxes_v1",
             "seconds": 55.61,
@@ -7305,7 +7339,7 @@
   "baseline": {
     "type": "offline comparison of what each layer adds",
     "fresh_model_inference": false,
-    "pipeline_sha256": "629826919a66e44fab1da7ca93b75f906d7733b524c509646209f9ae0580e414",
+    "pipeline_sha256": "bd47cf40043994c4bca53a219ad1da16aef95b33a93616c19459bb09bf01e990",
     "final_picture_definition": "Accept when every required final placement holds in the attempt's last state. Order is ignored and it never abstains.",
     "limits": [
       "The final-picture check is our own simple comparison, written to show what order checking adds. It is not another product.",

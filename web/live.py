@@ -20,6 +20,7 @@ from oneshot.graph import add_evidence, build_task_graph
 from oneshot.media import small_mp4, video_info
 from oneshot.narration import listen, narrate, spoken_text, has_audio
 from oneshot.procedure import Procedure, StepInfo, Rule, learn, milestones, final_keys, with_reference_objects, _closure
+from oneshot import second_look
 from oneshot.schema import TaskGraph
 from oneshot.words import SURFACE
 from web import budget, storage
@@ -36,6 +37,7 @@ ALLOWED = {".mp4", ".mov", ".webm", ".mkv", ".m4v", ".avi"}
 MAX_BYTES = 80 * 1024 * 1024
 MAX_SECONDS = int(os.environ.get("MAX_UPLOAD_SECONDS", "120"))
 MAX_WAITING = 3
+LOOK_RESERVE_USD = 0.10
 ACTIVE = {"queued", "running", "checked"}
 _jobs: dict[str, dict] = {}
 _graphs: dict[str, tuple[TaskGraph, TaskGraph, Procedure]] = {}
@@ -291,6 +293,15 @@ def finalize(job_id, ref, att, proc, clip):
     with _lock:
         current = _graphs.get(job_id)
         if current: proc = current[2]  # Preserve edits made while tracking was running.
+    report = compare(ref, tracked, procedure=proc)
+    if second_look.to_check(report):
+        _set(job_id, stage="Taking a closer look at reported problems")
+        tracked = second_look.attach(tracked, second_look.run(
+            report, tracked, clip, _work(job_id) / "looks",
+            guard=lambda: budget.call("closer look", LOOK_RESERVE_USD)))
+    with _lock:
+        current = _graphs.get(job_id)
+        if current: proc = current[2]
         _graphs[job_id] = (ref, tracked, proc)
     result = report_view(compare(ref, tracked, procedure=proc), tracked)
     result["tracking"]["accounted_usd"] = (tracking_meter.cost if tracking_meter.observed else tracking_meter.amount) if tracking_meter else 0
