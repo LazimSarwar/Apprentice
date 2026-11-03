@@ -1,7 +1,7 @@
 {
   "type": "offline comparison of what each layer adds",
   "fresh_model_inference": false,
-  "pipeline_sha256": "a473a20ca88771c5139b9c6919b1ce4f24a7b0bb510b34e403da39eb13e384b4",
+  "pipeline_sha256": "629826919a66e44fab1da7ca93b75f906d7733b524c509646209f9ae0580e414",
   "final_picture_definition": "Accept when every required final placement holds in the attempt's last state. Order is ignored and it never abstains.",
   "limits": [
     "The final-picture check is our own simple comparison, written to show what order checking adds. It is not another product.",

@@ -1136,7 +1136,7 @@
   "method": {
     "type": "development replay",
     "fresh_model_inference": false,
-    "checker_sha256": "1bffae740671523fa8047d96c07eceb5de44574ba1427fa2d657a944d15a0af3",
+    "checker_sha256": "1353ed2a98f8cd5a60b1d790557f1d8ca8400b81ecc4bec5481d02bb4854b0f9",
     "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
     "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
     "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",

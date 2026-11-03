@@ -169,6 +169,7 @@ class StepEvidence(BaseModel):
 
 
 class ObjectWithEvidence(Object):
+    from_reference: bool = False   # The reading left it out; it was searched for from the reference.
     tracked: bool = False
     track: Optional[Track] = None
 

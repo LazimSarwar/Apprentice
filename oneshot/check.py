@@ -30,7 +30,7 @@ from types import SimpleNamespace
 
 from .narration import Narration, Turn, listen, narrate, spoken_text
 from .procedure import (Key, Milestone, Procedure, Rule, events, final_keys, learn,  # noqa: F401
-                        map_objects, milestones, pair_id, placement_timeline)
+                        map_objects, milestones, pair_id, placement_timeline, with_confirmed_kinds)
 from .schema import TaskGraph
 from .tracking_identity import ambiguous_tracks
 from .sim import monitor
@@ -419,10 +419,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                 **att.meta.tracking_errors,
                 **{oid: "Ambiguous tracking identity" for oid in duplicates}},
                 "track_seconds": att.meta.track_seconds if att.meta.track_seconds is not None else 0.0})})
-    if proc.object_kinds:
-        def typed(g):
-            return g.model_copy(update={"objects": [o.model_copy(update={"kind": proc.object_kinds.get(o.id, o.kind)}) for o in g.objects]})
-        ref, att = typed(ref), typed(att)
+    ref, att = with_confirmed_kinds(ref, proc), with_confirmed_kinds(att, proc)
     if rules is not None:
         proc = Procedure(proc.steps, [Rule(r.before, r.after, "required", "you", r.note) for r in rules],
                          proc.references, proc.narration, proc.final_goals, proc.object_kinds)
@@ -498,11 +495,22 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                 f"Put the {nice(a)} {where(k[0], k[2])} instead of {where(rel, b)}",
                                 t, [a, k[2], b], m.critical, m.reason, m.quote,
                                 f"Move the {nice(a)} {into(rel, b)}."))
+        elif tracked and obj is not None and obj.from_reference and not obj.track and obj.id not in att.meta.tracking_errors:
+            issues.append(Issue("unknown", "unknown",
+                                f"Couldn't verify: {m.text} — the {nice(a)} was not found anywhere in this recording.",
+                                prev_time, [a, b], m.critical, m.reason, m.quote,
+                                "Check whether it was left out, or re-record with the whole workspace in view."))
         elif tracked and _visible_share(obj, att, prev_time) < HIDDEN:
             issues.append(Issue("unknown", "unknown",
                                 f"Couldn't verify: {m.text} — the {nice(a)} was hidden or out of view "
                                 f"when this step should have happened", prev_time, [a, b], m.critical, m.reason, m.quote,
                                 "Re-record with the whole workspace in view, or check this step by hand."))
+        elif tracked and _evidence(m.key, SimpleNamespace(end_s=max(0.0, att.video.duration_s - 1.5)), att, back) == "confirmed":
+            # A reading can miss a step that happened. It takes both witnesses to call it skipped.
+            issues.append(Issue("unknown", "unknown",
+                                f"Couldn't verify: {m.text} — the video reading does not report it, but the tracker "
+                                f"shows the {nice(a)} in that place at the end.", prev_time, [a, b], m.critical,
+                                m.reason, m.quote, "Review the recording to confirm this step happened."))
         else:
             hint = f" (expected after {clock(prev_time)})" if prev_time is not None else ""
             issues.append(Issue("skipped", "fail", f"Skipped: {m.text}{hint}", prev_time, [a, b],

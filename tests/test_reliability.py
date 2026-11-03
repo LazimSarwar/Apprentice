@@ -85,7 +85,8 @@ class ReliabilityTests(unittest.TestCase):
         self.assertFalse(any(i.kind == "skipped" for i in result.issues))
 
     def test_visible_missing_step_is_a_skip(self):
-        att = graph(tracked=True).model_copy(update={"steps": []})
+        # Visible away from the tray. In the tray, the tracker would dispute the skip.
+        att = graph(tracked=True, position=[100, 100, 110, 110]).model_copy(update={"steps": []})
         result = compare(graph(), att)
         self.assertEqual(result.verdict, "fail")
         self.assertEqual(result.issues[0].kind, "skipped")

@@ -15,7 +15,7 @@ import json
 from pathlib import Path
 
 from oneshot.check import compare, holds_now
-from oneshot.procedure import Procedure, final_keys, learn, map_objects, placement_timeline
+from oneshot.procedure import Procedure, final_keys, learn, map_objects, placement_timeline, with_confirmed_kinds
 from oneshot.schema import TaskGraph
 from web.build_judging import APP, DEMO, MEDIA, pipeline_digest
 
@@ -32,6 +32,7 @@ def _load(path: Path) -> TaskGraph:
 
 def final_picture(ref: TaskGraph, att: TaskGraph, proc: Procedure) -> str:
     """Accept when every required final placement holds in the attempt's last state."""
+    ref, att = with_confirmed_kinds(ref, proc), with_confirmed_kinds(att, proc)
     mapping = map_objects(ref, att)
     locations = {}
     for _, obj, key in placement_timeline(att, mapping):

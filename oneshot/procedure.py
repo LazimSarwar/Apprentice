@@ -280,6 +280,28 @@ def events(graph: TaskGraph, mapping: dict[str, str]) -> list[tuple[float, Key, 
     return out
 
 
+def with_confirmed_kinds(graph: TaskGraph, proc: Procedure) -> TaskGraph:
+    """The graph with the solid/container/surface choices a person confirmed in the procedure."""
+    if not proc.object_kinds:
+        return graph
+    return graph.model_copy(update={"objects": [o.model_copy(update={"kind": proc.object_kinds.get(o.id, o.kind)})
+                                                for o in graph.objects]})
+
+
+def with_reference_objects(att: TaskGraph, ref: TaskGraph, proc: Procedure) -> TaskGraph:
+    """Add procedure objects the reading left out, so the tracker can look for them. A video
+    model can omit something in plain view, and only a separate search can tell "still on the
+    table" from "not in this recording". Appearance only: no steps or placements are added."""
+    typed_ref = with_confirmed_kinds(ref, proc)
+    named = {part for step in proc.steps for part in step.key[1:]}
+    present = set(map_objects(typed_ref, with_confirmed_kinds(att, proc)).values()) | {o.id for o in att.objects}
+    missing = [o for o in typed_ref.objects if o.id in named and o.id not in present and not _is_surface(o)]
+    if not missing:
+        return att
+    added = [o.model_copy(update={"from_reference": True, "tracked": False, "track": None}) for o in missing]
+    return att.model_copy(update={"objects": [*att.objects, *added]})
+
+
 def placement_timeline(graph: TaskGraph, mapping: dict[str, str]) -> list[tuple[float, str, Key | None]]:
     """(time, object in reference ids, where it now is) in time order. None means it was
     picked up or moved with no destination reported, so it is no longer placed anywhere.

@@ -19,7 +19,7 @@ from oneshot.check import compare
 from oneshot.graph import add_evidence, build_task_graph
 from oneshot.media import small_mp4, video_info
 from oneshot.narration import listen, narrate, spoken_text, has_audio
-from oneshot.procedure import Procedure, StepInfo, Rule, learn, milestones, final_keys, _closure
+from oneshot.procedure import Procedure, StepInfo, Rule, learn, milestones, final_keys, with_reference_objects, _closure
 from oneshot.schema import TaskGraph
 from oneshot.words import SURFACE
 from web import budget, storage
@@ -275,15 +275,16 @@ def finalize(job_id, ref, att, proc, clip):
     started = time.monotonic()
     note = None
     tracking_meter = None
+    searched = with_reference_objects(att, ref, proc)
     try:
         # Up to two requests per object plus the bounded color fallback.
-        with budget.call("track objects (estimated)", max(budget.TRACK_EST_USD, len(att.objects) * 4 * budget.TRACK_EST_USD)) as tracking_meter:
-            tracked = add_evidence(att, clip)
+        with budget.call("track objects (estimated)", max(budget.TRACK_EST_USD, len(searched.objects) * 4 * budget.TRACK_EST_USD)) as tracking_meter:
+            tracked = add_evidence(searched, clip)
     except Exception:
         traceback.print_exc()
-        tracked = att.model_copy(update={"meta": att.meta.model_copy(update={
+        tracked = searched.model_copy(update={"meta": searched.meta.model_copy(update={
             "track_seconds": time.monotonic() - started,
-            "tracking_errors": {o.id: "Tracking unavailable" for o in att.objects},
+            "tracking_errors": {o.id: "Tracking unavailable" for o in searched.objects},
             "warnings": [*att.meta.warnings, "Acceptance withheld: tracking unavailable."],
         })})
         note = "Tracking was unavailable. Review the recording or provide clearer evidence."
@@ -300,7 +301,7 @@ def finalize(job_id, ref, att, proc, clip):
     except storage.AccessError:
         pass
     seen = None
-    if tracked.meta.tracking_errors != {o.id: "Tracking unavailable" for o in att.objects}:
+    if tracked.meta.tracking_errors != {o.id: "Tracking unavailable" for o in searched.objects}:
         try:
             target = _work(job_id) / "encoded" / f"{job_id}_attempt_seen.mp4"
             target.parent.mkdir(parents=True, exist_ok=True)

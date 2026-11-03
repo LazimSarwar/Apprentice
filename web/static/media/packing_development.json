@@ -1,7 +1,7 @@
 {
   "title": "Five real packing recordings: development study",
   "type": "development observations, not a held-out benchmark",
-  "scope": "One person, one workspace, one reference, five attempts. These recordings informed fixes. They were processed across different builds; expected scenarios were not frozen in the independent trial system. No accuracy percentage is claimed.",
+  "scope": "One person, one workspace, one reference, five attempts. These recordings informed fixes. They were processed across different builds; expected scenarios were not frozen in the independent trial system. No accuracy percentage is claimed. A later run on one build, recorded in single_build_run, is also development evidence.",
   "media_public": false,
   "fresh_recheck_pipeline_sha256": "ee44e434a690921e7ba2354141e5bc8d2d065846e32c4737a7f6921a3fb650f8",
   "remaining_limit": "Boxes are 2D, so a covered item is inferred from its confirmed placement and the covering object's position, not observed directly. The earlier result for these attempts is kept in fresh_post_fix_assessment.",
@@ -534,6 +534,111 @@
           {
             "severity": "warn",
             "message": "Different order from the reference: \u201cPlaces the white charger in the yellow box\u201d happened before \u201cPlaces the colorful cube on the white liner\u201d"
+          }
+        ]
+      }
+    }
+  },
+  "single_build_run": {
+    "type": "one fresh inference per recording, first result kept, then replayed on this build",
+    "fresh_model_inference": true,
+    "pipeline_sha256": "629826919a66e44fab1da7ca93b75f906d7733b524c509646209f9ae0580e414",
+    "date": "2026-11-03",
+    "note": "Not independent: these recordings informed checker fixes. One person, one workspace, one run per clip, so verdicts may differ between runs. Descriptions were written from sampled frames before this run.",
+    "known_errors": [
+      "P02 also reports a false wrong placement of the card, from a model misreading.",
+      "P02 lost tracking on the box to a timeout.",
+      "The final-picture check rejects P02 because of that misreading, so this set does not show it accepting a real order-only mistake."
+    ],
+    "cases": {
+      "P01": {
+        "recording": "Correct order: liner, cube on liner, charger in box, card on cube.",
+        "verdict": "pass",
+        "evidence_status": "partial",
+        "final_picture_check": "pass",
+        "tracking_errors": {},
+        "issues": []
+      },
+      "P02": {
+        "recording": "Charger goes in before the liner. The liner is then slid under it, and the final picture looks right.",
+        "verdict": "fail",
+        "evidence_status": "inconclusive",
+        "final_picture_check": "fail",
+        "tracking_errors": {
+          "yellow_box": "Tracking unavailable (TimeoutError)"
+        },
+        "issues": [
+          {
+            "severity": "fail",
+            "kind": "order",
+            "message": "Wrong order: \u201cPlaces the white charger in the yellow box\u201d happened before \u201cPlaces the white liner in the yellow box\u201d"
+          },
+          {
+            "severity": "unknown",
+            "kind": "unknown",
+            "message": "Couldn't verify: Places the white charger in the yellow box \u2014 tracking was unavailable for yellow box."
+          },
+          {
+            "severity": "unknown",
+            "kind": "unknown",
+            "message": "Couldn't verify: Places the white liner in the yellow box \u2014 tracking was unavailable for yellow box."
+          },
+          {
+            "severity": "unknown",
+            "kind": "unknown",
+            "message": "Couldn't verify the final placement of the white liner."
+          },
+          {
+            "severity": "unknown",
+            "kind": "unknown",
+            "message": "Couldn't verify the final placement of the white charger."
+          },
+          {
+            "severity": "fail",
+            "kind": "wrong_place",
+            "message": "Put the white card on the white liner instead of on the multicolor cube"
+          }
+        ]
+      },
+      "P03": {
+        "recording": "Charger is never put in the box and stays on the table.",
+        "verdict": "fail",
+        "evidence_status": "partial",
+        "final_picture_check": "fail",
+        "tracking_errors": {},
+        "issues": [
+          {
+            "severity": "fail",
+            "kind": "skipped",
+            "message": "Skipped: Places the white charger in the yellow box (expected after 0:11)"
+          }
+        ]
+      },
+      "P04": {
+        "recording": "Card goes in the box beside the charger, not on the cube.",
+        "verdict": "fail",
+        "evidence_status": "partial",
+        "final_picture_check": "fail",
+        "tracking_errors": {},
+        "issues": [
+          {
+            "severity": "fail",
+            "kind": "wrong_place",
+            "message": "Put the white card on the white liner instead of on the multicolor cube"
+          }
+        ]
+      },
+      "P05": {
+        "recording": "Liner first, then charger before cube, then card on cube. Allowed, with a note.",
+        "verdict": "pass_notes",
+        "evidence_status": "partial",
+        "final_picture_check": "pass",
+        "tracking_errors": {},
+        "issues": [
+          {
+            "severity": "warn",
+            "kind": "order",
+            "message": "Different order from the reference: \u201cPlaces the white charger in the yellow box\u201d happened before \u201cPlaces the multicolor cube on the white liner\u201d"
           }
         ]
       }
