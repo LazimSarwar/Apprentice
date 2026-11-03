@@ -26,7 +26,11 @@ Three checks read the same saved video-model readings, with no new model calls
 - **Tracking added caution, not corrections.** Across 36 saved tracked readings, tracking changed five verdicts. All five moved to review, and none corrected a wrong reading.
 - **Scope:** the final-picture check is our own simple comparison, not another product. These are three generated order-only cases and development recordings, not a held-out benchmark.
 
-**Order is now checked at the moment of placement.** A required earlier step must still hold when the later step happens. Taking the liner out, adding the charger and putting the liner back ends in the same picture, but now fails. This follows a false accept found in review. It is covered by constructed tests and changed none of 118 saved verdicts. None of those saved readings reports an object being taken back out, so behaviour on a real recording of a removal is untested, and the rule depends on the video model reporting that removal.
+**The tracker now checks order and movement itself.** Each object gets an arrival time from its tracked boxes alone. If the reading and the tracker disagree about a required order, the result goes to review. The tracker never fails anyone on its own. A step also goes to review if the object was visible before and after it and never moved. On the saved recordings the tracker agreed with the reading on 24 required orders, disagreed on 0, and could not tell on 6. The thresholds were chosen on these same recordings, and no saved reading has a wrong order for the tracker to catch, so catching one is shown only by constructed tests.
+
+**Items hidden by a required step no longer block a correct result.** A card on top of a cube hides the cube, as the procedure requires. That now counts when the cube's placement was confirmed first, it stayed visible until the covering step began, and the covering object is over it when it disappears. Otherwise it still requires review.
+
+**Order is now checked at the moment of placement.** A required earlier step must still hold when the later step happens. Taking the liner out, adding the charger and putting the liner back ends in the same picture, but now fails. This follows a false accept found in review. It is covered by constructed tests and changed none of 118 saved verdicts. None of those saved readings reports an object being taken back out, so behaviour on a real recording of a removal is untested. This rule depends on the video model reporting the removal. If it does not, the tracker's arrival check is the fallback, shown so far only by a constructed test.
 
 ## Dynamic object discovery (Nov 3)
 
@@ -39,7 +43,7 @@ wrong card placement, and a valid alternate order. They exposed real extraction 
 failures: coarse containment was mistaken for a wrong support, and a generic "white block"
 tracking query followed the card instead of the charger. Physical tracking descriptions and
 duplicate-identity checks now address those failures without weakening final-state checks.
-Fresh P01 and P05 inference still requests review when the card hides the final cube.
+Saved readings of P01 and P05, replayed with the covered-item check, are now accepted, and the cube is reported as hidden as expected. No new model inference was run for this replay.
 These are development cases across multiple builds, not five automatic passes or an independent
 accuracy benchmark. Sanitized observations, clip hashes and the two post-fix assessments are in
 [`packing_development.json`](web/static/media/packing_development.json); personal videos remain private.
@@ -77,7 +81,7 @@ person must supply new recordings. Anonymous participant codes and review timing
 self-reported; the optional time differences exclude model waiting and are not a
 controlled impact study. The recording guide is in `../Real-footage/packing-pilot/`.
 
-All **148 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
+All **169 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
 3.12.10 deployment image**, including the two false-accept regressions, reference-only
 confirmation, frozen labels, first-submission preservation, source drift, duplicate
 recordings, private reports and separate timing denominators. `pip check` passes in the
@@ -195,7 +199,7 @@ Verdicts and evidence strength are separate:
 
 - **Model only:** video interpretation without independent tracking corroboration; clearly labelled unverified.
 - **Partial:** objects were tracked, but not every relation is corroborated.
-- **Corroborated:** boxes support every reached placement. This is a 2D geometric heuristic, not proof of 3D contact.
+- **Corroborated:** boxes support every reached placement, or show an item hidden by a required later step. This is a 2D geometric heuristic, not proof of 3D contact.
 - **Inconclusive:** missing or conflicting evidence requires review. An empty reference never passes.
 
 Tracker disagreement and unseen reported steps cannot produce a passing verdict. A final picture without

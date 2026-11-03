@@ -73,6 +73,27 @@
           "holds": true
         }
       ],
+      "order_checks": [
+        {
+          "id": "on/pink_block/surface -> on/green_block/pink_block",
+          "before": "Puts down the pink block",
+          "after": "Stacks the green block on the pink block",
+          "reading_ok": true,
+          "tracker": "agrees",
+          "before_at": 1.467,
+          "after_at": 5.067,
+          "key_before": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "key_after": [
+            "on",
+            "green_block",
+            "pink_block"
+          ]
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 113.7,
@@ -186,6 +207,27 @@
           "holds": true
         }
       ],
+      "order_checks": [
+        {
+          "id": "on/pink_block/surface -> on/green_block/pink_block",
+          "before": "Puts down the pink block",
+          "after": "Stacks the green block on the pink block",
+          "reading_ok": true,
+          "tracker": "agrees",
+          "before_at": 1.467,
+          "after_at": 5.1,
+          "key_before": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "key_after": [
+            "on",
+            "green_block",
+            "pink_block"
+          ]
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 21.9,
@@ -258,6 +300,7 @@
       "tracking_used": true,
       "evidence_status": "partial",
       "final_states": [],
+      "order_checks": [],
       "tracking": {
         "parser": null,
         "seconds": 38.99,
@@ -353,6 +396,7 @@
       "tracking_used": true,
       "evidence_status": "partial",
       "final_states": [],
+      "order_checks": [],
       "tracking": {
         "parser": null,
         "seconds": 81.76,
@@ -468,6 +512,7 @@
           "holds": true
         }
       ],
+      "order_checks": [],
       "tracking": {
         "parser": null,
         "seconds": 133.66,
@@ -572,6 +617,7 @@
           "holds": true
         }
       ],
+      "order_checks": [],
       "tracking": {
         "parser": null,
         "seconds": 101.49,
@@ -676,6 +722,7 @@
           "holds": true
         }
       ],
+      "order_checks": [],
       "tracking": {
         "parser": null,
         "seconds": 95.15,
@@ -770,6 +817,7 @@
           "holds": true
         }
       ],
+      "order_checks": [],
       "tracking": {
         "parser": null,
         "seconds": 97.77,
@@ -873,6 +921,27 @@
           "holds": true
         }
       ],
+      "order_checks": [
+        {
+          "id": "on/pink_block/surface -> on/green_block/pink_block",
+          "before": "Puts down the pink block",
+          "after": "Stacks the green block on the pink block",
+          "reading_ok": true,
+          "tracker": "agrees",
+          "before_at": 1.833,
+          "after_at": 5.533,
+          "key_before": [
+            "on",
+            "pink_block",
+            "surface"
+          ],
+          "key_after": [
+            "on",
+            "green_block",
+            "pink_block"
+          ]
+        }
+      ],
       "tracking": {
         "parser": null,
         "seconds": 42.92,
@@ -955,6 +1024,27 @@
         ],
         "evidence": "seen",
         "holds": true
+      }
+    ],
+    "order_checks": [
+      {
+        "id": "on/pink_block/surface -> on/green_block/pink_block",
+        "before": "Puts down the pink block",
+        "after": "Stacks the green block on the pink block",
+        "reading_ok": true,
+        "tracker": "agrees",
+        "before_at": 1.3,
+        "after_at": 4.167,
+        "key_before": [
+          "on",
+          "pink_block",
+          "surface"
+        ],
+        "key_after": [
+          "on",
+          "green_block",
+          "pink_block"
+        ]
       }
     ],
     "tracking": {
@@ -1046,7 +1136,7 @@
   "method": {
     "type": "development replay",
     "fresh_model_inference": false,
-    "checker_sha256": "9b73b338cc136b427aa4b069280f54cd8f1ef6ade4cdd8e818973c13c76ff284",
+    "checker_sha256": "1bffae740671523fa8047d96c07eceb5de44574ba1427fa2d657a944d15a0af3",
     "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
     "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
     "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",

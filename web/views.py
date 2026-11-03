@@ -38,6 +38,7 @@ def report_view(report: Report, att: TaskGraph) -> dict:
         "tracking_used": report.tracking_used,
         "evidence_status": report.evidence_status,
         "final_states": report.final_states,
+        "order_checks": report.order_checks,
         "tracking": {"parser": att.meta.tracking_parser, "seconds": att.meta.track_seconds,
                      "objects_tracked": sum(bool(o.track) for o in att.objects),
                      "objects_total": len(att.objects), "errors": att.meta.tracking_errors},

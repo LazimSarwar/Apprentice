@@ -4,7 +4,7 @@
   "scope": "One person, one workspace, one reference, five attempts. These recordings informed fixes. They were processed across different builds; expected scenarios were not frozen in the independent trial system. No accuracy percentage is claimed.",
   "media_public": false,
   "fresh_recheck_pipeline_sha256": "ee44e434a690921e7ba2354141e5bc8d2d065846e32c4737a7f6921a3fb650f8",
-  "remaining_limit": "The card covers the cube at the end of otherwise correct attempts. Earlier visible placement does not prove the required final placement remains true.",
+  "remaining_limit": "Boxes are 2D, so a covered item is inferred from its confirmed placement and the covering object's position, not observed directly. The earlier result for these attempts is kept in fresh_post_fix_assessment.",
   "cases": [
     {
       "id": "P01",
@@ -369,5 +369,174 @@
         ]
       }
     }
-  ]
+  ],
+  "covered_item_replay": {
+    "type": "offline replay of saved readings",
+    "fresh_model_inference": false,
+    "pipeline_sha256": "a473a20ca88771c5139b9c6919b1ce4f24a7b0bb510b34e403da39eb13e384b4",
+    "note": "These saved readings informed the covered-item check, so this is not independent validation.",
+    "cases": {
+      "P01": {
+        "passed": true,
+        "verdict": "pass",
+        "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "white_charger",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "white_liner",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "multicolor_cube",
+              "white_liner"
+            ],
+            "evidence": "covered",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "white_card",
+              "multicolor_cube"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
+        "order_checks": [
+          {
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the multicolor cube on the white liner",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": null
+          },
+          {
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the white charger in the yellow box",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": 14.633
+          },
+          {
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the white card on the multicolor cube",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": 23.8
+          },
+          {
+            "before": "Places the multicolor cube on the white liner",
+            "after": "Places the white card on the multicolor cube",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": 23.8
+          }
+        ],
+        "issues": []
+      },
+      "P05": {
+        "passed": true,
+        "verdict": "pass_notes",
+        "evidence_status": "partial",
+        "final_states": [
+          {
+            "key": [
+              "inside",
+              "white_charger",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "inside",
+              "white_liner",
+              "yellow_box"
+            ],
+            "evidence": "confirmed",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "colorful_cube",
+              "white_liner"
+            ],
+            "evidence": "covered",
+            "holds": true
+          },
+          {
+            "key": [
+              "on",
+              "white_card",
+              "colorful_cube"
+            ],
+            "evidence": "seen",
+            "holds": true
+          }
+        ],
+        "order_checks": [
+          {
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the colorful cube on the white liner",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": 19.833
+          },
+          {
+            "before": "Places the white liner in the yellow box",
+            "after": "Places the white charger in the yellow box",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": 14.267
+          },
+          {
+            "before": "Places the white liner in the yellow box",
+            "after": "Stacks the white card on the colorful cube",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": 22.733
+          },
+          {
+            "before": "Places the colorful cube on the white liner",
+            "after": "Stacks the white card on the colorful cube",
+            "reading_ok": true,
+            "tracker": "agrees",
+            "before_at": 19.833,
+            "after_at": 22.733
+          }
+        ],
+        "issues": [
+          {
+            "severity": "warn",
+            "message": "Different order from the reference: \u201cPlaces the white charger in the yellow box\u201d happened before \u201cPlaces the colorful cube on the white liner\u201d"
+          }
+        ]
+      }
+    }
+  }
 }

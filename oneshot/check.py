@@ -38,6 +38,13 @@ from .words import clock, imperative, into, nice, where
 
 HIDDEN = 0.25          # seen in under this share of the frames after the previous step = hidden
 SETTLE = 0.5           # an object must be seen this long after its move ends to know where it came to rest
+ARRIVAL_TOLERANCE = 0.6  # near its resting place = within this share of the object's size
+ARRIVAL_STAY = 0.85      # arrived = at least this share of the later boxes stay near the resting place
+ARRIVAL_MARGIN = 1.0     # seconds between two arrivals before the tracker can call their order
+ALREADY_THERE = 0.5      # settled before this many seconds: the track shows no arrival at all
+STILL_SPAN = 0.3         # the box never moved more than this share of the object's size
+COVER_OVERLAP = 0.25     # a covering object must overlap this share of where the item was resting
+FULL_VIEW = 0.4          # a box under this share of the usual area shows a partly hidden object
 
 
 @dataclass
@@ -65,6 +72,7 @@ class Report:
     tracking_used: bool = False
     evidence_status: str = "model_only"  # model_only | partial | corroborated | inconclusive
     final_states: list[dict] = field(default_factory=list)
+    order_checks: list[dict] = field(default_factory=list)
 
     def summary(self) -> str:
         fails = [i for i in self.issues if i.severity == "fail"]
@@ -91,7 +99,8 @@ class Report:
         return {"passed": self.passed, "verdict": self.verdict, "milestones": self.milestones,
                 "issues": [asdict(i) for i in self.issues], "mapping": self.mapping,
                 "rules": self.rules, "verified": self.verified, "tracking_used": self.tracking_used,
-                "evidence_status": self.evidence_status, "final_states": self.final_states}
+                "evidence_status": self.evidence_status, "final_states": self.final_states,
+                "order_checks": self.order_checks}
 
 
 # --- tracking evidence -------------------------------------------------------------
@@ -176,6 +185,97 @@ def _evidence(key: Key, step, att: TaskGraph, back: dict[str, str]) -> str:
     return "confirmed" if _gap(box_a.box, box_b.box) <= width else "seen"
 
 
+def _median(values: list[float]) -> float:
+    return sorted(values)[len(values) // 2]
+
+
+def _centre(box: list[float]) -> tuple[float, float]:
+    return (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+
+
+def _object_size(boxes) -> float:
+    return _median([max(b.box[2] - b.box[0], b.box[3] - b.box[1]) for b in boxes])
+
+
+def _full_view(boxes) -> list:
+    """Boxes that show the whole object. A partly covered object shrinks to a sliver whose
+    centre has moved, which must not read as the object itself moving."""
+    if not boxes:
+        return []
+    areas = sorted(_area(b.box) for b in boxes)
+    usual = areas[int(0.8 * (len(areas) - 1))]   # Not the median: a covered object can be a sliver for most of a clip.
+    return [b for b in boxes if _area(b.box) >= FULL_VIEW * usual]
+
+
+def arrival_time(track, duration: float) -> float | None:
+    """When the tracker shows an object reaching the place it ends up, independent of the
+    video model. None when the track is too short, is lost well before the end, or shows the
+    object already there from the start, which says nothing about when it arrived."""
+    boxes = track.boxes if track else []
+    if len(boxes) < 5 or duration - boxes[-1].t_s > max(1.5, 0.15 * duration):
+        return None
+    boxes = _full_view(boxes)
+    if len(boxes) < 5:
+        return None
+    tail = boxes[-max(5, len(boxes) // 8):]
+    rest = (_median([_centre(b.box)[0] for b in tail]), _median([_centre(b.box)[1] for b in tail]))
+    reach = ARRIVAL_TOLERANCE * _object_size(tail)
+    near = [((_centre(b.box)[0] - rest[0]) ** 2 + (_centre(b.box)[1] - rest[1]) ** 2) ** 0.5 <= reach for b in boxes]
+    for i, box in enumerate(boxes):
+        if near[i] and sum(near[i:]) / (len(near) - i) >= ARRIVAL_STAY:
+            return box.t_s if box.t_s >= ALREADY_THERE else None
+    return None
+
+
+def never_moved(track, step) -> bool:
+    """The object was visible before and after its reported move and stayed in one place."""
+    boxes = track.boxes if track else []
+    if sum(b.t_s < step.start_s for b in boxes) < 3 or sum(b.t_s >= step.end_s for b in boxes) < 3:
+        return False
+    xs, ys = zip(*(_centre(b.box) for b in boxes))
+    return ((max(xs) - min(xs)) ** 2 + (max(ys) - min(ys)) ** 2) ** 0.5 < STILL_SPAN * _object_size(boxes)
+
+
+def _resting_box(track, start: float, end: float) -> list[float] | None:
+    # Median of each edge, so one odd frame cannot decide the result.
+    boxes = track.in_window(start, end)
+    return [_median([b.box[i] for b in boxes]) for i in range(4)] if boxes else None
+
+
+def _is_covered(key: Key, final_evidence: dict, required, step_of: dict, milestone_evidence: dict,
+                objs: dict, back: dict[str, str], errors, visited: tuple = ()) -> bool:
+    """An item can be out of sight because the procedure puts something on it. That counts
+    only if its placement was confirmed first, it stayed visible until the covering step
+    began, and the covering object is over it at the moment it disappears."""
+    item = objs.get(back.get(key[1], key[1]))
+    placed = step_of.get(key)
+    if (item is None or not item.track or not item.track.boxes or placed is None
+            or item.id in errors or milestone_evidence.get(key) != "confirmed"):
+        return False
+    for cover in required:
+        if cover == key or cover in visited or cover[0] not in ("on", "inside") or cover[2] != key[1] or cover not in step_of:
+            continue
+        evidence = final_evidence.get(cover)
+        if evidence == "unseen":
+            evidence_ok = _is_covered(cover, final_evidence, required, step_of, milestone_evidence,
+                                      objs, back, errors, (*visited, key))
+        else:
+            evidence_ok = evidence in ("confirmed", "seen")
+        cover_obj = objs.get(back.get(cover[1], cover[1]))
+        if not evidence_ok or cover_obj is None or not cover_obj.track or not cover_obj.track.boxes:
+            continue
+        whole = _full_view(item.track.boxes)
+        if not whole or whole[-1].t_s < step_of[cover].start_s - 1.0:
+            continue                         # It vanished well before anything covered it.
+        # Compare at the moment it disappeared: the camera may shift later in the recording.
+        gone = whole[-1].t_s
+        last_seen = [_median([b.box[i] for b in whole if b.t_s >= gone - 1.0]) for i in range(4)]
+        over = _resting_box(cover_obj.track, gone, gone + 1.5)
+        if over and max(_inside_share(last_seen, over), _inside_share(over, last_seen)) >= COVER_OVERLAP:
+            return True
+    return False
+
+
 # --- the comparison ---------------------------------------------------------------
 
 def _q(text: str) -> str:
@@ -220,6 +320,49 @@ def holds_now(key: Key, locations: dict[str, Key | None]) -> bool:
             or (current[0] == "inside" and _inside_container(key, current[2], locations)))
 
 
+def _reached_by(key: Key, keys: set[Key], locations: dict[str, Key | None]) -> set[Key]:
+    return {key} | {k for k in keys if k[0] == "inside" and k[1] == key[1] and k != key
+                    and _inside_container(key, k[2], locations)}
+
+
+def _kept_in_reference(ref: TaskGraph, rule: Rule, keys: set[Key]) -> bool:
+    """Was the earlier step still in place when the reference reached the later one?"""
+    locations: dict[str, Key | None] = {}
+    for _, obj, key in placement_timeline(ref, {}):
+        locations[obj] = key
+        if key is not None and rule.after in _reached_by(key, keys, locations):
+            return rule.before[1] not in locations or holds_now(rule.before, locations)
+    return True
+
+
+def order_checks(ref: TaskGraph, att: TaskGraph, proc: Procedure, first: dict[Key, float],
+                 back: dict[str, str]) -> list[dict]:
+    """Compare each required order the video model reports with the order the tracker shows."""
+    keys = {s.key for s in proc.steps}
+    objs = {o.id: o for o in att.objects}
+    out = []
+    for rule in proc.pairs:
+        if (rule.strength != "required" or rule.before[1] == rule.after[1] or rule.before not in first
+                or rule.after not in first or not _kept_in_reference(ref, rule, keys)):
+            continue
+        a, b = (objs.get(back.get(k[1], k[1])) for k in (rule.before, rule.after))
+        errors = att.meta.tracking_errors
+        before_at = arrival_time(a.track, att.video.duration_s) if a is not None and a.id not in errors else None
+        after_at = arrival_time(b.track, att.video.duration_s) if b is not None and b.id not in errors else None
+        reading_ok = first[rule.before] <= first[rule.after]
+        if before_at is None or after_at is None:
+            tracker = "unknown"
+        elif abs(after_at - before_at) < ARRIVAL_MARGIN:
+            tracker = "too_close"
+        else:
+            tracker = "agrees" if (before_at < after_at) == reading_ok else "conflicts"
+        out.append({"id": pair_id(rule.before, rule.after), "before": proc.step(rule.before).text,
+                    "after": proc.step(rule.after).text, "reading_ok": reading_ok, "tracker": tracker,
+                    "before_at": before_at, "after_at": after_at, "key_before": list(rule.before),
+                    "key_after": list(rule.after)})
+    return out
+
+
 def undone_issues(ref: TaskGraph, att: TaskGraph, proc: Procedure, mapping: dict[str, str] | None = None) -> list[Issue]:
     """A required earlier step must still hold when the later step happens. Reaching it once
     is not enough: taking the liner out, adding the charger and putting the liner back ends in
@@ -232,19 +375,7 @@ def undone_issues(ref: TaskGraph, att: TaskGraph, proc: Procedure, mapping: dict
         return []
     mapping = map_objects(ref, att) if mapping is None else mapping
 
-    def reached_by(key: Key, locations: dict[str, Key | None]) -> set[Key]:
-        return {key} | {k for k in keys if k[0] == "inside" and k[1] == key[1] and k != key
-                        and _inside_container(key, k[2], locations)}
-
-    def kept_in_reference(rule: Rule) -> bool:
-        locations: dict[str, Key | None] = {}
-        for _, obj, key in placement_timeline(ref, {}):
-            locations[obj] = key
-            if key is not None and rule.after in reached_by(key, locations):
-                return rule.before[1] not in locations or holds_now(rule.before, locations)
-        return True
-
-    enforced = [r for r in rules if kept_in_reference(r)]
+    enforced = [r for r in rules if _kept_in_reference(ref, r, keys)]
     locations: dict[str, Key | None] = {}
     reached: set[Key] = set()
     undone: dict[Key, list[tuple[float, Rule]]] = {}
@@ -252,7 +383,7 @@ def undone_issues(ref: TaskGraph, att: TaskGraph, proc: Procedure, mapping: dict
         locations[obj] = key
         if key is None:
             continue
-        now = reached_by(key, locations)
+        now = _reached_by(key, keys, locations)
         for rule in enforced:
             if rule.after in now and rule.before in reached and not holds_now(rule.before, locations):
                 undone.setdefault(rule.before, []).append((t, rule))
@@ -387,6 +518,18 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
         trace.append(monitor.Snapshot(i, None, {k: (k in first and first[k] <= t) for k in ms_keys}))
     broken = [r for r, v in zip(enforced, monitor.check_rules(trace, mon))
               if not v.ok and r.before in first and r.after in first]   # skips are reported already
+    # The tracker can send an order to review, but it never fails anyone on its own.
+    checks = order_checks(ref, att, proc, first, back) if tracked else []
+    disputed = {c["id"] for c in checks if c["tracker"] == "conflicts"}
+    broken = [r for r in broken if pair_id(r.before, r.after) not in disputed]
+    for c in checks:
+        if c["tracker"] == "conflicts":
+            issues.append(Issue("doubt", "unknown",
+                                f"Check the order: the video reading and the tracker disagree about whether "
+                                f"{_q(c['before'])} came before {_q(c['after'])}.",
+                                min(first[tuple(c["key_before"])], first[tuple(c["key_after"])]),
+                                [c["key_before"][1], c["key_after"][1]],
+                                fix="Review this part of the recording or re-record with both objects in view."))
     issues += _order_issues(broken, first, info)
     issues += undone_issues(ref, att, proc, mapping)
 
@@ -396,13 +539,22 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                 f"{where(k[0], k[2])}", t, [k[1]]))
 
     status = []
+    milestone_evidence: dict[Key, str | None] = {}
     for m in ms:
         done = m.key in first or m.key in finals
         ev = None
         if tracked and done:
             ev = _evidence(m.key, step_of[m.key], att, back) if m.key in step_of else "unseen"
             failed = [k for k in m.key[1:] if back.get(k, k) in att.meta.tracking_errors]
-            if failed:
+            moved = objs.get(back.get(m.key[1], m.key[1]))
+            if (not failed and ev in ("confirmed", "seen") and m.key in step_of and moved is not None
+                    and never_moved(moved.track, step_of[m.key])):
+                ev = "still"
+                issues.append(Issue("doubt", "unknown",
+                                    f"Check this step: the video reading reports it, but the tracker shows the "
+                                    f"{nice(m.key[1])} staying in one place.", first.get(m.key), [m.key[1], m.key[2]],
+                                    m.critical, fix="Review this moment or re-record with the move in view."))
+            elif failed:
                 ev = "unseen"
                 shared = [k for k in failed if back.get(k, k) in duplicates]
                 issues.append(Issue("unknown", "unknown",
@@ -422,6 +574,7 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                     f"Couldn't verify: {m.text} — the reported result wasn't seen by the tracker.",
                                     first.get(m.key), [m.key[1], m.key[2]], m.critical,
                                     fix="Check this step by hand or re-record with the objects visible after placement."))
+        milestone_evidence[m.key] = ev
         status.append({"text": m.text, "done": done, "time": first.get(m.key), "ref_time": m.ref_time,
                        "critical": m.critical, "reason": m.reason, "quote": m.quote, "evidence": ev})
 
@@ -435,6 +588,12 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
             required |= {k for a, k in ref_last.items() if not any(r[1] == a for r in required)}
         latest = {k[1]: (t, k, s) for t, k, s in evs}
         locations = {a: item[1] for a, item in latest.items()}
+        end = SimpleNamespace(end_s=max(0.0, att.video.duration_s - 1.5))
+        final_evidence = {}
+        if tracked:
+            for key in required:
+                final_evidence[key] = ("unseen" if any(back.get(a, a) in att.meta.tracking_errors for a in key[1:])
+                                       else _evidence(key, end, att, back))
         for key in sorted(required):
             if key not in first and key not in finals:
                 continue  # The missing milestone already explains this result.
@@ -444,10 +603,11 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
             explicit_conflict = any(k[1] == key[1] and k[0] == key[0] and k != key for k in finals)
             ev = None
             if tracked:
-                end = SimpleNamespace(end_s=max(0.0, att.video.duration_s - 1.5))
-                ev = _evidence(key, end, att, back)
-                if any(back.get(a, a) in att.meta.tracking_errors for a in key[1:]):
-                    ev = "unseen"
+                ev = final_evidence[key]
+                if ev == "unseen" and not (conflicting or explicit_conflict) and _is_covered(
+                        key, final_evidence, required, step_of, milestone_evidence, objs, back,
+                        att.meta.tracking_errors):
+                    ev = "covered"
             final_states.append({"key": list(key), "evidence": ev, "holds": not (conflicting or explicit_conflict)})
             if conflicting or explicit_conflict:
                 coarse = last is not None and last[1][0] == "inside" and _inside_container(key, last[1][2], locations)
@@ -474,12 +634,13 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     verdict = "fail" if "fail" in sev else "unsure" if "unknown" in sev else "pass_notes" if sev else "pass"
     corroborated = verdict in ("pass", "pass_notes") and bool(status) and all(
         m["done"] and m["evidence"] == "confirmed" for m in status) and all(
-        s["holds"] and s["evidence"] == "confirmed" for s in final_states)
+        s["holds"] and s["evidence"] in ("confirmed", "covered") for s in final_states)
     evidence_status = ("inconclusive" if "unknown" in sev else "corroborated" if corroborated
                        else "partial" if tracked else "model_only")
     return Report(passed=verdict in ("pass", "pass_notes"), verdict=verdict, milestones=status, issues=issues,
                   mapping=mapping, rules=[rule_view(r, proc) for r in proc.shown()], verified=corroborated,
-                  tracking_used=tracked, evidence_status=evidence_status, final_states=final_states)
+                  tracking_used=tracked, evidence_status=evidence_status, final_states=final_states,
+                  order_checks=checks)
 
 
 def _order_issues(broken: list[Rule], first: dict[Key, float], info: dict) -> list[Issue]:

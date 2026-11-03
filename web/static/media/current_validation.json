@@ -1,7 +1,7 @@
 {
   "type": "offline development replay",
   "fresh_model_inference": false,
-  "pipeline_sha256": "7029d1d008c857cc51ba2f9a7a0c3e17c3ab9de02fb920cf2135c3c6cba71a12",
+  "pipeline_sha256": "a473a20ca88771c5139b9c6919b1ce4f24a7b0bb510b34e403da39eb13e384b4",
   "historical_pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
   "scope": "Same sixteen packaged generated fixtures, checked under the current acceptance policy.",
   "summary": {
@@ -58,6 +58,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -223,6 +224,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -388,6 +390,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -553,6 +556,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -718,6 +722,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -895,6 +900,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1072,6 +1078,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1249,6 +1256,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1408,6 +1416,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1578,6 +1587,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1757,6 +1767,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -1925,6 +1936,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -2093,6 +2105,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -2261,6 +2274,7 @@
             "holds": true
           }
         ],
+        "order_checks": [],
         "tracking": {
           "parser": null,
           "seconds": null,
@@ -2427,6 +2441,46 @@
             ],
             "evidence": "unseen",
             "holds": true
+          }
+        ],
+        "order_checks": [
+          {
+            "id": "inside/blue_liner/brown_box -> on/red_product/blue_liner",
+            "before": "Places the blue liner in the brown box",
+            "after": "Stacks the red product on the blue liner",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": null,
+            "key_before": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "key_after": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ]
+          },
+          {
+            "id": "inside/blue_liner/brown_box -> inside/green_charger/brown_box",
+            "before": "Places the blue liner in the brown box",
+            "after": "Places the green charger in the brown box",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": null,
+            "key_before": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "key_after": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ]
           }
         ],
         "tracking": {
@@ -2649,6 +2703,46 @@
             ],
             "evidence": "unseen",
             "holds": true
+          }
+        ],
+        "order_checks": [
+          {
+            "id": "inside/blue_liner/brown_box -> on/red_product/blue_liner",
+            "before": "Places the blue liner in the brown box",
+            "after": "Stacks the red product on the blue liner",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": null,
+            "key_before": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "key_after": [
+              "on",
+              "red_product",
+              "blue_liner"
+            ]
+          },
+          {
+            "id": "inside/blue_liner/brown_box -> inside/green_charger/brown_box",
+            "before": "Places the blue liner in the brown box",
+            "after": "Places the green charger in the brown box",
+            "reading_ok": true,
+            "tracker": "unknown",
+            "before_at": null,
+            "after_at": null,
+            "key_before": [
+              "inside",
+              "blue_liner",
+              "brown_box"
+            ],
+            "key_after": [
+              "inside",
+              "green_charger",
+              "brown_box"
+            ]
           }
         ],
         "tracking": {

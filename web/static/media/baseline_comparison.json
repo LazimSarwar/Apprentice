@@ -1,7 +1,7 @@
 {
   "type": "offline comparison of what each layer adds",
   "fresh_model_inference": false,
-  "pipeline_sha256": "7029d1d008c857cc51ba2f9a7a0c3e17c3ab9de02fb920cf2135c3c6cba71a12",
+  "pipeline_sha256": "a473a20ca88771c5139b9c6919b1ce4f24a7b0bb510b34e403da39eb13e384b4",
   "final_picture_definition": "Accept when every required final placement holds in the attempt's last state. Order is ignored and it never abstains.",
   "limits": [
     "The final-picture check is our own simple comparison, written to show what order checking adds. It is not another product.",
@@ -9,6 +9,7 @@
     "These are development recordings that informed checker fixes, not a held-out benchmark.",
     "The generated recordings come from one renderer. The phone recordings are one person, two blocks and one workspace, and contain no order-only mistake."
   ],
+  "tracker_order_note": "When a reading reports a required order, this counts whether the tracker's arrival times agree. Thresholds were chosen on these same recordings.",
   "generated": {
     "summary": {
       "cases": 24,
@@ -54,6 +55,12 @@
           "occluded_accepted": 0
         }
       }
+    },
+    "tracker_order": {
+      "agrees": 21,
+      "conflicts": 0,
+      "too_close": 0,
+      "unknown": 6
     },
     "cases": [
       {
@@ -319,6 +326,12 @@
           "occluded_accepted": 1
         }
       }
+    },
+    "tracker_order": {
+      "agrees": 3,
+      "conflicts": 0,
+      "too_close": 0,
+      "unknown": 0
     },
     "cases": [
       {

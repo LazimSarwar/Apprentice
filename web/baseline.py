@@ -59,6 +59,18 @@ def _case(case_id: str, kind: str, ref: TaskGraph, att: TaskGraph, proc: Procedu
         "with_tracking": _outcome(compare(ref, att, procedure=proc).verdict)}}
 
 
+def _order_evidence(ref: TaskGraph, att: TaskGraph, proc: Procedure) -> dict:
+    counts = {"agrees": 0, "conflicts": 0, "too_close": 0, "unknown": 0}
+    for check in compare(ref, att, procedure=proc).order_checks:
+        counts[check["tracker"]] += 1
+    return counts
+
+
+def _add(total: dict, counts: dict) -> None:
+    for key, value in counts.items():
+        total[key] = total.get(key, 0) + value
+
+
 def _summary(rows: list[dict]) -> dict:
     def share(kinds, outcome, system):
         return sum(r["outcomes"][system] == outcome for r in rows if r["kind"] in kinds)
@@ -82,15 +94,19 @@ def refresh() -> dict:
     pack_ref = _load(APP / "web/reference.graph.json")
     pack_proc = Procedure.from_dict(json.loads((APP / "web/reference.procedure.json").read_text(encoding="utf-8")))
     generated = []
+    generated_orders: dict = {}
+    phone_orders: dict = {}
     for path in sorted(DEMO.glob("pack_*.graph.json")):
         stem = path.name.removesuffix(".graph.json")
         generated.append(_case(stem, stem.removeprefix("pack_"), pack_ref, _load(path), pack_proc))
+        _add(generated_orders, _order_evidence(pack_ref, _load(path), pack_proc))
     repair = json.loads((MEDIA / "tracking_validation.json").read_text(encoding="utf-8"))
     for prior in repair["results"]:
         path = DEMO / "judging" / f"{prior['id']}.graph.json"
         if not path.exists():
             path = path.with_name(f"{prior['id']}.repaired.graph.json")
         generated.append(_case(prior["id"], prior["kind"], pack_ref, _load(path), pack_proc))
+        _add(generated_orders, _order_evidence(pack_ref, _load(path), pack_proc))
 
     phone_ref = _load(DEMO / "real_ref.graph.json")
     phone_proc = learn([phone_ref])
@@ -100,6 +116,7 @@ def refresh() -> dict:
         if stem in ("real_ref", "real_ok_1"):
             continue  # The reference and its own source recording are not attempts.
         phone.append(_case(stem, label["expected"], phone_ref, _load(DEMO / f"{stem}.graph.json"), phone_proc))
+        _add(phone_orders, _order_evidence(phone_ref, _load(DEMO / f"{stem}.graph.json"), phone_proc))
 
     data = {"type": "offline comparison of what each layer adds", "fresh_model_inference": False,
             "pipeline_sha256": pipeline_digest(),
@@ -108,8 +125,9 @@ def refresh() -> dict:
                        "All three checks use the same saved video-model readings, so a reading error affects all of them.",
                        "These are development recordings that informed checker fixes, not a held-out benchmark.",
                        "The generated recordings come from one renderer. The phone recordings are one person, two blocks and one workspace, and contain no order-only mistake."],
-            "generated": {"summary": _summary(generated), "cases": generated},
-            "phone": {"summary": _summary(phone), "cases": phone}}
+            "tracker_order_note": "When a reading reports a required order, this counts whether the tracker's arrival times agree. Thresholds were chosen on these same recordings.",
+            "generated": {"summary": _summary(generated), "tracker_order": generated_orders, "cases": generated},
+            "phone": {"summary": _summary(phone), "tracker_order": phone_orders, "cases": phone}}
     (MEDIA / "baseline_comparison.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
     return data
 
