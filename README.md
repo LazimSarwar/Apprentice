@@ -160,3 +160,7 @@ Everything in this repository was written during the event, except the third-par
   <https://www.pexels.com/video/a-kid-playing-with-wooden-building-blocks-3676968/>. The web page includes a
   downscaled copy and a version with tracking boxes drawn on it, credited here.
 - Built with help from AI coding assistants; all design and code decisions are reviewed by the author.
+
+## License
+
+This project's own code, tests and documentation are under the [MIT License](LICENSE). Videos, images, dependencies and adapted cookbook code are covered in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
