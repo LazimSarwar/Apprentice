@@ -16,6 +16,46 @@ def objects(*items):
 
 
 class DynamicObjectTests(unittest.TestCase):
+    def test_renamed_object_cannot_hide_conflicting_fields_behind_copied_description(self):
+        for field, value in [('color', 'blue'), ('shape', 'mug')]:
+            with self.subTest(field=field):
+                ref=graph(tracked=True);att=graph(tracked=True)
+                ref.objects[0].tracking_description='red wooden block'
+                att.objects[0].id='renamed_item'
+                att.objects[0].tracking_description='red wooden block'
+                setattr(att.objects[0],field,value)
+                att.steps[0].object='renamed_item'
+                saved=att.model_dump()
+                report=compare(ref,att)
+                self.assertNotIn('renamed_item',report.mapping)
+                self.assertFalse(report.passed)
+                self.assertFalse(report.verified)
+                self.assertEqual(att.model_dump(),saved)
+
+    def test_explicitly_negated_marking_requires_review(self):
+        for expected, observed in [('red block with white logo', 'red block with no white logo'),
+                                   ('red block with white logo', 'red block without a white logo'),
+                                   ('red block with blue star', 'red block, not a blue star'),
+                                   ('red block without a logo', 'red block with a logo')]:
+            with self.subTest(expected=expected,observed=observed):
+                ref=graph(tracked=True);att=graph(tracked=True)
+                ref.objects[0].tracking_description=expected
+                att.objects[0].tracking_description=observed
+                report=compare(ref,att)
+                self.assertEqual(report.verdict,'unsure')
+                self.assertFalse(report.verified)
+                self.assertTrue(any(i.kind=='identity' for i in report.issues))
+
+    def test_missing_feature_detail_and_compatible_negative_refinement_remain_allowed(self):
+        for expected, observed in [('red block', 'red block without a logo'),
+                                   ('red block without a logo', 'red block'),
+                                   ('red block without a logo', 'red wooden cube with no logo')]:
+            with self.subTest(expected=expected,observed=observed):
+                ref=graph(tracked=True);att=graph(tracked=True)
+                ref.objects[0].tracking_description=expected
+                att.objects[0].tracking_description=observed
+                self.assertTrue(compare(ref,att).passed)
+
     def test_reused_id_with_conflicting_appearance_never_passes(self):
         for tracked in (False, True):
             with self.subTest(tracked=tracked):

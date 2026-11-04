@@ -2,6 +2,14 @@
 
 Newest first. Each entry keeps the numbers and wording from that date, so older counts may differ from the current summary in [README.md](README.md).
 
+## Final submission reliability checks (Nov 4)
+
+Object matching now checks supplied colour, shape, kind and description together when IDs change. A copied description cannot override contradictory colour or shape. Explicitly negated markings (for example, a logo versus no logo) request identity review; missing details and compatible refinements remain allowed. Three new regression tests cover these cases.
+
+The judge walkthrough now applies a rule change only after a successful response, blocks overlapping submissions, and ignores replies for an example the viewer has left. Five JavaScript tests exercise successful changes, restoration, rapid clicks, navigation during a request, stale responses and retry after a network failure. CI runs these alongside the Python checks.
+
+No new recordings or accuracy measurements were added. Existing development evidence and its limitations remain unchanged.
+
 ## What order checking adds (Nov 3)
 
 Three checks read the same saved video-model readings, with no new model calls

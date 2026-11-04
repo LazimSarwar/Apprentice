@@ -231,29 +231,45 @@ def _mods(obj_id: str) -> set[str]:
     return {p for p in obj_id.split("_") if p in ("left", "right", "top", "middle", "bottom", "front", "back", "center")}
 
 
+def _appearance_terms(value):
+    """Keep explicit negative features separate from compatible extra detail."""
+    aliases = {"grey": "gray", "cube": "block", "cuboid": "block", "mug": "cup"}
+    positive, negative = set(), set()
+    negated = False
+    for word in re.findall(r"[a-z0-9]+|[.,;:]", (value or "").casefold()):
+        if word in {"no", "not", "without"}:
+            negated = True
+        elif word in {"and", "but", "with", "on", "in", ".", ",", ";", ":"}:
+            negated = False
+        elif word not in {"a", "an", "the", "of"}:
+            (negative if negated else positive).add(aliases.get(word, word))
+    return positive, negative
+
+
+def _appearance_conflicts(expected, observed) -> list[str]:
+    reasons = []
+    for field in ("color", "shape", "kind", "tracking_description"):
+        left, right = getattr(expected, field), getattr(observed, field)
+        ap, an = _appearance_terms(left)
+        bp, bn = _appearance_terms(right)
+        a, b = ap | an, bp | bn
+        if (ap & bn or bp & an) or (a and b and not (a <= b or b <= a)):
+            reasons.append(f"{field.replace('_', ' ')}: reference '{left}', attempt '{right}'")
+    return reasons
+
+
 def identity_conflicts(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
     """A reused ID is a model label, not proof of the same physical object.
 
     Missing detail is not a contradiction. Compatible refinements and common shape
     synonyms are allowed; conflicting supplied appearance needs human review.
     """
-    aliases = {"grey": "gray", "cube": "block", "cuboid": "block", "mug": "cup"}
-    def words(value):
-        return {aliases.get(w, w) for w in re.findall(r"[a-z0-9]+", (value or "").casefold())
-                if w not in {"a", "an", "the", "with", "of"}}
-    def differs(left, right):
-        a, b = words(left), words(right)
-        return bool(a and b and not (a <= b or b <= a))
     by_id = {o.id: o for o in ref.objects}
     conflicts = {}
     for obj in att.objects:
         other = by_id.get(obj.id)
         if other is None: continue
-        reasons = []
-        for field in ("color", "shape", "kind", "tracking_description"):
-            expected, observed = getattr(other, field), getattr(obj, field)
-            if differs(expected, observed):
-                reasons.append(f"{field.replace('_', ' ')}: reference '{expected}', attempt '{observed}'")
+        reasons = _appearance_conflicts(other, obj)
         if reasons: conflicts[obj.id] = "; ".join(reasons)
     return conflicts
 
@@ -290,7 +306,8 @@ def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
 
     for matches in (same_description, same_shape):
         candidates = {a.id: [r.id for r in ref.objects if r.id in ref_ids and r.id not in used
-                            and _is_container(r) == _is_container(a) and matches(a, r)]
+                            and _is_container(r) == _is_container(a) and matches(a, r)
+                            and not _appearance_conflicts(r, a)]
                       for a in att.objects if a.id not in mapping and a.id not in conflicts and not _is_surface(a)}
         for aid, ids in candidates.items():
             if len(ids) == 1 and sum(ids[0] in others for others in candidates.values()) == 1:

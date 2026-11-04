@@ -3205,7 +3205,7 @@
     "method": {
       "type": "development replay",
       "fresh_model_inference": false,
-      "checker_sha256": "2bb3c048a415e2d3125278b8cf032159bf65ad2dee42beab238b8e3ea38ec629",
+      "checker_sha256": "6c0894a831bffcc8813e46074c4ac352cfe90a11e1c37378e45eaea69b242ab0",
       "scope": "Two blocks, one workspace, one person. These clips informed earlier checker fixes; they are not a held-out benchmark.",
       "order_caveat": "The two reversed stacks change the final structure and are diagnosed as wrong placement. They do not test pure order-only errors.",
       "tracking_caveat": "2D boxes support object visibility and approximate placement; they do not establish 3D contact. Partial evidence is labelled.",
@@ -4412,7 +4412,7 @@
   "current_validation": {
     "type": "offline development replay",
     "fresh_model_inference": false,
-    "pipeline_sha256": "756f31ed5a3a90e103fe062b7e0d67543fc6a58e078b3b7f5230496a96357279",
+    "pipeline_sha256": "ad006510810da7f13d6890575863678f899b7b6b883a11e542d4f8837218ef24",
     "historical_pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
     "scope": "Same sixteen packaged generated fixtures, checked under the current acceptance policy.",
     "summary": {
@@ -7339,7 +7339,7 @@
   "baseline": {
     "type": "offline comparison of what each layer adds",
     "fresh_model_inference": false,
-    "pipeline_sha256": "756f31ed5a3a90e103fe062b7e0d67543fc6a58e078b3b7f5230496a96357279",
+    "pipeline_sha256": "ad006510810da7f13d6890575863678f899b7b6b883a11e542d4f8837218ef24",
     "final_picture_definition": "Accept when every required final placement holds in the attempt's last state. Order is ignored and it never abstains.",
     "limits": [
       "The final-picture check is our own simple comparison, written to show what order checking adds. It is not another product.",

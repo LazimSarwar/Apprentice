@@ -70,7 +70,8 @@ This is all development evidence. The real footage is the builder's own and info
 | 3 generated order-only mistakes | A final-picture check accepted 3; OneShot accepted 0 |
 | 13 reported problems double-checked with closer looks | 11 of 12 true problems confirmed; the 1 false problem went to review |
 | 2 real uploads to the live site, Nov 4 | Correct clip passed in 38 s, wrong placement failed in 46 s, both with partial evidence ([report](docs/evidence/live_uploads_2026-11-04.json)) |
-| Offline test suite, model services mocked | 218 of 218 pass on Windows with Python 3.14 and in the [Linux deployment image](docs/evidence/release-linux-validation.json) with Python 3.12 |
+| Offline test suite, model services mocked | 221 of 221 pass on Windows with Python 3.14 and in the [Linux deployment image](docs/evidence/release-linux-validation.json) with Python 3.12 |
+| Judge interaction tests, delayed responses and network failures | 5 of 5 pass (`node --test tests/judge_state.test.cjs`) |
 
 **What these results don't show:**
 
