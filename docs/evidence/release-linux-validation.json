@@ -1,0 +1,5 @@
+{
+  "python": "3.12.10 (main, May 21 2025, 23:34:56) [GCC 12.2.0]",
+  "pipeline_sha256": "756f31ed5a3a90e103fe062b7e0d67543fc6a58e078b3b7f5230496a96357279",
+  "offline_tests": "passed"
+}

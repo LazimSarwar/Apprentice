@@ -1,0 +1,98 @@
+{
+  "type": "live deployment smoke test",
+  "date": "2026-11-04",
+  "pipeline_sha256": "756f31ed5a3a90e103fe062b7e0d67543fc6a58e078b3b7f5230496a96357279",
+  "scope": "Two real uploads to the deployed site. Both clips are builder recordings that informed development, so this shows the service working, not accuracy.",
+  "results": [
+    {
+      "case": "correct",
+      "seconds": 38.32,
+      "status": "done",
+      "history": [
+        {
+          "seconds": 4.47,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 16.64,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "pass"
+          ]
+        },
+        {
+          "seconds": 38.32,
+          "state": [
+            "done",
+            null,
+            "pass"
+          ]
+        }
+      ],
+      "verdict": "pass",
+      "verified": false,
+      "evidence_status": "partial",
+      "issues": []
+    },
+    {
+      "case": "wrong-place",
+      "seconds": 46.26,
+      "status": "done",
+      "history": [
+        {
+          "seconds": 4.02,
+          "state": [
+            "running",
+            "Reading the steps in your attempt",
+            null
+          ]
+        },
+        {
+          "seconds": 16.38,
+          "state": [
+            "checked",
+            "Checking with the tracker",
+            "fail"
+          ]
+        },
+        {
+          "seconds": 35.41,
+          "state": [
+            "checked",
+            "Taking a closer look at reported problems",
+            "fail"
+          ]
+        },
+        {
+          "seconds": 46.26,
+          "state": [
+            "done",
+            null,
+            "fail"
+          ]
+        }
+      ],
+      "verdict": "fail",
+      "verified": false,
+      "evidence_status": "partial",
+      "issues": [
+        {
+          "kind": "Wrong place",
+          "type": "wrong_place",
+          "severity": "fail",
+          "message": "Put the green block on the surface instead of on the pink block",
+          "time": 9.2,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Move the green block onto the pink block."
+        }
+      ]
+    }
+  ]
+}

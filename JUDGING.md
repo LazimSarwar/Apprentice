@@ -23,7 +23,7 @@ python -m modal run deploy/validate.py
 python -m uvicorn web.server:app --port 8000
 ```
 
-The current phone report is `web/static/media/real_results.json`; the older seven-of-nine report is `real_results_baseline.json`. The current generated replay is `current_validation.json`. Earlier repair and live-service artifacts retain their original source fingerprints and do not verify changed builds. `runs/release-linux-validation.json` records the image validation fingerprint.
+The current phone report is `web/static/media/real_results.json`; the older seven-of-nine report is `real_results_baseline.json`. The current generated replay is `current_validation.json`. Earlier repair and live-service artifacts retain their original source fingerprints and do not verify changed builds. `docs/evidence/release-linux-validation.json` records the image validation fingerprint.
 
 ## Five real packing development recordings
 
@@ -31,7 +31,7 @@ The final walkthrough step includes a separate P01–P05 development summary. It
 
 ## Field trial
 
-Record `REF.mp4` plus `P01.mp4`–`P09.mp4` using the guide in `../Real-footage/packing-pilot/`. Use a second person, distinct objects except the identity challenge, continuous unedited takes, and human-confirmed labels before model output is inspected. Disclose retakes and coaching. Freeze the study in `/pilot` against a confirmed four-placement packing reference. Do not tune the checker to the recordings and then present those recordings as held out.
+Record `REF.mp4` plus `P01.mp4`–`P09.mp4` using the [recording guide](docs/packing-trial-recording-guide.md). Use a second person, distinct objects except the identity challenge, continuous unedited takes, and human-confirmed labels before model output is inspected. Disclose retakes and coaching. Freeze the study in `/pilot` against a confirmed four-placement packing reference. Do not tune the checker to the recordings and then present those recordings as held out.
 
 The report keeps expected outcomes, first results, reviews, pipeline errors, full denominators, clip hashes, source/plan hashes and model latency. Participant codes are self-reported. Optional human review times are self-timed, exclude model waiting and do not constitute a controlled impact study. Export before the retention period expires. Raw footage and owner-session credentials stay private.
 

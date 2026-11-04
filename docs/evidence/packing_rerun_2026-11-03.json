@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-03",
+  "pipeline_sha256": "e6bbfb40efc08964e1ef308e7ed8aa72834e1841aef1c10ed99a96252114bf86",
+  "scope": "Two fresh model runs on existing development recordings, using the same previously confirmed procedure. Not new independent footage. First results preserved; no code changes or retries to improve outcomes.",
+  "same_confirmed_procedure": true,
+  "fresh_model_results": [
+    {
+      "recording": "P01",
+      "expected": "pass",
+      "actual": "pass",
+      "matched_expected": true,
+      "evidence_status": "partial",
+      "procedure_sha256": "f8fb842256fdcdb64cb0a9715f4c5558a0f8137146123e1fd2751b8eeb3dd54e",
+      "issues": [],
+      "ambiguous_objects": [],
+      "tracker_errors": {}
+    },
+    {
+      "recording": "P03",
+      "expected": "fail",
+      "actual": "unsure",
+      "matched_expected": false,
+      "evidence_status": "inconclusive",
+      "procedure_sha256": "f8fb842256fdcdb64cb0a9715f4c5558a0f8137146123e1fd2751b8eeb3dd54e",
+      "issues": [
+        {
+          "kind": "Couldn't verify",
+          "type": "unknown",
+          "severity": "unknown",
+          "message": "Couldn't verify: Places the white charger in the yellow box — the white charger was hidden or out of view when this step should have happened",
+          "time": 11.5,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Re-record with the whole workspace in view, or check this step by hand."
+        },
+        {
+          "kind": "Couldn't verify",
+          "type": "unknown",
+          "severity": "unknown",
+          "message": "Couldn't verify where the white card went — the tracker could not support the reported placement (on the white liner)",
+          "time": 21,
+          "critical": false,
+          "reason": null,
+          "quote": null,
+          "fix": "Re-record with the whole workspace in view, or check this step by hand."
+        }
+      ],
+      "ambiguous_objects": [
+        "white_card",
+        "white_charger"
+      ],
+      "tracker_errors": {}
+    }
+  ],
+  "constructed_stress_cases": {
+    "total": 299,
+    "passed": 299,
+    "independent_videos": false
+  },
+  "browser_checks": {
+    "rule_relaxation_changes_failure_to_note": true,
+    "restoring_rule_restores_failure": true,
+    "accepted_P03_job_survives_page_refresh": true,
+    "P01_decision_history_loads": true,
+    "both_reports_download": true
+  },
+  "finding": "P03 was not accepted incorrectly, but the missing charger was not conclusively identified. Card and charger tracks are ambiguous. The missing charger used the inherited white block description. Its initial wrong-card-placement accusation became review; this did not invoke closer-look model calls.",
+  "real_frame_inspected": "P03-at-23s.png shows the charger outside the box and the card over the cube.",
+  "estimated_accounted_spend_delta_usd": 1.0417
+}
