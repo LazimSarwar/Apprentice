@@ -4,7 +4,7 @@
 
 Two people can pack the same box and end with the same final picture, but only one followed the procedure. OneShot learns a tabletop procedure from one recorded demonstration, then checks recordings of later attempts and reports what went wrong, when it happened and how to fix it.
 
-**[Open the live app](https://tanjilsarwar30--oneshot-web-web.us-east.modal.run)** · **[Take the guided walkthrough](https://tanjilsarwar30--oneshot-web-web.us-east.modal.run/judge)** · [Judge notes](JUDGING.md)
+**[Watch the 3-minute demo](https://youtu.be/w91nOT9J0PM)** · **[Open the live app](https://tanjilsarwar30--oneshot-web-web.us-east.modal.run)** · **[Take the guided walkthrough](https://tanjilsarwar30--oneshot-web-web.us-east.modal.run/judge)** · [Judge notes](JUDGING.md)
 
 Everything here was built during the event, Oct 26 to Nov 4, 2026, except the material listed under [Pre-existing and third-party material](#pre-existing-and-third-party-material).
 
