@@ -1,5 +1,7 @@
 """Objects the reading leaves out are searched for, and a miss needs both witnesses to be a skip."""
 import unittest
+import tempfile
+from pathlib import Path
 from unittest.mock import patch
 
 from oneshot.check import compare
@@ -53,6 +55,18 @@ def reading_without_charger(*objects):
 
 
 class SearchListTests(unittest.TestCase):
+    def test_omitted_legacy_named_object_uses_specific_search_not_generic_geometry(self):
+        ref = REF.model_copy(deep=True)
+        charger = next(o for o in ref.objects if o.id == 'black_charger')
+        charger.shape = 'block'
+        charger.tracking_description = None
+        att = graph([obj('yellow_box', 'container'), obj('red_cube')], [CUBE_STEP], tracked=False)
+        searched = with_reference_objects(att, ref, learn([ref]))
+        found = next(o for o in searched.objects if o.id == 'black_charger')
+        self.assertTrue(found.from_reference)
+        self.assertEqual(found.concept(), 'black charger')
+        self.assertIsNone(found.track)
+
     def test_left_out_procedure_object_is_added_for_the_tracker(self):
         att = graph([obj("yellow_box", "container"), obj("red_cube")], [CUBE_STEP], tracked=False)
         added = with_reference_objects(att, REF, PROC)
@@ -91,7 +105,8 @@ class SearchListTests(unittest.TestCase):
         def fake(graph_in, _clip):
             seen["ids"] = [o.id for o in graph_in.objects]
             return graph_in.model_copy(update={"meta": graph_in.meta.model_copy(update={"track_seconds": 1.0})})
-        with patch.object(live, "add_evidence", fake), patch.object(live, "overlay_frames", side_effect=OSError), \
+        with tempfile.TemporaryDirectory() as budget_dir, patch.object(live.budget, "FILE", Path(budget_dir) / "budget.json"), \
+                patch.object(live, "add_evidence", fake), patch.object(live, "overlay_frames", side_effect=OSError), \
                 patch.object(live.iio, "immeta", return_value={"fps": 4}), patch.object(live, "_work") as work:
             work.return_value.__truediv__.return_value.__truediv__.return_value.parent.mkdir.return_value = None
             live.finalize("0" * 32, REF, att, PROC, "clip.mp4")

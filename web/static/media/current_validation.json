@@ -1,7 +1,7 @@
 {
   "type": "offline development replay",
   "fresh_model_inference": false,
-  "pipeline_sha256": "bd47cf40043994c4bca53a219ad1da16aef95b33a93616c19459bb09bf01e990",
+  "pipeline_sha256": "756f31ed5a3a90e103fe062b7e0d67543fc6a58e078b3b7f5230496a96357279",
   "historical_pipeline_sha256": "55e00e1289d1e3fce67804a4160bef6e6d8a429fe1d0f335e3ddd2c3edd59b49",
   "scope": "Same sixteen packaged generated fixtures, checked under the current acceptance policy.",
   "summary": {
@@ -140,7 +140,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -307,7 +307,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -474,7 +474,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -641,7 +641,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -820,7 +820,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -999,7 +999,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -1178,7 +1178,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -1357,7 +1357,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -1529,7 +1529,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -1701,7 +1701,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -1871,7 +1871,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -2041,7 +2041,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -2211,7 +2211,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -2381,7 +2381,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "model_only",
             "first_seen": null,
@@ -2635,7 +2635,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "tracked",
             "first_seen": 0.0,
@@ -2886,7 +2886,7 @@
           {
             "id": "green_charger",
             "name": "green charger",
-            "description": "green block",
+            "description": "green charger",
             "kind": null,
             "status": "tracked",
             "first_seen": 0.0,

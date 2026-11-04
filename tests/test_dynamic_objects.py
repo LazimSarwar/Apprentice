@@ -16,6 +16,49 @@ def objects(*items):
 
 
 class DynamicObjectTests(unittest.TestCase):
+    def test_reused_id_with_conflicting_appearance_never_passes(self):
+        for tracked in (False, True):
+            with self.subTest(tracked=tracked):
+                ref=graph(tracked=tracked);att=graph(tracked=tracked)
+                att.objects[0].color='blue';att.objects[0].shape='mug'
+                att.objects[0].tracking_description='blue ceramic mug'
+                saved=att.model_dump()
+                report=compare(ref,att)
+                self.assertEqual(report.verdict,'unsure')
+                self.assertFalse(report.verified)
+                self.assertNotIn('red_block',report.mapping)
+                self.assertTrue(any(i.kind=='identity' for i in report.issues))
+                self.assertEqual(att.model_dump(),saved)
+                self.assertEqual(report_view(report,att)['detections'][0]['status'],'ambiguous')
+
+    def test_conflicting_target_identity_cannot_verify_containment(self):
+        ref=graph(tracked=True);att=graph(tracked=True)
+        ref.objects[1].kind='container';att.objects[1].kind='solid'
+        report=compare(ref,att)
+        self.assertFalse(report.passed)
+        self.assertTrue(any(i.kind=='identity' and 'gray_tray' in i.objects for i in report.issues))
+
+    def test_same_id_with_changed_marking_requires_review(self):
+        ref=graph(tracked=True);att=graph(tracked=True)
+        ref.objects[0].tracking_description='red block with blue logo'
+        att.objects[0].tracking_description='red block with green logo'
+        self.assertEqual(compare(ref,att).verdict,'unsure')
+
+    def test_compatible_refinements_do_not_break_exact_identity(self):
+        ref=graph(tracked=True);att=graph(tracked=True)
+        ref.objects[0].tracking_description='red block'
+        att.objects[0].tracking_description='Red wooden cube'
+        att.objects[0].shape='cube';att.objects[1].color='grey'
+        self.assertTrue(compare(ref,att).passed)
+
+    def test_identity_conflict_does_not_accuse_a_wrong_placement(self):
+        ref=graph(tracked=True);att=graph(tracked=True)
+        att.objects[0].color='blue'
+        att.steps[0].target=None;att.steps[0].relation='on'
+        report=compare(ref,att)
+        self.assertEqual(report.verdict,'unsure')
+        self.assertFalse(any(i.severity=='fail' for i in report.issues))
+
     def test_reference_hint_preserves_appearance_without_expected_positions(self):
         g=graph(tracked=True)
         g.objects[0].tracking_description='red wooden block with a white star'

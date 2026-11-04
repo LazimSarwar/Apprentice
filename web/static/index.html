@@ -182,18 +182,76 @@
   details.judge-method{margin-top:16px} details.judge-method summary{cursor:pointer;font-weight:600}
   details.judge-method p{font-size:14px;color:var(--dim)}
   @media(max-width:650px){.real-cases{grid-template-columns:repeat(2,minmax(0,1fr))}.proof-strip{gap:6px}.evidence-table{font-size:12px}.bar{flex-wrap:wrap}}
+
+  /* Shared visual language: calm surfaces, clear actions, readable evidence. */
+  :root{--bg:#f4f6fa;--ink:#14223b;--dim:#526079;--faint:#64718a;--line:#dfe5ef;--accent:#315ff4;--accent-soft:#edf2ff;--radius:20px;--shadow:0 4px 24px #13264706}
+  html{scroll-padding-top:100px}body{line-height:1.6}button,input,select{font:inherit}button,a,input,select,summary{touch-action:manipulation}button{min-height:42px}button:disabled{cursor:not-allowed;opacity:.65}a{text-underline-offset:3px}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #89a6ff;outline-offset:4px}
+  .wrap{max-width:1280px;padding:0 32px}.app-header{position:sticky;top:0;z-index:20;background:#fffffff5;border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}.app-header-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:80px}.wordmark{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-size:22px;font-weight:800;letter-spacing:-.7px}.brand-mark{display:grid;place-items:center;width:34px;height:34px;background:var(--accent);color:#fff;border-radius:11px;font-size:23px;line-height:1}.brand-sub{font-size:9px;letter-spacing:1.4px;font-weight:700;color:var(--faint);margin-left:12px;max-width:85px;line-height:1.5}.app-header nav{display:flex;align-items:center;gap:28px}.app-header nav a{font-size:13px;font-weight:600;color:var(--dim);text-decoration:none;padding:10px 0}.app-header nav a:hover{color:var(--accent)}.app-header nav .nav-cta{background:var(--ink);color:#fff;padding:11px 16px;border-radius:10px}.nav-cta span{margin-left:14px}
+  .hero{background:radial-gradient(ellipse at 82% 0%,#eaf0ff 0,transparent 55%),#fafbfe;border-bottom:1px solid var(--line)}.hero .hero-grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:52px;padding-top:64px;padding-bottom:66px}.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.6px;color:var(--accent);margin:0 0 16px}.hero h1{font-size:clamp(36px,4.1vw,55px);line-height:1.1;letter-spacing:-2.4px;margin:0 0 21px}.hero h1 span{color:var(--accent)}.lede{font-size:16px;line-height:1.8;max-width:520px}.judge-nav{margin-top:25px;gap:10px}.judge-nav a{padding:13px 18px;font-size:13px;border-radius:10px;transition:background .15s,transform .15s}.judge-nav a:hover{transform:translateY(-1px);background:#234bd1}.judge-nav a.secondary{color:var(--ink);background:#fff}.judge-nav a span{margin-left:18px}.hero-footnote{font-size:11px;color:var(--faint);margin:17px 0 0}.hero-proof{margin:0;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 18px 50px #182b5610;transform:rotate(1deg)}.proof-caption{display:flex;align-items:center;justify-content:space-between;padding:17px 20px;gap:10px}.proof-caption .eyebrow{margin:0;font-size:9px}.proof-caption>span:last-child{font-size:10px;color:var(--dim)}.hero-proof img{width:100%;height:auto;display:block;aspect-ratio:16/9;object-fit:cover}.hero-proof figcaption{padding:16px 20px}.hero-proof figcaption strong{display:block;font-size:13px;font-weight:650}.hero-proof figcaption span{display:block;font-size:10px;color:var(--faint);margin-top:4px}
+  section.step{padding-top:54px;scroll-margin-top:20px}.step-head{gap:14px;margin-bottom:24px}.step-head h2{font-size:25px;letter-spacing:-.8px}.step-head p{font-size:14px;margin-top:5px;max-width:900px}.num{border-radius:11px;width:36px;height:36px;background:var(--accent-soft);color:var(--accent)}.two{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px}.two>*{min-width:0}.workspace-grid{grid-template-columns:minmax(0,.85fr) minmax(0,1.35fr);gap:24px}.card{padding:25px}.card h3{color:var(--dim);font-size:11px;letter-spacing:1px}.workspace-label{font-size:10px;letter-spacing:1.6px;color:var(--accent);font-weight:800;margin-bottom:20px}.workspace-input h3{font-size:14px;text-transform:none;letter-spacing:-.1px;color:var(--ink);margin-bottom:12px}.workspace-input h3:not(:first-child){margin-top:23px}.workspace-input .workspace-label+h3{margin-top:0}.radio{font-size:13px;padding:12px;line-height:1.5;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;gap:10px;transition:background .15s,border-color .15s}.radio:has(input:checked){border-color:#a5b9ff;background:var(--accent-soft);color:#2348ba}.radio input{accent-color:var(--accent);width:16px;height:16px;flex:none;margin:0}.radio:has(select){flex-wrap:wrap}.radio select{flex-basis:100%;width:100%;margin-top:4px}select,input:not([type=checkbox]):not([type=radio]):not([type=file]){max-width:100%;border:1px solid #cbd5e5;border-radius:9px;background:#fff;color:var(--ink);padding:10px;font-size:14px;min-height:42px}input[type=checkbox]{accent-color:var(--accent)}#ownrefs>label:not(.drop){display:block;font-size:13px;margin:12px 0}#procedurename{display:block;width:100%;margin-top:5px}.drop{font-size:13px;padding:24px 16px;background:#fafbfe;border:1px dashed #b3bfd4;border-radius:12px}.drop:focus-within{outline:3px solid #89a6ff;outline-offset:3px}.drop input{width:100%;height:100%}.go{padding:14px;font-size:14px;border-radius:11px;background:var(--accent);box-shadow:0 3px 7px #315ff41c}.go:not(:disabled):hover{background:#224cd2}.go:disabled{opacity:1;background:#e1e6f0;color:#68758d;box-shadow:none}.samples{font-size:11px;line-height:1.8;margin-top:11px}.fine{font-size:12px;color:var(--faint);line-height:1.7}.workspace-grid .fine,.detection-panel .fine{text-align:left}.workspace-input>.fine{border-top:1px solid var(--line);padding-top:16px;margin-top:20px;font-size:11px}.workspace-input summary{font-size:12px;font-weight:600}.placeholder{min-height:505px;background:linear-gradient(145deg,#fff,#fafbff);border-style:dashed;box-shadow:none;padding:36px 24px}.empty-mark{display:grid;place-items:center;width:70px;height:70px;border-radius:23px;background:var(--accent-soft);color:var(--accent);font-size:43px;line-height:1;margin:0 auto 24px}.placeholder h3{font-size:22px;text-transform:none;letter-spacing:-.6px;color:var(--ink);margin:0}.placeholder p{font-size:14px;line-height:1.8;margin:10px 0 24px}.empty-note{font-size:10px;display:inline-block;background:#f1f4fa;border-radius:30px;padding:9px 15px;color:var(--dim)}summary{cursor:pointer;color:var(--ink);padding:5px 0}details[open]>summary{margin-bottom:12px}.procedure-details>summary{font-size:14px;font-weight:650}.detection-panel{border-top:1px solid var(--line);margin-top:24px;padding-top:15px}.detection-panel summary{font-size:12px}.verdict{padding:19px;font-size:20px;letter-spacing:-.4px;border-radius:14px}.sub{line-height:1.7}.assurance{border-radius:0 9px 9px 0}.ms{display:grid;grid-template-columns:16px minmax(0,1fr) auto;row-gap:3px;padding:10px 8px;font-size:14px;border-bottom:1px solid #eef1f6}.ms .ev{white-space:normal}.ms .at{font-size:12px}.issue .m{font-size:14px}.bar{font-size:13px}.toggle{font-size:13px;position:relative}.toggle input{display:block;position:absolute;opacity:0;width:1px;height:1px}.toggle input:focus-visible+.switch{outline:3px solid #89a6ff;outline-offset:4px}.hint{font-size:12px}.rule{padding:15px;font-size:14px}.seg{flex:none}.seg button{min-height:40px}.seg button:focus-visible{outline-offset:-4px}.soundbtn{border-radius:10px;padding:9px 13px;font-size:12px}.src{min-height:42px}.card button:not(.go):not(.seg button):not(.soundbtn):not(.att):not(.src):not(.real-case){font-size:13px;border:1px solid var(--line);padding:9px 13px;border-radius:9px;background:#f7f9fd;color:var(--ink);cursor:pointer}.workspace-result #jobactions{padding:22px}.workspace-result #jobactions>button{margin-bottom:6px}#followupfile{display:block;width:100%;font-size:12px;margin-top:8px}#reviewdecision{width:100%}#reviewstatus{display:block;font-size:13px;margin-top:8px}.evidence-table{overflow-wrap:anywhere}footer{border-top:1px solid var(--line);margin-top:48px}
+  @media(max-width:1000px){.brand-sub{display:none}.hero .hero-grid{gap:30px}.hero h1{font-size:42px}.workspace-grid{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)}.card{padding:20px}.rule{grid-template-columns:1fr}}
+  @media(max-width:900px){.two{grid-template-columns:1fr}.hero .hero-grid{padding-top:42px;padding-bottom:42px;gap:30px}.hero h1{font-size:38px}.hero .lede{font-size:14px}.hero-proof figcaption span{font-size:10px}.app-header nav{gap:18px}.placeholder{min-height:320px}.workspace-input{padding:24px}.workspace-result .fine{overflow-wrap:anywhere}}
+  @media(max-width:650px){html{scroll-padding-top:84px}.wrap{padding:0 18px}.app-header-inner{min-height:68px;gap:12px}.wordmark{font-size:20px}.brand-mark{width:30px;height:30px;font-size:21px}.app-header nav{gap:14px}.app-header nav>a:not(.nav-cta){display:none}.app-header nav .nav-cta{font-size:11px;padding:10px 12px}.nav-cta span{margin-left:8px}.hero .hero-grid{grid-template-columns:1fr;gap:28px;padding-top:36px;padding-bottom:32px}.hero h1{font-size:40px;letter-spacing:-1.8px}.eyebrow{font-size:9px;letter-spacing:1.3px}.hero .lede{font-size:14px;max-width:500px}.hero-proof{transform:none;max-width:500px}.hero-proof img{aspect-ratio:2/1}.hero-footnote{font-size:10px}.judge-nav a{padding:12px 14px;font-size:12px}.judge-nav a span{margin-left:12px}section.step{padding-top:36px}.step-head{gap:11px;margin-bottom:18px}.step-head h2{font-size:22px;line-height:1.25}.step-head p{font-size:13px}.num{width:30px;height:30px;border-radius:9px;font-size:14px}.workspace-grid{gap:18px}.card{padding:18px;border-radius:16px}.workspace-input{padding:20px}.placeholder{min-height:280px}.empty-note{font-size:9px;padding:8px 10px}.verdict{font-size:18px;padding:15px}.issue{gap:8px;padding:12px 10px}.issue .clock{font-size:11px;padding:3px 6px}.ms{font-size:13px;column-gap:8px;grid-template-columns:14px minmax(0,1fr)}.ms .at{grid-column:2;margin-left:0}.ms .ev{margin-left:0;font-size:10px}.bar{padding:12px;gap:10px}.rule{padding:12px;font-size:13px}.rule .why{font-size:12px}.att{padding:12px}.att .ttl{font-size:14px}.att .what{font-size:12px}.acc .card,.how .card{padding:14px}.acc .big{font-size:24px}.how .d,.acc .lab{font-size:12px}.real-case{padding:11px}.real-case strong{font-size:12px}.real-case .pill{font-size:11px}.proof-strip span{font-size:12px}.workspace-result #jobactions{padding:16px}.empty-mark{width:58px;height:58px;font-size:36px;border-radius:18px}.evidence-table th,.evidence-table td{padding:7px 3px}.badge{font-size:9px}#objectkinds label{flex-wrap:wrap}#objectkinds select{width:100%}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<div class="hero"><div class="wrap">
-  <div class="brand">OneShot</div>
-  <h1>Show it once. Say why.<br>Check every attempt.</h1>
-  <p class="lede">Record a short tabletop procedure once. Add narration to explain what matters. OneShot learns the steps and rules, checks another attempt, and points to what went wrong, when, and how to fix it. When evidence is missing or conflicting, it asks for review.</p>
-  <div class="uses"><span class="use">Procedure verification</span><span class="use">Pack-out &amp; kitting QA</span><span class="use">Training new staff</span></div>
-  <div class="judge-nav"><a href="/judge">Three-minute walkthrough</a><a class="secondary" href="#try">Teach or check a procedure</a><a class="secondary" href="/pilot">Packing trial</a></div>
+<header class="app-header"><div class="wrap app-header-inner"><a class="wordmark" href="/" aria-label="OneShot home"><span class="brand-mark" aria-hidden="true">O</span>OneShot<span class="brand-sub">PROCEDURE INTELLIGENCE</span></a><nav aria-label="Main navigation"><a href="#try">Workspace</a><a href="#real">Evidence</a><a class="nav-cta" href="/judge">Judge walkthrough <span aria-hidden="true">↗</span></a></nav></div></header>
+<div class="hero"><div class="wrap hero-grid">
+  <div class="hero-copy"><p class="eyebrow">FROM DEMONSTRATION TO VERIFICATION</p><h1>Show it once.<br><span>Check with evidence.</span></h1><p class="lede">Turn a tabletop demonstration into a clear procedure. Check the next attempt, find the moment that matters, and review what the camera couldn’t confirm.</p><div class="judge-nav"><a href="#try">Check a video <span aria-hidden="true">→</span></a><a class="secondary" href="/judge">See the three-minute demo</a></div><p class="hero-footnote">Powered by Meta video understanding and object tracking.</p></div>
+  <figure class="hero-proof"><div class="proof-caption"><span class="eyebrow">REAL REFERENCE FOOTAGE</span><span>01 / Observe</span></div><img src="/static/media/real_ref.jpg" width="640" height="360" alt="Two coloured blocks on a tabletop in the recorded reference demonstration"><figcaption><strong>The procedure starts with what you show.</strong><span>Confirm the steps. Keep the evidence. Review uncertainty.</span></figcaption></figure>
 </div></div>
 
 <div class="wrap">
+  <section class="step" id="try">
+    <div class="step-head"><div class="num">↗</div><div><h2>Your checking workspace</h2>
+      <p>Choose a reference, add your video, and inspect the evidence behind the result.</p></div></div>
+    <div class="two workspace-grid">
+      <div class="card workspace-input">
+        <div class="workspace-label">SET UP YOUR CHECK</div><h3>1 · Choose your reference</h3>
+        <label class="radio"><input type="radio" name="refmode" value="real" checked> Two-block stacking · sample reference</label>
+        <label class="radio"><input type="radio" name="refmode" value="pack"> Packing · narrated sample reference</label>
+        <label class="radio"><input type="radio" name="refmode" value="own"> Teach my own procedure</label>
+        <label class="radio" id="savedrefoption" hidden><input type="radio" name="refmode" value="saved"> Reuse a confirmed procedure <select id="savedreference" aria-label="Confirmed procedure"></select></label>
+        <div id="ownrefs" hidden>
+          <label class="drop" id="refdrop"><input type="file" id="reffile" accept="video/*"><span id="reflabel">Choose or drop your reference video</span></label>
+          <label class="drop" id="ref2drop"><input type="file" id="ref2file" accept="video/*"><span id="ref2label">Optional: a second correct way to do it</span></label>
+          <label>Procedure name <input id="procedurename" value="Everyday packing" maxlength="100"></label>
+          <button class="soundbtn" id="learnreference" disabled>Learn this reference first</button>
+        </div>
+        <h3>2 · Add an attempt</h3>
+        <label class="drop" id="attdrop"><input type="file" id="attfile" accept="video/*"><span id="attlabel">Choose or drop a video of someone doing it</span></label>
+        <div class="samples" id="realsamples">No video handy? Download a phone attempt and upload it:
+          <a download href="/static/media/real_ok_3_demo.mp4">correct</a> ·
+          <a download href="/static/media/real_wrongplace_1_demo.mp4">beside, not on</a> ·
+          <a download href="/static/media/real_skip_1_demo.mp4">green missing</a></div>
+        <div class="samples" id="packsamples" hidden>Packing samples for the narrated packing reference:
+          <a download href="/static/media/pack_ok_demo.mp4">correct</a> ·
+          <a download href="/static/media/pack_order_demo.mp4">liner too late</a> ·
+          <a download href="/static/media/pack_skip_card_demo.mp4">no card</a> ·
+          <a download href="/static/media/pack_wrong_place_demo.mp4">wrong place</a></div>
+        <button class="go" id="go" disabled>Check this video</button>
+        <div id="uploadstatus" role="status" aria-live="polite" hidden><p id="uploadmessage"></p><progress id="uploadprogress" max="100" value="0" style="width:100%"></progress></div>
+        <details style="margin-top:16px"><summary>Your recent checks</summary><p class="fine">Available in this browser for 24 hours. Open a check to resume it or download its report.</p><div id="recentchecks">Loading saved checks…</div></details>
+        <div class="fine">Live checks use Meta models. Videos up to 2 minutes and 80 MB are sent to model services, kept private to this browser session, and expire after 24 hours. You can delete a completed recording below.</div>
+        <ol class="stages" id="stages" hidden></ol>
+        <div class="err" id="liveerr" hidden></div>
+      </div>
+      <div class="workspace-result">
+        <div class="media" id="livemedia" hidden>
+          <div class="screen"><video id="livevid" muted loop playsinline autoplay></video></div>
+          <div class="bar"><label class="toggle"><input type="checkbox" id="livevision" disabled><span class="switch"></span>AI vision</label>
+            <span class="hint" id="livehint">Checking with the tracker…</span></div>
+        </div>
+        <div class="card" aria-live="polite" id="livereport" style="margin-top:16px" hidden></div>
+        <div class="card" id="liveproc" style="margin-top:16px" hidden></div>
+        <div class="card" id="procedureready" style="margin-top:16px" hidden><h3>Ready to check new attempts</h3><p>Your confirmed reference can be reused without learning it again.</p><button id="editprocedure">Edit saved procedure</button> <a id="startpilot" href="/pilot">Start the independent packing trial →</a><p>Select an attempt on the left, or use this reference in the camera section.</p></div>
+        <div id="jobactions" hidden style="margin-top:12px"><button id="jobhistory">Decision history</button> <button id="jobdelete">Delete recording</button><label class="assessment-action" style="display:block;margin-top:12px">Check a clearer recording with this procedure <input id="followupfile" type="file" accept="video/*"></label><details class="assessment-action" style="margin-top:12px"><summary>Record a human review</summary><p>This is saved separately from the machine assessment.</p><select id="reviewdecision"><option value="needs_evidence">Needs more evidence</option><option value="accept">Accept after human inspection</option><option value="reject">Reject after human inspection</option></select><input id="reviewnote" aria-label="Reason for human decision" placeholder="Explain your decision"><button id="savereview">Save human review</button><span id="reviewstatus"></span></details><pre id="historyview" style="white-space:pre-wrap" hidden></pre></div>
+        <div class="card placeholder" id="liveempty"><div><span class="empty-mark" aria-hidden="true">⌖</span><h3>Ready when you are.</h3><p>Your video, the result, and the evidence<br>will appear together here.</p><span class="empty-note">Learn a reference · Confirm the steps · Check an attempt</span></div></div>
+      </div>
+    </div>
+  </section>
+
   <section class="step" id="real">
     <div class="step-head"><div class="num">▶</div><div><h2>One reference. Real phone footage. Inspect every verdict.</h2>
       <p>Two physical blocks, filmed by the builder. Learn red down → green on red, then check nine separate attempts. Select a case and click its timestamp to inspect the evidence.</p></div></div>
@@ -289,57 +347,10 @@
     <div class="fine" style="text-align:left">Muse Spark reads only the video up to that moment. The interval adapts to processing delay (about 8 s per read in the earlier generated-example test; up to four run at once). The delay shown on each warning is measured, not estimated.</div>
   </section>
 
-  <section class="step" id="try">
-    <div class="step-head"><div class="num">5</div><div><h2>Try it with your own video</h2>
-      <p>Upload an attempt to run the real pipeline. A provisional model assessment appears first; the final result follows tracking, or requests review if tracking is unavailable.</p></div></div>
-    <div class="two">
-      <div class="card">
-        <h3>1 · Reference</h3>
-        <label class="radio"><input type="radio" name="refmode" value="real" checked> The two-block phone reference above</label>
-        <label class="radio"><input type="radio" name="refmode" value="pack"> The narrated packing reference</label>
-        <label class="radio"><input type="radio" name="refmode" value="own"> My own reference video — talk while you record it</label>
-        <label class="radio" id="savedrefoption" hidden><input type="radio" name="refmode" value="saved"> Reuse a confirmed procedure <select id="savedreference" aria-label="Confirmed procedure"></select></label>
-        <div id="ownrefs" hidden>
-          <label class="drop" id="refdrop"><input type="file" id="reffile" accept="video/*"><span id="reflabel">Choose or drop your reference video</span></label>
-          <label class="drop" id="ref2drop"><input type="file" id="ref2file" accept="video/*"><span id="ref2label">Optional: a second correct way to do it</span></label>
-          <label>Procedure name <input id="procedurename" value="Everyday packing" maxlength="100"></label>
-          <button class="soundbtn" id="learnreference" disabled>Learn this reference first</button>
-        </div>
-        <h3>2 · Attempt</h3>
-        <label class="drop" id="attdrop"><input type="file" id="attfile" accept="video/*"><span id="attlabel">Choose or drop a video of someone doing it</span></label>
-        <div class="samples" id="realsamples">No video handy? Download a phone attempt and upload it:
-          <a download href="/static/media/real_ok_3_demo.mp4">correct</a> ·
-          <a download href="/static/media/real_wrongplace_1_demo.mp4">beside, not on</a> ·
-          <a download href="/static/media/real_skip_1_demo.mp4">green missing</a></div>
-        <div class="samples" id="packsamples" hidden>Packing samples for the narrated packing reference:
-          <a download href="/static/media/pack_ok_demo.mp4">correct</a> ·
-          <a download href="/static/media/pack_order_demo.mp4">liner too late</a> ·
-          <a download href="/static/media/pack_skip_card_demo.mp4">no card</a> ·
-          <a download href="/static/media/pack_wrong_place_demo.mp4">wrong place</a></div>
-        <button class="go" id="go" disabled>Check this video</button>
-        <div id="uploadstatus" role="status" aria-live="polite" hidden><p id="uploadmessage"></p><progress id="uploadprogress" max="100" value="0" style="width:100%"></progress></div>
-        <details style="margin-top:16px"><summary>Your recent checks</summary><p class="fine">Available in this browser for 24 hours. Open a check to resume it or download its report.</p><div id="recentchecks">Loading saved checks…</div></details>
-        <div class="fine">Live checks use Meta models. Videos up to 2 minutes and 80 MB are sent to model services, kept private to this browser session, and expire after 24 hours. You can delete a completed recording below.</div>
-        <ol class="stages" id="stages" hidden></ol>
-        <div class="err" id="liveerr" hidden></div>
-      </div>
-      <div>
-        <div class="media" id="livemedia" hidden>
-          <div class="screen"><video id="livevid" muted loop playsinline autoplay></video></div>
-          <div class="bar"><label class="toggle"><input type="checkbox" id="livevision" disabled><span class="switch"></span>AI vision</label>
-            <span class="hint" id="livehint">Checking with the tracker…</span></div>
-        </div>
-        <div class="card" id="liveproc" style="margin-top:16px" hidden></div>
-        <div class="card" id="procedureready" style="margin-top:16px" hidden><h3>Ready to check new attempts</h3><p>Your confirmed reference can be reused without learning it again.</p><button id="editprocedure">Edit saved procedure</button> <a id="startpilot" href="/pilot">Start the independent packing trial →</a><p>Select an attempt on the left, or use this reference in the camera section.</p></div>
-        <div class="card" id="livereport" style="margin-top:16px" hidden></div>
-        <div id="jobactions" hidden style="margin-top:12px"><button id="jobhistory">Decision history</button> <button id="jobdelete">Delete recording</button><label class="assessment-action" style="display:block;margin-top:12px">Check a clearer recording with this procedure <input id="followupfile" type="file" accept="video/*"></label><details class="assessment-action" style="margin-top:12px"><summary>Record a human review</summary><p>This is saved separately from the machine assessment.</p><select id="reviewdecision"><option value="needs_evidence">Needs more evidence</option><option value="accept">Accept after human inspection</option><option value="reject">Reject after human inspection</option></select><input id="reviewnote" aria-label="Reason for human decision" placeholder="Explain your decision"><button id="savereview">Save human review</button><span id="reviewstatus"></span></details><pre id="historyview" style="white-space:pre-wrap" hidden></pre></div>
-        <div class="card placeholder" id="liveempty"><div>Your verdict will appear here.</div></div>
-      </div>
-    </div>
-  </section>
 
-  <section class="step">
-    <div class="step-head"><div class="num">6</div><div><h2>How reliable is it?</h2>
+
+  <section class="step" id="evaluation">
+    <div class="step-head"><div class="num">5</div><div><h2>How reliable is it?</h2>
       <p id="accintro"></p></div></div>
     <div class="acc" id="acc"></div>
     <div class="caveat" id="acccaveat"></div>
@@ -351,7 +362,7 @@
   </section>
 
   <section class="step">
-    <div class="step-head"><div class="num">7</div><div><h2>It understands steps well enough to do them</h2>
+    <div class="step-head"><div class="num">6</div><div><h2>It understands steps well enough to do them</h2>
       <p>Optional extension: an earlier learned task graph drives deterministic skills on a simulated arm. No physical robot is claimed.</p></div></div>
     <div class="two">
       <div class="media"><div class="screen"><video id="robot" muted loop playsinline autoplay></video></div></div>
@@ -371,7 +382,7 @@
   </section>
 
   <footer>
-    The first section uses real phone recordings. The packing examples use generated shapes and computer-voiced narration; the robot is simulated. Verdicts are rebuilt from cached model outputs with the current checker. Real footage is a development set; self-checks and abstentions are reported separately.
+    The phone examples use real recordings. The packing examples use generated shapes and computer-voiced narration; the robot is simulated. Verdicts are rebuilt from cached model outputs with the current checker. Real footage is a development set; self-checks and abstentions are reported separately.
   </footer>
 </div>
 
@@ -485,9 +496,10 @@ function renderReport(a, el, video, sub){
     h+=`<p class="fine"><b>Closer look:</b> ${n('confirmed')} reported problem${n('confirmed')===1?'':'s'} confirmed${review?`, ${review} sent to review`:''}${n('not_checked')?`, ${n('not_checked')} could not be checked`:''}.</p>`;}
   const covered=(a.final_states||[]).filter(s=>s.evidence==='covered').map(s=>esc(s.key[1].replace(/_/g,' ')));
   if(covered.length)h+=`<p class="fine"><b>Hidden as expected:</b> ${covered.join(', ')}. A later step in the procedure covers it, and the tracker saw it placed first.</p>`;
+  let detectionPanel='';
   if(a.detections?.length){
     const labels={tracked:'Tracked in video',ambiguous:'Identity needs review',unavailable:'Tracking unavailable',model_only:'Model detection · not yet tracked',unseen:'Not found by tracker'};
-    h+=`<details style="margin:16px 0" open><summary><b>Objects detected in this video · ${a.detections.length}</b></summary><p class="fine">Discovered from this recording. Tracking an object does not by itself verify its final placement.</p>${a.detections.map(o=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(o.description||o.name)}</b><br><span class="fine">${esc(labels[o.status]||'Needs review')}${o.first_seen!=null?` · ${clock(o.first_seen)}–${clock(o.last_seen)}`:''}</span></div>`).join('')}</details>`;
+    detectionPanel=`<details class="detection-panel"><summary><b>Objects detected in this video · ${a.detections.length}</b></summary><p class="fine">Discovered from this recording. Tracking an object does not by itself verify its final placement.</p>${a.detections.map(o=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(o.description||o.name)}</b><br><span class="fine">${esc(labels[o.status]||'Needs review')}${o.first_seen!=null?` · ${clock(o.first_seen)}–${clock(o.last_seen)}`:''}</span></div>`).join('')}</details>`;
   }
   if(a.issues.length){
     h+=`<h3>${fails.length?'Problems':a.verdict==='unsure'?'Needs review':'Notes'}</h3>`+a.issues.map((x,j)=>`<div class="issue ${x.severity==='warn'?'warn':x.severity==='unknown'?'unknown':''}" data-j="${j}"><span class="clock">${clock(x.time)}</span><div>
@@ -495,7 +507,7 @@ function renderReport(a, el, video, sub){
       ${saidLine(x.quote,x.reason)}${x.fix?`<span class="fix"><b>Fix:</b> ${esc(x.fix)}</span>`:''}</div></div>`).join('');
   }
   h+=`<h3>Steps in this attempt</h3>`+a.milestones.map((m,j)=>`<div class="ms ${m.done?'click':''}" data-j="${j}"><span class="i ${m.done?'yes':'no'}">${m.done?'✓':'✕'}</span><span>${esc(m.text)}${m.critical?'<span class="badge b-crit">Critical</span>':''}${m.evidence?`<span class="ev ev-${m.evidence}">${EV[m.evidence]}</span>`:''}</span><span class="at">${m.done?'at '+clock(m.time):'not seen'}</span></div>`).join('');
-  el.innerHTML=h;
+  el.innerHTML=h+detectionPanel;
   el.querySelectorAll('.issue').forEach(n=>n.onclick=()=>{const x=a.issues[+n.dataset.j]; if(x.time!=null) seek(video,x.time);
     n.classList.add('flash'); setTimeout(()=>n.classList.remove('flash'),700);});
   el.querySelectorAll('.ms.click').forEach(n=>n.onclick=()=>{const m=a.milestones[+n.dataset.j]; if(m.time!=null) seek(video,m.time);});
@@ -612,8 +624,8 @@ function liveError(msg){
 function renderLiveProc(ref){
   if(L.shownRules) return; L.shownRules=true; L.rules=ref.rules;
   const el=$('liveproc'); el.hidden=false;
-  el.innerHTML=`<h3>What it learned from your reference</h3><ol class="steps">${ref.steps.map(s=>`<li><div><span class="t">${esc(s.text)}</span>${s.critical?'<span class="badge b-crit">Critical</span>':''}${saidLine(s.quote,s.reason)}</div></li>`).join('')}</ol>
-    <h3>Order rules</h3><div class="rules" id="liverules"></div>`;
+  el.innerHTML=`<details class="procedure-details"><summary>Reference procedure · ${ref.steps.length} steps</summary><h3>What it learned from your reference</h3><ol class="steps">${ref.steps.map(s=>`<li><div><span class="t">${esc(s.text)}</span>${s.critical?'<span class="badge b-crit">Critical</span>':''}${saidLine(s.quote,s.reason)}</div></li>`).join('')}</ol>
+    <h3>Order rules</h3><div class="rules" id="liverules"></div></details>`;
   renderRules(L.rules,$('liverules'),L.ov,recheckLive);
 }
 function renderProcedureEditor(j){

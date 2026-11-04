@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typing import Literal, Optional
 import math
+import re
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -37,12 +38,30 @@ class Object(BaseModel):
         """Short noun phrase to hand the tracker, e.g. 'red block'."""
         if self.tracking_description and self.tracking_description.strip():
             return " ".join(self.tracking_description.split())
+        # Older references only stored geometry. Preserve a colour-qualified,
+        # descriptive name rather than reducing every named device to a block.
+        # This changes the search query, never the evidence needed for a match.
+        geometry = {"block", "cube", "cuboid", "rectangle", "rectangular", "square",
+                    "round", "object", "item", "thing", "shape"}
+        roles = {"product", "part", "target", "source", "required", "expected", "sample",
+                 "left", "right", "top", "bottom", "front", "back", "middle", "center"}
+        color = re.findall(r"[a-z]+", (self.color or "").casefold())
+        shape = set(re.findall(r"[a-z]+", (self.shape or "").casefold()))
+        name = self.id.casefold().split("_")
+        if (color and shape and shape <= geometry and name[:len(color)] == color
+                and all(word.isalpha() for word in name)):
+            specific = [word for word in name[len(color):] if word not in geometry | roles]
+            if specific:
+                return " ".join(color + specific)
         words = [w for w in (self.color, self.shape) if w]
         return " ".join(words) if words else self.id.replace("_", " ")
 
     def reference_hint(self) -> dict:
         """Appearance only: never leak expected actions or positions into detection."""
-        return self.model_dump(include={"id", "color", "shape", "kind", "tracking_description"}, exclude_none=True)
+        hint = self.model_dump(include={"id", "color", "shape", "kind", "tracking_description"}, exclude_none=True)
+        if not self.tracking_description:
+            hint["tracking_description"] = self.concept()
+        return hint
 
 
 class Step(BaseModel):

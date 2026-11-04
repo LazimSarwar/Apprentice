@@ -18,6 +18,7 @@ critical steps. A person can then confirm or change any rule; their choice wins.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+import re
 
 from .narration import Narration
 from .schema import TaskGraph
@@ -230,6 +231,33 @@ def _mods(obj_id: str) -> set[str]:
     return {p for p in obj_id.split("_") if p in ("left", "right", "top", "middle", "bottom", "front", "back", "center")}
 
 
+def identity_conflicts(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
+    """A reused ID is a model label, not proof of the same physical object.
+
+    Missing detail is not a contradiction. Compatible refinements and common shape
+    synonyms are allowed; conflicting supplied appearance needs human review.
+    """
+    aliases = {"grey": "gray", "cube": "block", "cuboid": "block", "mug": "cup"}
+    def words(value):
+        return {aliases.get(w, w) for w in re.findall(r"[a-z0-9]+", (value or "").casefold())
+                if w not in {"a", "an", "the", "with", "of"}}
+    def differs(left, right):
+        a, b = words(left), words(right)
+        return bool(a and b and not (a <= b or b <= a))
+    by_id = {o.id: o for o in ref.objects}
+    conflicts = {}
+    for obj in att.objects:
+        other = by_id.get(obj.id)
+        if other is None: continue
+        reasons = []
+        for field in ("color", "shape", "kind", "tracking_description"):
+            expected, observed = getattr(other, field), getattr(obj, field)
+            if differs(expected, observed):
+                reasons.append(f"{field.replace('_', ' ')}: reference '{expected}', attempt '{observed}'")
+        if reasons: conflicts[obj.id] = "; ".join(reasons)
+    return conflicts
+
+
 def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
     """Attempt -> reference identity, with unique appearance matches for renamed objects.
 
@@ -239,8 +267,9 @@ def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
     ref_ids = {o.id for o in ref.objects if not _is_surface(o)}
     mapping: dict[str, str] = {}
     used: set[str] = set()
+    conflicts = identity_conflicts(ref, att)
     for a in att.objects:
-        if a.id in ref_ids:
+        if a.id in ref_ids and a.id not in conflicts:
             mapping[a.id] = a.id
             used.add(a.id)
     def description(o):
@@ -262,7 +291,7 @@ def map_objects(ref: TaskGraph, att: TaskGraph) -> dict[str, str]:
     for matches in (same_description, same_shape):
         candidates = {a.id: [r.id for r in ref.objects if r.id in ref_ids and r.id not in used
                             and _is_container(r) == _is_container(a) and matches(a, r)]
-                      for a in att.objects if a.id not in mapping and not _is_surface(a)}
+                      for a in att.objects if a.id not in mapping and a.id not in conflicts and not _is_surface(a)}
         for aid, ids in candidates.items():
             if len(ids) == 1 and sum(ids[0] in others for others in candidates.values()) == 1:
                 mapping[aid] = ids[0]

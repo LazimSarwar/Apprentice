@@ -15,17 +15,18 @@ from oneshot.tracking_identity import ambiguous_tracks
 
 KIND = {"skipped": "Skipped step", "order": "Wrong order", "wrong_place": "Wrong place",
         "extra": "Extra step", "unknown": "Couldn't verify", "doubt": "Conflicting evidence",
-        "invalid_reference": "Reference needs review"}
+        "invalid_reference": "Reference needs review", "identity": "Object identity needs review"}
 WARN_KIND = {"order": "Different order"}
 
 
 def report_view(report: Report, att: TaskGraph) -> dict:
     ambiguous = ambiguous_tracks(att.objects)
+    identity_unclear = {oid for issue in report.issues if issue.kind == "identity" for oid in issue.objects}
     detections = []
     for obj in att.objects:
         error = att.meta.tracking_errors.get(obj.id)
         boxes = obj.track.boxes if obj.track else []
-        state = ("ambiguous" if obj.id in ambiguous else "unavailable" if error else
+        state = ("ambiguous" if obj.id in ambiguous or obj.id in identity_unclear else "unavailable" if error else
                  "tracked" if boxes else "model_only" if att.meta.track_seconds is None else "unseen")
         detections.append({"id": obj.id, "name": nice(obj.id), "description": obj.concept(),
                            "kind": obj.kind, "status": state,

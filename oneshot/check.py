@@ -30,7 +30,7 @@ from types import SimpleNamespace
 
 from .narration import Narration, Turn, listen, narrate, spoken_text
 from .procedure import (Key, Milestone, Procedure, Rule, events, final_keys, learn,  # noqa: F401
-                        map_objects, milestones, pair_id, placement_timeline, with_confirmed_kinds)
+                        map_objects, milestones, pair_id, placement_timeline, with_confirmed_kinds, identity_conflicts)
 from .schema import TaskGraph
 from .tracking_identity import ambiguous_tracks
 from .sim import monitor
@@ -437,6 +437,14 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                 **{oid: "Ambiguous tracking identity" for oid in duplicates}},
                 "track_seconds": att.meta.track_seconds if att.meta.track_seconds is not None else 0.0})})
     ref, att = with_confirmed_kinds(ref, proc), with_confirmed_kinds(att, proc)
+    required_objects = {oid for step in proc.steps for oid in step.key[1:]}
+    conflicts = {oid: reason for oid, reason in identity_conflicts(ref, att).items() if oid in required_objects}
+    if conflicts:
+        # Preserve the saved graph. A track of a conflicting identity cannot verify
+        # a reference placement, even when steps/final relations reuse the same ID.
+        att = att.model_copy(update={"meta": att.meta.model_copy(update={
+            "tracking_errors": {**att.meta.tracking_errors,
+                                **{oid: "Conflicting object identity" for oid in conflicts}}})})
     if rules is not None:
         proc = Procedure(proc.steps, [Rule(r.before, r.after, "required", "you", r.note) for r in rules],
                          proc.references, proc.narration, proc.final_goals, proc.object_kinds)
@@ -469,7 +477,10 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
     tracked = att.meta.track_seconds is not None or any(o.track for o in att.objects)
     objs = {o.id: o for o in att.objects}
 
-    issues: list[Issue] = []
+    issues: list[Issue] = [Issue("identity", "unknown",
+        f"Couldn't verify the identity of {nice(oid)} — {reason}.", None, [oid],
+        fix="Compare this object with the reference and confirm it is the intended item.")
+        for oid, reason in conflicts.items()]
     for obj in att.objects:
         if obj.id not in mapping and any((candidate.color or "").lower() == (obj.color or "").lower()
                                         for candidate in ref.objects):
@@ -519,6 +530,12 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                 f"Put the {nice(a)} {where(k[0], k[2])} instead of {where(rel, b)}",
                                 t, [a, k[2], b], m.critical, m.reason, m.quote,
                                 f"Move the {nice(a)} {into(rel, b)}.", list(m.key), list(k)))
+        elif tracked and obj is not None and obj.id in duplicates:
+            issues.append(Issue("unknown", "unknown",
+                                f"Couldn't verify: {m.text} — the tracker confused the {nice(a)} "
+                                "with another object, so it cannot establish whether this step was skipped.",
+                                prev_time, [a, b], m.critical, m.reason, m.quote,
+                                "Review the object identities and this step by hand, or retry the check."))
         elif tracked and obj is not None and obj.from_reference and not obj.track and obj.id not in att.meta.tracking_errors:
             issues.append(Issue("unknown", "unknown",
                                 f"Couldn't verify: {m.text} — the {nice(a)} was not found anywhere in this recording.",
@@ -670,6 +687,13 @@ def compare(ref: TaskGraph, att: TaskGraph, rules: list[monitor.OrderingRule] | 
                                 None, [k[1]], info[k].critical,
                                 fix="Show the full sequence so the required order can be checked."))
 
+    # Conflicting identities cannot establish a skip, wrong placement or order failure.
+    # Independent problems involving other objects are retained.
+    for issue in issues:
+        if issue.severity == "fail" and conflicts.keys() & set(issue.objects):
+            issue.severity = "unknown"
+            issue.kind = "identity"
+            issue.message = "Object identity needs review before this problem can be confirmed: " + issue.message
     issues.sort(key=lambda i: (i.time is None, i.time or 0.0))
     sev = {i.severity for i in issues}
     verdict = "fail" if "fail" in sev else "unsure" if "unknown" in sev else "pass_notes" if sev else "pass"

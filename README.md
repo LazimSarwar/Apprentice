@@ -38,6 +38,11 @@ Three checks read the same saved video-model readings, with no new model calls
 
 ## Dynamic object discovery (Nov 3)
 
+Legacy references no longer reduce a specific colour-qualified object name to generic geometry when no tracking description exists (for example, a named charger stored as a block). Explicit appearance descriptions still take precedence; this changes the search query, not the criteria for accepting evidence. Missing-step reports now identify duplicate tracking as identity confusion instead of claiming an object was hidden. New regression tests cover named objects, generic IDs, preserved descriptions and omitted-object searches.
+
+Reused object IDs now undergo appearance consistency checks. Conflicting colour, shape, kind or visual markings request identity review and cannot produce a verified pass. Missing details and compatible refinements remain allowed. The judge page shows the latest recorded P01–P05 run first, labels its evidence limitations, and preserves earlier outcomes in the downloadable report.
+
+
 Object names are discovered from each video, not selected from a packing whitelist. The reference now supplies appearance-only identity hints (including visible markings and object kind) to upload and camera reads. Absent objects must not be invented from the guide; unfamiliar objects retain their own identities. Unique visual descriptions can match renamed objects. A same-colour object of a different shape cannot silently substitute for a required item, and ambiguous matches remain unresolved. Reports show each discovered object, its visual description and tracking status separately from placement verification. The checked task vocabulary remains tabletop placements: on, inside and near. This is not a claim to recognize every possible object or procedure.
 
 ## Real packing tests and upload recovery (Nov 3)
@@ -85,7 +90,7 @@ person must supply new recordings. Anonymous participant codes and review timing
 self-reported; the optional time differences exclude model waiting and are not a
 controlled impact study. The recording guide is in `../Real-footage/packing-pilot/`.
 
-All **209 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
+All **218 offline tests pass on Windows/Python 3.14.5 and the clean Modal Linux/Python
 3.12.10 deployment image**, including the two false-accept regressions, reference-only
 confirmation, frozen labels, first-submission preservation, source drift, duplicate
 recordings, private reports and separate timing denominators. `pip check` passes in the

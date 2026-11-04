@@ -39,6 +39,8 @@ class IdentityTests(unittest.TestCase):
         result = compare(graph(), att)
         self.assertEqual(result.verdict, 'unsure')
         self.assertFalse(any(i.kind == 'skipped' for i in result.issues))
+        self.assertTrue(any('tracker confused' in i.message for i in result.issues))
+        self.assertFalse(any('hidden or out of view' in i.message for i in result.issues))
 
     def test_duplicate_target_cannot_support_a_wrong_place(self):
         att = duplicate_attempt()
@@ -83,6 +85,25 @@ class IdentityTests(unittest.TestCase):
 
 
 class DescriptionTests(unittest.TestCase):
+    def test_legacy_geometry_keeps_specific_names_for_different_object_types(self):
+        for name in ('white_charger', 'blue_stapler', 'red_scissors'):
+            with self.subTest(name=name):
+                obj = Object(id=name, color=name.split('_')[0], shape='block')
+                self.assertEqual(obj.concept(), name.replace('_', ' '))
+                self.assertEqual(obj.reference_hint()['tracking_description'], obj.concept())
+                self.assertIsNone(obj.tracking_description)  # Saved reference is not rewritten.
+
+    def test_legacy_search_does_not_invent_names_from_generic_or_opaque_ids(self):
+        for name in ('white_block', 'white_product', 'white_item_3', 'sku_123', 'white_left_cube'):
+            with self.subTest(name=name):
+                self.assertEqual(Object(id=name, color='white', shape='block').concept(), 'white block')
+
+    def test_specific_appearance_takes_precedence_over_legacy_id(self):
+        obj = Object(id='white_charger', color='white', shape='block',
+                     tracking_description='white adapter with two metal prongs')
+        self.assertEqual(obj.concept(), 'white adapter with two metal prongs')
+        self.assertEqual(Object(id='white_charger', color='white', shape='card').concept(), 'white card')
+
     def test_specific_visible_description_is_used_with_legacy_fallback(self):
         obj = Object(id='adapter', color='white', shape='block', tracking_description=' white  charger ')
         self.assertEqual(obj.concept(), 'white charger')
